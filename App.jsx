@@ -5,7 +5,7 @@ import LandingPage from './components/Landingpage';
 
 import { initializeApp } from 'firebase/app';
 
-import { getAuth } from 'firebase/auth';
+import { getAuth, signOut } from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { Settings } from 'react-native-fbsdk-next';
 
@@ -37,14 +37,19 @@ export default function App() {
   };
 
   const navigateToSignIn = () => {
+    // if(auth.currentUser) {
+    //   signOut(auth);
+    //   console.log('User signed out');
+    // }
+
+    signOut(auth);
+    
     if(auth.currentUser) {
-      auth.signOut();
+      console.log('Sign out failed');
+    } else {
       console.log('User signed out');
-      // Toast.show({
-      //   type: 'success',
-      //   text1: 'Signed out successfully'
-      // });
     }
+
     setCurrentPage('signin');
   };
 

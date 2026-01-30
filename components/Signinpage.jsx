@@ -13,7 +13,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { getAuth, signInWithCredential, GoogleAuthProvider, FacebookAuthProvider } from '@react-native-firebase/auth';
+import { getAuth, signInWithEmailAndPassword, signInWithCredential, GoogleAuthProvider, FacebookAuthProvider } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 
