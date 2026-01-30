@@ -14,9 +14,20 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
+import { getAuth, createUserWithEmailAndPassword, signInWithCredential, GoogleAuthProvider } from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
+
+import Toast from 'react-native-toast-message';
+
 // SignupPage Component - A modern sign-up screen with email/password authentication
 // Features: name, email validation, password visibility toggle, confirm password, loading state, social login buttons
 export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) {
+    GoogleSignin.configure({
+        webClientId: '1054885312610-4nm3kn457o6a4q64u0o6ofccisflvunl.apps.googleusercontent.com'
+    });
+
+    const auth = getAuth();
+
     // State for form inputs
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -40,12 +51,72 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
         setTimeout(() => {
             setIsLoading(false);
             console.log('Sign up with:', name, email, password);
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    console.log('User account created & signed in!', user);
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Account created successfully!',
+                    });
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error('Error during sign up:', errorCode, errorMessage);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Sign up failed',
+                        text2: errorMessage,
+                    });
+                });
+
             // Navigate to landing page after successful sign-up
             if (onNavigateToLanding) {
                 onNavigateToLanding();
             }
         }, 2000);
     };
+
+    const handleGoogleSignUp = async () => {
+        try {
+            // Check if your device supports Google Play
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+            // Prompt the sign in pop-up
+            const signInResult = await GoogleSignin.signIn();
+
+            // Get the sign-in token of the pop-up
+            let idToken = signInResult.data?.idToken;
+
+            // Maybe the token was in an older format
+            if(!idToken)
+            {
+                idToken = signInResult.idToken;
+            }
+
+            // If not then throw an error
+            if(!idToken) {
+                throw new Error('No ID token returned from Google Sign-In');
+            }
+
+            const googleCredential = GoogleAuthProvider.credential(idToken);
+            await signInWithCredential(auth, googleCredential);
+            console.log('Signed in with Google credential!');
+
+            if (onNavigateToLanding) {
+                onNavigateToLanding();
+            }
+        } catch (error) {
+            console.error('Error during Google sign-in:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Google sign-in failed',
+                text2: error.message,
+            });
+        }
+    }
 
     // Validates email format - checks for @ and . characters
     const isValidEmail = email.includes('@') && email.includes('.');
@@ -266,7 +337,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
 
                             {/* Social Login Buttons - Quick sign up with Google, Apple, and Facebook */}
                             <View style={styles.socialContainer}>
-                                <TouchableOpacity style={styles.socialButton}>
+                                <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignUp}>
                                     <Ionicons name="logo-google" size={24} color="#DB4437" />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.socialButton}>

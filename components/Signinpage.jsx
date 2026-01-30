@@ -13,9 +13,16 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
+import { getAuth, signInWithCredential, GoogleAuthProvider } from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+import Toast from 'react-native-toast-message';
+
 // SigninPage Component - A modern login screen with email/password authentication
 // Features: email validation, password visibility toggle, loading state, social login buttons
 export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) {
+    const auth = getAuth();
+
     // State for form inputs
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -29,11 +36,81 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
     // Handler for sign-in button press
     // Immediately navigates to landing page (authentication disabled for testing)
     const handleSignIn = () => {
-        // Navigate to landing page immediately without validation
-        if (onNavigateToLanding) {
-            onNavigateToLanding();
+        if(email.trim() === '' || password.trim() === '') {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Please enter both email and password.',
+            });
+            return;
         }
+
+        signInWithEmailAndPassword(auth, email, password).
+        then((userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            console.log('User signed in:', user.email);
+
+            Toast.show({
+                type: 'success',
+                text1: 'Sign-in Successful',
+                text2: `Welcome back, ${user.email}!`,
+            });
+
+            // Navigate to landing page
+            if (onNavigateToLanding) {
+                onNavigateToLanding();
+            }
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error('Sign-in error:', errorCode, errorMessage);
+            Toast.show({
+                type: 'error',
+                text1: 'Sign-in Failed',
+                text2: errorMessage,
+            });
+        });
     };
+
+    const handleGoogleSignIn = async () => {
+            try {
+                // Check if your device supports Google Play
+                await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+                // Prompt the sign in pop-up
+                const signInResult = await GoogleSignin.signIn();
+    
+                // Get the sign-in token of the pop-up
+                let idToken = signInResult.data?.idToken;
+    
+                // Maybe the token was in an older format
+                if(!idToken)
+                {
+                    idToken = signInResult.idToken;
+                }
+    
+                // If not then throw an error
+                if(!idToken) {
+                    throw new Error('No ID token returned from Google Sign-In');
+                }
+    
+                const googleCredential = GoogleAuthProvider.credential(idToken);
+                await signInWithCredential(auth, googleCredential);
+                console.log('Signed in with Google credential!');
+    
+                if (onNavigateToLanding) {
+                    onNavigateToLanding();
+                }
+            } catch (error) {
+                console.error('Error during Google sign-in:', error);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Google sign-in failed',
+                    text2: error.message,
+                });
+            }
+    }
 
     // Validates email format - checks for @ and . characters
     const isValidEmail = email.includes('@') && email.includes('.');
@@ -180,7 +257,7 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
 
                         {/* Social Login Buttons - Quick login with Google, Apple, and Facebook */}
                         <View style={styles.socialContainer}>
-                            <TouchableOpacity style={styles.socialButton}>
+                            <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignIn}>
                                 <Ionicons name="logo-google" size={24} color="#DB4437" />
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.socialButton}>
