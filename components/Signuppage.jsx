@@ -14,18 +14,15 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { getAuth, createUserWithEmailAndPassword, signInWithCredential, GoogleAuthProvider } from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin'
+import { getAuth, createUserWithEmailAndPassword, signInWithCredential, GoogleAuthProvider, FacebookAuthProvider } from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 
 import Toast from 'react-native-toast-message';
 
 // SignupPage Component - A modern sign-up screen with email/password authentication
 // Features: name, email validation, password visibility toggle, confirm password, loading state, social login buttons
 export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) {
-    GoogleSignin.configure({
-        webClientId: '1054885312610-4nm3kn457o6a4q64u0o6ofccisflvunl.apps.googleusercontent.com'
-    });
-
     const auth = getAuth();
 
     // State for form inputs
@@ -115,6 +112,43 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
                 text1: 'Google sign-in failed',
                 text2: error.message,
             });
+        }
+    }
+
+    const handleFacebookSignUp = async () => {
+        try{
+            // Attempt login with permissions
+            const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+            if (result.isCancelled) {
+                throw new Error('User cancelled the login process');
+            }
+
+            // Once signed in, get the users AccessToken
+            const data = await AccessToken.getCurrentAccessToken();
+
+            if (!data) {
+                throw new Error('Something went wrong obtaining access token');
+            }
+
+            // Create a Firebase credential with the AccessToken
+            const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
+
+            // Sign-in the user with the credential
+            await signInWithCredential(auth, facebookCredential);
+            console.log('Signed in with Facebook credential!');
+
+            if (onNavigateToLanding) {
+                onNavigateToLanding();
+            }
+        }
+        catch(error){
+            console.error('Error during Facebook login:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Facebook login failed',
+                text2: error.message,
+            });
+            return;
         }
     }
 
@@ -343,7 +377,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
                                 <TouchableOpacity style={styles.socialButton}>
                                     <Ionicons name="logo-apple" size={24} color="#000" />
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.socialButton}>
+                                <TouchableOpacity style={styles.socialButton} onPress={handleFacebookSignUp}>
                                     <Ionicons name="logo-facebook" size={24} color="#4267B2" />
                                 </TouchableOpacity>
                             </View>

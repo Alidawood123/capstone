@@ -4,7 +4,11 @@ import SignupPage from './components/Signuppage';
 import LandingPage from './components/Landingpage';
 
 import { initializeApp } from 'firebase/app';
+
 import { getAuth } from 'firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { Settings } from 'react-native-fbsdk-next';
+
 import Toast from 'react-native-toast-message';
 
 // Your web app's Firebase configuration
@@ -20,8 +24,11 @@ const firebaseConfig = {
 export default function App() {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-
   const auth = getAuth(app);
+  GoogleSignin.configure({
+    webClientId: process.env.EXPO_PUBLIC_FIREBASE_WEB_ID,
+  });
+  Settings.setAppID(process.env.EXPO_PUBLIC_FACEBOOK_APP_ID);
 
   const [currentPage, setCurrentPage] = useState('signin'); // 'signin', 'signup', or 'landing'
 

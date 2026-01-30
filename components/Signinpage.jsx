@@ -13,8 +13,9 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { getAuth, signInWithCredential, GoogleAuthProvider } from '@react-native-firebase/auth';
+import { getAuth, signInWithCredential, GoogleAuthProvider, FacebookAuthProvider } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 
 import Toast from 'react-native-toast-message';
 
@@ -111,6 +112,34 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
                 });
             }
     }
+
+    const handleFacebookSignIn = async () => {
+        try {
+            // Attempt login with permissions
+            const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+            if (result.isCancelled) {
+                throw new Error('User cancelled the login process');
+            }
+            // Once signed in, get the users AccessToken
+            const data = await AccessToken.getCurrentAccessToken();
+            if (!data) {
+                throw new Error('Something went wrong obtaining access token');
+            }
+            const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
+            await signInWithCredential(auth, facebookCredential);
+            console.log('Signed in with Facebook credential!');
+            if (onNavigateToLanding) {
+                onNavigateToLanding();
+            }
+        } catch (error) {
+            console.error('Error during Facebook login:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Facebook sign-in failed',
+                text2: error.message,
+            });
+        }
+    };
 
     // Validates email format - checks for @ and . characters
     const isValidEmail = email.includes('@') && email.includes('.');
@@ -263,7 +292,7 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
                             <TouchableOpacity style={styles.socialButton}>
                                 <Ionicons name="logo-apple" size={24} color="#000" />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.socialButton}>
+                            <TouchableOpacity style={styles.socialButton} onPress={handleFacebookSignIn}>
                                 <Ionicons name="logo-facebook" size={24} color="#4267B2" />
                             </TouchableOpacity>
                         </View>
