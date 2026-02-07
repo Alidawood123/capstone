@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 // LandingPage Component - The first page users see after logging in
-export default function LandingPage({ onNavigateToSignIn, onNavigateToFitness, onNavigateToNutrition }) {
+export default function LandingPage({ onNavigateToSignIn, onNavigateToFitness, onNavigateToNutrition, onNavigateToTrophy }) {
     return (
         <LinearGradient
             colors={['#00b4d8', '#d00000']}
