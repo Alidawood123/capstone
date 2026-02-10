@@ -3,7 +3,7 @@ import auth from '@react-native-firebase/auth';
 
 import SigninPage from '../pages/auth/Signinpage';
 import SignupPage from '../pages/auth/Signuppage';
-import LandingPage from '../pages/start/Landingpage';
+import LandingPage from '../pages/landing/Landingpage';
 import FitnessPage from '../pages/fitness/Fitnesspage';
 import NutritionPage from '../pages/nutrition/Nutritionpage';
 import TrophyPage from '../pages/trophy/Trophypage';
