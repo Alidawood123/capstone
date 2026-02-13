@@ -55,14 +55,13 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
     const isFormValid = name.length >= 2 && isValidEmail && password.length >= 6 && passwordsMatch;
 
     return (
-        // LinearGradient creates a sky blue-to-bright red gradient background
-        <LinearGradient
-            colors={['#00b4d8', '#d00000']}
-            style={styles.gradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-        >
-            {/* KeyboardAvoidingView prevents the keyboard from covering input fields on iOS */}
+        <View style={styles.root}>
+            {/* 50/50 color split: red left, blue right */}
+            <View style={styles.colorSplit}>
+                <View style={styles.colorLeft} />
+                <View style={styles.colorRight} />
+            </View>
+            {/* Content overlay */}
             <KeyboardAvoidingView
                 style={styles.container}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -288,15 +287,34 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
-        </LinearGradient>
+        </View>
     );
 }
 
 // StyleSheet - Defines all styling for the sign-up page components
 const styles = StyleSheet.create({
-    // Main gradient background container
-    gradient: {
+    // Root container
+    root: {
         flex: 1,
+    },
+    // 50/50 vertical color split background
+    colorSplit: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        flexDirection: 'row',
+    },
+    // Left half - red
+    colorLeft: {
+        flex: 1,
+        backgroundColor: '#d00000',
+    },
+    // Right half - blue
+    colorRight: {
+        flex: 1,
+        backgroundColor: '#00b4d8',
     },
     // Full-screen container
     container: {
