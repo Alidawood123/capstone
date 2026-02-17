@@ -14,12 +14,14 @@ import FitnessTemplatesContent from './fitness/FitnessTemplatesContent';
 import FitnessHistoryContent from './fitness/FitnessHistoryContent';
 import FitnessAnalyticsContent from './fitness/FitnessAnalyticsContent';
 import FitnessProfileContent from './fitness/FitnessProfileContent';
+import EmptyWorkoutContent from './fitness/EmptyWorkoutContent';
 
 const BLUE = '#00b4d8';
 const GRAY = '#9ca3af';
 
 export default function FitnessPage({ onNavigateToLanding }) {
     const [activeTab, setActiveTab] = useState('home');
+    const [fitnessScreen, setFitnessScreen] = useState('tabs'); // 'tabs' | 'emptyworkout'
     const insets = useSafeAreaInsets();
 
     return (
@@ -35,7 +37,20 @@ export default function FitnessPage({ onNavigateToLanding }) {
                             resizeMode="contain"
                         />
                     </View>
-                    {activeTab === 'home' ? (
+                    {fitnessScreen === 'emptyworkout' ? (
+                        <>
+                            <Text style={styles.headerTitle} numberOfLines={1}>
+                                Empty Workout
+                            </Text>
+                            <TouchableOpacity
+                                style={styles.backButton}
+                                onPress={() => setFitnessScreen('tabs')}
+                                activeOpacity={0.8}
+                            >
+                                <Ionicons name="arrow-back" size={24} color="#fff" />
+                            </TouchableOpacity>
+                        </>
+                    ) : activeTab === 'home' ? (
                         <>
                             <Text style={styles.headerTitle} numberOfLines={1}>
                                 welcome back!
@@ -53,16 +68,28 @@ export default function FitnessPage({ onNavigateToLanding }) {
                     )}
                 </View>
 
-                {/* Main content - white area, routes by tab */}
+                {/* Main content - white area, routes by tab or empty workout */}
                 <View style={styles.content}>
-                    {activeTab === 'home' && <FitnessHomeContent />}
-                    {activeTab === 'templates' && <FitnessTemplatesContent />}
-                    {activeTab === 'history' && <FitnessHistoryContent />}
-                    {activeTab === 'analytics' && <FitnessAnalyticsContent />}
-                    {activeTab === 'profile' && <FitnessProfileContent />}
+                    {fitnessScreen === 'emptyworkout' ? (
+                        <EmptyWorkoutContent
+                                onAddExercises={() => {}}
+                                onCancelWorkout={() => setFitnessScreen('tabs')}
+                            />
+                    ) : (
+                        <>
+                            {activeTab === 'home' && (
+                                <FitnessHomeContent onStartEmptyWorkout={() => setFitnessScreen('emptyworkout')} />
+                            )}
+                            {activeTab === 'templates' && <FitnessTemplatesContent />}
+                            {activeTab === 'history' && <FitnessHistoryContent />}
+                            {activeTab === 'analytics' && <FitnessAnalyticsContent />}
+                            {activeTab === 'profile' && <FitnessProfileContent />}
+                        </>
+                    )}
                 </View>
 
-                {/* Bottom navigation bar */}
+                {/* Bottom navigation bar - hide when on empty workout */}
+                {fitnessScreen === 'tabs' && (
                 <View style={[styles.bottomNav, { paddingBottom: 12 + Math.max(insets.bottom, 12) }]}>
                     <TouchableOpacity
                         style={styles.navItem}
@@ -160,6 +187,7 @@ export default function FitnessPage({ onNavigateToLanding }) {
                         </Text>
                     </TouchableOpacity>
                 </View>
+                )}
             </View>
         </View>
     );

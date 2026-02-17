@@ -4,10 +4,14 @@ import { Ionicons } from '@expo/vector-icons';
 
 const BLUE = '#00b4d8';
 
-export default function FitnessHomeContent() {
+export default function FitnessHomeContent({ onStartEmptyWorkout }) {
     return (
         <View style={styles.content}>
-            <TouchableOpacity style={styles.startWorkoutButton} activeOpacity={0.85}>
+            <TouchableOpacity
+                style={styles.startWorkoutButton}
+                activeOpacity={0.85}
+                onPress={onStartEmptyWorkout}
+            >
                 <Ionicons name="play" size={24} color="#fff" />
                 <Text style={styles.startWorkoutText}>Start Empty Workout</Text>
             </TouchableOpacity>
