@@ -1,12 +1,13 @@
 import Toast from 'react-native-toast-message';
 import auth from '@react-native-firebase/auth';
 
-import SigninPage from '../pages/auth/Signinpage';
-import SignupPage from '../pages/auth/Signuppage';
-import LandingPage from '../pages/landing/Landingpage';
-import FitnessPage from '../pages/fitness/Fitnesspage';
-import NutritionPage from '../pages/nutrition/Nutritionpage';
-import TrophyPage from '../pages/trophy/Trophypage';
+import SigninPage from '../pages/Signinpage';
+import SignupPage from '../pages/Signuppage';
+import LandingPage from '../pages/LandingPage';
+import FitnessPage from '../pages/FitnessPage';
+import NutritionPage from '../pages/NutritionPage';
+import TrophyPage from '../pages/TrophyPage';
+import SettingsPage from '../pages/SettingsPage';
 
 export default function NavigatePage({ page, setPage }) {
     
@@ -21,14 +22,8 @@ export default function NavigatePage({ page, setPage }) {
     const navigateToLanding = () => setPage('landing');
     const navigateToFitness = () => setPage('fitness');
     const navigateToNutrition = () => setPage('nutrition');
-    const navigateToTrophy = () => setCurrentPage('trophy');
-
-
-    // Fitness Sub-Pages 
-
-
-    // Nutritions Sub-Pages 
-
+    const navigateToTrophy = () => setPage('trophy');
+    const navigateToSettings = () => setPage('settings');
 
     // Switch Pages
     switch (page) {
@@ -43,11 +38,12 @@ export default function NavigatePage({ page, setPage }) {
 
         case 'landing':
             return <>
-                <LandingPage 
-                    onNavigateToSignIn={navigateToSignIn} 
-                    onNavigateToFitness={navigateToFitness}
+                <LandingPage
+                    onNavigateToSignIn={navigateToSignIn}
                     onNavigateToNutrition={navigateToNutrition}
+                    onNavigateToFitness={navigateToFitness}
                     onNavigateToTrophy={navigateToTrophy}
+                    onNavigateToSettings={navigateToSettings}
                 />
                 <Toast />
             </>;
@@ -60,6 +56,9 @@ export default function NavigatePage({ page, setPage }) {
 
         case 'trophy':
             return <TrophyPage onNavigateToLanding={navigateToLanding} />;
+
+        case 'settings':
+            return <SettingsPage onNavigateToLanding={navigateToLanding} />;
 
         default:
             return <>

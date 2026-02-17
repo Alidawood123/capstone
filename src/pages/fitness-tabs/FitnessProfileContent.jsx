@@ -5,17 +5,16 @@ import { Ionicons } from '@expo/vector-icons';
 import backButtonStyle from '../../styles/backButton'
 
 // LandingPage Component - The first page users see after logging in
-export default function FitnessPage({ onNavigateToLanding }) {
+export default function FitnessProfileContent({ onNavigateToLanding }) {
     return (
         <View>
             <Pressable onPress={onNavigateToLanding} style={backButtonStyle.backButton} activeOpacity={0.8}>
                 <Ionicons name="arrow-back" size={24} color="white" />
             </Pressable>
-
-            <Text>Fitness Page</Text>
+            <Text>FitnessProfileContent Page</Text>
         </View>
     );
 }
 
-// Local StyleSheet For FitnessPage 
+// Local StyleSheet For NutritionPage 
 const styles = StyleSheet.create({  });

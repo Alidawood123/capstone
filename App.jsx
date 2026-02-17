@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import NavigatePage from './src/components/NavigatePages';
 
@@ -8,9 +9,16 @@ import { Settings } from 'react-native-fbsdk-next';
 export default function App() {
   const [currentPage, setCurrentPage] = useState('signin');
 
-  // Initialize Firebase
-  GoogleSignin.configure({webClientId: process.env.EXPO_PUBLIC_FIREBASE_WEB_ID});
-  Settings.setAppID(process.env.EXPO_PUBLIC_FACEBOOK_APP_ID);
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_FIREBASE_WEB_ID,
+    });
+    Settings.setAppID(process.env.EXPO_PUBLIC_FACEBOOK_APP_ID);
+  }, []);
 
-  return <NavigatePage page={currentPage} setPage={setCurrentPage} />
+  return (
+    <SafeAreaProvider>
+      <NavigatePage page={currentPage} setPage={setCurrentPage} />
+    </SafeAreaProvider>
+  );
 }

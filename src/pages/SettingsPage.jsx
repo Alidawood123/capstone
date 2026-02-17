@@ -2,19 +2,20 @@ import React from 'react';
 
 import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import backButtonStyle from '../../styles/backButton'
+import backButtonStyle from '../styles/backButton'
 
 // LandingPage Component - The first page users see after logging in
-export default function NutritionPage({ onNavigateToLanding }) {
+export default function SettingsPage({ onNavigateToLanding }) {
     return (
         <View>
             <Pressable onPress={onNavigateToLanding} style={backButtonStyle.backButton} activeOpacity={0.8}>
                 <Ionicons name="arrow-back" size={24} color="white" />
             </Pressable>
-            <Text>Nutrition Page</Text>
+
+            <Text>Settings Page</Text>
         </View>
     );
 }
 
-// Local StyleSheet For NutritionPage 
+// Local StyleSheet For FitnessPage 
 const styles = StyleSheet.create({  });
