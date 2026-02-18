@@ -9,6 +9,7 @@ import {
     Platform,
     Pressable,
     ActivityIndicator,
+    Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -147,22 +148,28 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
     const isFormValid = true;
 
     return (
-        // LinearGradient creates a sky blue-to-bright red gradient background
-        <LinearGradient
-            colors={['#00b4d8', '#d00000']}
-            style={styles.gradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-        >
-            {/* KeyboardAvoidingView prevents the keyboard from covering input fields on iOS */}
+        <View style={styles.root}>
+            {/* 50/50 color split: red left, blue right */}
+            <View style={styles.colorSplit}>
+                <View style={styles.colorLeft} />
+                <View style={styles.colorRight} />
+            </View>
+            {/* Content overlay */}
             <KeyboardAvoidingView
                 style={styles.container}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
                 <View style={styles.innerContainer}>
-                    {/* Header text */}
-                    <Text style={styles.title}>Welcome Back</Text>
-                    <Text style={styles.subtitle}>Sign in to your account</Text>
+                    {/* Logo */}
+                    <View style={styles.logoContainer}>
+                        <Image
+                            source={require('../assets/logo.png')}
+                            style={styles.logo}
+                            resizeMode="contain"
+                        />
+                    </View>
+                    {/* Main header text */}
+                    <Text style={styles.mainHeading}>Sign in to your account</Text>
 
                     {/* Card Container - White card that holds all form elements */}
                     <View style={styles.card}>
@@ -307,15 +314,34 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
                     </View>
                 </View>
             </KeyboardAvoidingView>
-        </LinearGradient>
+        </View>
     );
 }
 
 // StyleSheet - Defines all styling for the sign-in page components
 const styles = StyleSheet.create({
-    // Main gradient background container
-    gradient: {
+    // Root container
+    root: {
         flex: 1,
+    },
+    // 50/50 vertical color split background
+    colorSplit: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        flexDirection: 'row',
+    },
+    // Left half - red
+    colorLeft: {
+        flex: 1,
+        backgroundColor: '#d00000',
+    },
+    // Right half - blue
+    colorRight: {
+        flex: 1,
+        backgroundColor: '#00b4d8',
     },
     // Full-screen container
     container: {
@@ -327,18 +353,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 24,
     },
-    // Large welcome text
-    title: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#fff',
-        textAlign: 'center',
-        marginBottom: 8,
+    // Logo container
+    logoContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
     },
-    // Smaller subtitle text
-    subtitle: {
-        fontSize: 16,
-        color: 'rgba(255,255,255,0.8)',
+    // Logo image
+    logo: {
+        width: 80,
+        height: 80,
+    },
+    // Main heading - Sign in to your account
+    mainHeading: {
+        fontSize: 22,
+        fontWeight: '600',
+        color: '#fff',
         textAlign: 'center',
         marginBottom: 32,
     },
