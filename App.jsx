@@ -1,24 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-import NavigatePage from './src/components/NavigatePages';
-
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { Settings } from 'react-native-fbsdk-next';
+import React, { useState } from 'react';
+import SigninPage from './components/Signinpage';
+import SignupPage from './components/Signuppage';
+import LandingPage from './components/Landingpage';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('signin');
+  const [currentPage, setCurrentPage] = useState('signin'); // 'signin', 'signup', or 'landing'
 
-  useEffect(() => {
-    GoogleSignin.configure({
-      webClientId: process.env.EXPO_PUBLIC_FIREBASE_WEB_ID,
-    });
-    Settings.setAppID(process.env.EXPO_PUBLIC_FACEBOOK_APP_ID);
-  }, []);
+  const navigateToSignUp = () => {
+    setCurrentPage('signup');
+  };
 
-  return (
-    <SafeAreaProvider>
-      <NavigatePage page={currentPage} setPage={setCurrentPage} />
-    </SafeAreaProvider>
-  );
+  const navigateToSignIn = () => {
+    setCurrentPage('signin');
+  };
+
+  const navigateToLanding = () => {
+    setCurrentPage('landing');
+  };
+
+  if (currentPage === 'signup') {
+    return <SignupPage onNavigateToSignIn={navigateToSignIn} onNavigateToLanding={navigateToLanding} />;
+  }
+
+  if (currentPage === 'landing') {
+    return <LandingPage onNavigateToSignIn={navigateToSignIn} />;
+  }
+
+  return <SigninPage onNavigateToSignUp={navigateToSignUp} onNavigateToLanding={navigateToLanding} />;
 }

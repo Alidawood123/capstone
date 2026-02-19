@@ -9,22 +9,13 @@ import {
     Platform,
     Pressable,
     ActivityIndicator,
-    Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { getAuth, signInWithEmailAndPassword, signInWithCredential, GoogleAuthProvider, FacebookAuthProvider } from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
-
-import Toast from 'react-native-toast-message';
-
 // SigninPage Component - A modern login screen with email/password authentication
 // Features: email validation, password visibility toggle, loading state, social login buttons
 export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) {
-    const auth = getAuth();
-
     // State for form inputs
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -38,107 +29,9 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
     // Handler for sign-in button press
     // Immediately navigates to landing page (authentication disabled for testing)
     const handleSignIn = () => {
-        if(email.trim() === '' || password.trim() === '') {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Please enter both email and password.',
-            });
-            return;
-        }
-
-        signInWithEmailAndPassword(auth, email, password).
-        then((userCredential) => {
-            // Signed in
-            const user = userCredential.user;
-            console.log('User signed in:', user.email);
-
-            Toast.show({
-                type: 'success',
-                text1: 'Sign-in Successful',
-                text2: `Welcome back, ${user.email}!`,
-            });
-
-            // Navigate to landing page
-            if (onNavigateToLanding) {
-                onNavigateToLanding();
-            }
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.error('Sign-in error:', errorCode, errorMessage);
-            Toast.show({
-                type: 'error',
-                text1: 'Sign-in Failed',
-                text2: errorMessage,
-            });
-        });
-    };
-
-    const handleGoogleSignIn = async () => {
-            try {
-                // Check if your device supports Google Play
-                await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-                // Prompt the sign in pop-up
-                const signInResult = await GoogleSignin.signIn();
-    
-                // Get the sign-in token of the pop-up
-                let idToken = signInResult.data?.idToken;
-    
-                // Maybe the token was in an older format
-                if(!idToken)
-                {
-                    idToken = signInResult.idToken;
-                }
-    
-                // If not then throw an error
-                if(!idToken) {
-                    throw new Error('No ID token returned from Google Sign-In');
-                }
-    
-                const googleCredential = GoogleAuthProvider.credential(idToken);
-                await signInWithCredential(auth, googleCredential);
-                console.log('Signed in with Google credential!');
-    
-                if (onNavigateToLanding) {
-                    onNavigateToLanding();
-                }
-            } catch (error) {
-                console.error('Error during Google sign-in:', error);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Google sign-in failed',
-                    text2: error.message,
-                });
-            }
-    }
-
-    const handleFacebookSignIn = async () => {
-        try {
-            // Attempt login with permissions
-            const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-            if (result.isCancelled) {
-                throw new Error('User cancelled the login process');
-            }
-            // Once signed in, get the users AccessToken
-            const data = await AccessToken.getCurrentAccessToken();
-            if (!data) {
-                throw new Error('Something went wrong obtaining access token');
-            }
-            const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
-            await signInWithCredential(auth, facebookCredential);
-            console.log('Signed in with Facebook credential!');
-            if (onNavigateToLanding) {
-                onNavigateToLanding();
-            }
-        } catch (error) {
-            console.error('Error during Facebook login:', error);
-            Toast.show({
-                type: 'error',
-                text1: 'Facebook sign-in failed',
-                text2: error.message,
-            });
+        // Navigate to landing page immediately without validation
+        if (onNavigateToLanding) {
+            onNavigateToLanding();
         }
     };
 
@@ -148,28 +41,22 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
     const isFormValid = true;
 
     return (
-        <View style={styles.root}>
-            {/* 50/50 color split: red left, blue right */}
-            <View style={styles.colorSplit}>
-                <View style={styles.colorLeft} />
-                <View style={styles.colorRight} />
-            </View>
-            {/* Content overlay */}
+        // LinearGradient creates a sky blue-to-bright red gradient background
+        <LinearGradient
+            colors={['#00b4d8', '#d00000']}
+            style={styles.gradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+        >
+            {/* KeyboardAvoidingView prevents the keyboard from covering input fields on iOS */}
             <KeyboardAvoidingView
                 style={styles.container}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
                 <View style={styles.innerContainer}>
-                    {/* Logo */}
-                    <View style={styles.logoContainer}>
-                        <Image
-                            source={require('../../assets/logo.png')}
-                            style={styles.logo}
-                            resizeMode="contain"
-                        />
-                    </View>
-                    {/* Main header text */}
-                    <Text style={styles.mainHeading}>Sign in to your account</Text>
+                    {/* Header text */}
+                    <Text style={styles.title}>Welcome Back</Text>
+                    <Text style={styles.subtitle}>Sign in to your account</Text>
 
                     {/* Card Container - White card that holds all form elements */}
                     <View style={styles.card}>
@@ -293,13 +180,13 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
 
                         {/* Social Login Buttons - Quick login with Google, Apple, and Facebook */}
                         <View style={styles.socialContainer}>
-                            <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignIn}>
+                            <TouchableOpacity style={styles.socialButton}>
                                 <Ionicons name="logo-google" size={24} color="#DB4437" />
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.socialButton}>
                                 <Ionicons name="logo-apple" size={24} color="#000" />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.socialButton} onPress={handleFacebookSignIn}>
+                            <TouchableOpacity style={styles.socialButton}>
                                 <Ionicons name="logo-facebook" size={24} color="#4267B2" />
                             </TouchableOpacity>
                         </View>
@@ -314,34 +201,15 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
                     </View>
                 </View>
             </KeyboardAvoidingView>
-        </View>
+        </LinearGradient>
     );
 }
 
 // StyleSheet - Defines all styling for the sign-in page components
 const styles = StyleSheet.create({
-    // Root container
-    root: {
+    // Main gradient background container
+    gradient: {
         flex: 1,
-    },
-    // 50/50 vertical color split background
-    colorSplit: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        flexDirection: 'row',
-    },
-    // Left half - red
-    colorLeft: {
-        flex: 1,
-        backgroundColor: '#d00000',
-    },
-    // Right half - blue
-    colorRight: {
-        flex: 1,
-        backgroundColor: '#00b4d8',
     },
     // Full-screen container
     container: {
@@ -353,21 +221,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 24,
     },
-    // Logo container
-    logoContainer: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    // Logo image
-    logo: {
-        width: 80,
-        height: 80,
-    },
-    // Main heading - Sign in to your account
-    mainHeading: {
-        fontSize: 22,
-        fontWeight: '600',
+    // Large welcome text
+    title: {
+        fontSize: 32,
+        fontWeight: 'bold',
         color: '#fff',
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+    // Smaller subtitle text
+    subtitle: {
+        fontSize: 16,
+        color: 'rgba(255,255,255,0.8)',
         textAlign: 'center',
         marginBottom: 32,
     },
