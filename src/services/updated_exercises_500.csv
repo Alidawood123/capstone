@@ -1,0 +1,501 @@
+id,title,description,type,body part
+0,Leg press calf raise,The leg press calf raise is a variation of the standing calf raise performed...,machine/other,legs
+1,Narrow-stance leg press,The narrow-stance leg press is a machine-based exercise that targets the musc...,machine/other,legs
+2,Dumbbell lunge with biceps curl,The dumbbell lunge with biceps curl combines an isometric hold at the bottom...,dumbbell,legs
+3,Narrow-stance squat,The narrow-stance squat is an exercise that targets the lower body with an em...,barbell,legs
+4,Barbell Seated Calf Raise,Barbell Seated Calf Raise exercise.,barbell,legs
+5,Single-leg standing dumbbell calf raise,The single-leg standing dumbbell calf raise is a popular exercise to target t...,dumbbell,legs
+6,Pop Squat On Leg Press,Pop Squat On Leg Press exercise.,machine/other,legs
+7,Dumbbell walking calf raise,The dumbbell walking calf raise is a dynamic exercise targeting the calf musc...,dumbbell,legs
+8,Smith machine standing calf raise,The Smith machine standing calf raise is a machine-based exercise targeting t...,machine/other,legs
+9,Rocking Standing Calf Raise,Rocking Standing Calf Raise exercise.,barbell,legs
+10,Standing Dumbbell Calf Raise,The standing dumbbell calf raise is a popular exercise to target the calf mus...,dumbbell,legs
+11,Calf Raise On A Dumbbell,Calf Raise On A Dumbbell exercise.,dumbbell,legs
+12,Standing barbell calf raise,The standing barbell calf raise is a popular exercise to target the calf musc...,barbell,legs
+13,Hack squat calf raise,The hack squat calf raise is a variation of the standing calf raise performed...,machine/other,legs
+14,Squat with alternating side leg raise,The squat with alternating side leg raise is a bodyweight version of the squa...,reps only,legs
+15,Standing Calf Raise,The standing calf raise is a popular movement to target the calf muscles of t...,reps only,legs
+16,Standing calf raise-,The standing calf raise is a popular movement to target the calf muscles of t...,reps only,legs
+17,Sumo Deadlift with Bands,Sumo Deadlift with Bands exercise.,barbell,legs
+18,Sumo Deadlift with Chains,Sumo Deadlift with Chains exercise.,barbell,legs
+19,Sumo deadlift,The sumo deadlift is a compound movement in which the feet are set in a wide...,barbell,legs
+20,Barbell back squat to box,The barbell back squat to box is a popular version of a classic lower-body ex...,barbell,legs
+21,Reverse Band Sumo Deadlift,Reverse Band Sumo Deadlift exercise.,barbell,legs
+22,Squat with Chains,Squat with Chains exercise.,barbell,legs
+23,Squat with Bands,Squat with Bands exercise.,barbell,legs
+24,Kneeling Squat,Kneeling Squat exercise.,barbell,legs
+25,Reverse Band Power Squat,Reverse Band Power Squat exercise.,barbell,legs
+26,Box Squat with Bands,Box Squat with Bands exercise.,barbell,legs
+27,Leg press-,"The leg press is a machine exercise targeting the leg muscles, including the...",machine/other,legs
+28,KV Bulgarian Split Squat,KV Bulgarian Split Squat exercise.,barbell,legs
+29,Narrow Stance Hack Squats,Narrow Stance Hack Squats exercise.,machine/other,legs
+30,Machine seated calf raise,The machine seated calf raise is an exercise targeting the calf muscles of th...,machine/other,legs
+31,KV Dumbbell Lunges,KV Dumbbell Lunges exercise.,dumbbell,legs
+32,King Maker Leg Press,The leg press is a machine exercise targeting the quadriceps. It’s favorite a...,machine/other,legs
+33,King Maker Barbell Back Squat,The barbell back squat is a popular compound movement that emphasizes buildin...,barbell,legs
+34,King Maker Barbell Deadlift,The barbell deadlift is a compound exercise used to develop overall strength...,barbell,legs
+35,King Maker Weighted Jump Squat,"The dumbbell jump squat takes a classic bodybuilding move, the squat, and add...",weighted bodyweight,legs
+36,Leg Press - Gethin Variation,The leg press is a machine exercise targeting the quadriceps. It’s favorite a...,machine/other,legs
+37,Leg Press,The leg press is a machine exercise targeting the quadriceps. It’s favorite a...,machine/other,legs
+38,Jefferson Squats,Jefferson Squats exercise.,barbell,legs
+39,3D dumbbell lunge,The 3D dumbbell lunge is a sequence of lower-body exercises that target the m...,dumbbell,legs
+40,Hack Squat,The hack squat is a machine-based exercise that targets the muscles of the le...,barbell,legs
+41,Front-To-Back Barbell Squat,Front-To-Back Barbell Squat exercise.,barbell,legs
+42,Dumbbell Fix Dumbbell Split Squat,Dumbbell Fix Dumbbell Split Squat exercise.,dumbbell,legs
+43,Dumbbell Goblet Squat,The goblet squat is a common exercise used in the early stages of learning to...,dumbbell,legs
+44,Dumbbell Lunges,The dumbbell split squat is a popular lower-body exercise to build strength a...,dumbbell,legs
+45,Dumbbell Lying Hamstring Curl,Dumbbell Lying Hamstring Curl exercise.,dumbbell,legs
+46,Dumbbell Pistol Squat,Dumbbell Pistol Squat exercise.,dumbbell,legs
+47,Dumbbell Side Lunge,Dumbbell Side Lunge exercise.,dumbbell,legs
+48,Dumbbell Squat To A Bench,Dumbbell Squat To A Bench exercise.,dumbbell,legs
+49,Dumbbell Walking Lunge,The dumbbell walking lunge tests your ability to maintain balance while chall...,dumbbell,legs
+50,Dumbbell deadlift,"The dumbbell deadlift is a movement that targets the hamstrings, glutes, and...",dumbbell,legs
+51,Dumbbell front squat,The dumbbell front squat is a popular exercise for targeting the muscles of t...,dumbbell,legs
+52,Dumbbell jump squat with rotation,The dumbbell jump squat with rotation is a popular movement combining an expl...,dumbbell,legs
+53,Dumbbell racked reverse lunge,The dumbbell racked reverse lunge is a popular lower-body movement that targe...,dumbbell,legs
+54,Dumbbell reverse lunge,The dumbbell reverse lunge is a popular lower-body movement that targets the...,dumbbell,legs
+55,Dumbbell split squat,The dumbbell split squat is a popular lower-body exercise to build strength a...,dumbbell,legs
+56,Dumbbell squat,The dumbbell squat is a classic lower-body exercise that targets the quadrice...,dumbbell,legs
+57,Dumbbell step-down reverse lunge,The dumbbell step-down reverse lunge is an exercise targeting the lower body...,dumbbell,legs
+58,Narrow-stance hack squat,The narrow-stance hack squat is a machine-based exercise that targets the mus...,machine/other,legs
+59,Front Barbell Squat To A Bench,Front Barbell Squat To A Bench exercise.,barbell,legs
+60,Front Squat (Bodybuilder),The barbell front squat is a compound movement that emphasizes building the l...,barbell,legs
+61,Dumbbell sumo squat,The dumbbell sumo squat is a popular lower-body movement using a single dumbb...,dumbbell,legs
+62,Romanian Deadlift,"The barbell stiff-legged deadlift targets the hamstrings, glutes, lower and u...",barbell,legs
+63,Paul Carter Back Squat,The barbell back squat is a popular compound movement that emphasizes buildin...,barbell,legs
+64,Smith machine leg press,The Smith machine leg press is a machine-based movement that targets the quad...,machine/other,legs
+65,Split Squat with Dumbbells,The dumbbell Bulgaria split squat is a single-leg exercise targeting the quad...,dumbbell,legs
+66,Squat - Gethin Variation,The barbell back squat is a popular compound movement that emphasizes buildin...,barbell,legs
+67,Standing Calf Raises,The standing calf raise is a popular movement to target the calf muscles of t...,machine/other,legs
+68,Stiff-Legged Deadlift,"The barbell stiff-legged deadlift targets the hamstrings, glutes, lower and u...",barbell,legs
+69,Stiff-Legged Dumbbell Deadlift,"The dumbbell stiff-legged deadlift targets the hamstrings, glutes, low and up...",dumbbell,legs
+70,TBS Barbell Front Squat,The barbell front squat is a compound movement that emphasizes building the l...,barbell,legs
+71,TBS High-Bar Back Squat,The barbell back squat is a popular compound movement that emphasizes buildin...,barbell,legs
+72,Total Fitness Dumbbell Reverse Lunge,The dumbbell reverse lunge is a great single-leg movement that strengthens an...,dumbbell,legs
+73,UN Barbell Back Squat,UN Barbell Back Squat exercise.,barbell,legs
+74,UN Barbell Box Squat,UN Barbell Box Squat exercise.,barbell,legs
+75,UN Barbell Front Squat,UN Barbell Front Squat exercise.,barbell,legs
+76,UN Rear Foot Elevated Split Squat,UN Rear Foot Elevated Split Squat exercise.,barbell,legs
+77,UNS Dumbbell Goblet Squat,UNS Dumbbell Goblet Squat exercise.,dumbbell,legs
+78,UP Leg Press,The leg press is a machine exercise targeting the quadriceps. It’s favorite a...,machine/other,legs
+79,UP Single-Leg Press,The single-leg leg press is an exercise targeting the quadriceps one leg at a...,machine/other,legs
+80,UP Squat,The barbell back squat is a popular compound movement that emphasizes buildin...,barbell,legs
+81,Weighted Jump Squat,Weighted Jump Squat exercise.,weighted bodyweight,legs
+82,Smith machine lunge squat,"The Smith machine lunge squat is an exercise targeting the quads, glutes, and...",machine/other,legs
+83,Smith machine box squat,The Smith machine box squat is a machine-based exercise targeting the quads...,machine/other,legs
+84,Paul Carter Barbell Split Squat,"The barbell Bulgarian split squat is a single-leg, full-body exercise targeti...",barbell,legs
+85,Smith Machine Reverse Calf Raises,Smith Machine Reverse Calf Raises exercise.,machine/other,legs
+86,Rack Deadlift - Gethin Variation,The rack pull is a variation of the deadlift performed from an elevated heigh...,barbell,legs
+87,Donkey Calf Raise - Gethin Variation,The donkey calk raise is a strength and muscle-building exercise focused on t...,machine/other,legs
+88,Romanian Deadlift With Dumbbells,"The dumbbell stiff-legged deadlift targets the hamstrings, glutes, low and up...",dumbbell,legs
+89,Seated Calf Raise,The machine seated calf raise is an exercise targeting the calf muscles of th...,machine/other,legs
+90,Barbell Deadlift Bent Row Complex,The barbell deadlift bent-over row complex combines two movements to target t...,barbell,back
+91,Barbell deadlift bent-over row complex,The barbell deadlift bent-over row complex combines two movements to target t...,barbell,back
+92,Single-leg stiff-legged deadlift to row,The single-leg stiff-legged deadlift to row takes two popular strength moves...,dumbbell,back
+93,Deadlift with Bands,Deadlift with Bands exercise.,barbell,back
+94,Barbell deficit deadlift,The barbell deficit deadlift is a compound exercise targeting the posterior c...,barbell,back
+95,Deadlift with Chains,Deadlift with Chains exercise.,barbell,back
+96,Reverse Band Deadlift,Reverse Band Deadlift exercise.,barbell,back
+97,Reverse Barbell Row,Reverse Barbell Row exercise.,barbell,back
+98,Plate Row,Plate Row exercise.,barbell,back
+99,UN Bent-Over Dumbbell Row,UN Bent-Over Dumbbell Row exercise.,dumbbell,back
+100,Total Fitness Dumbbell Isometric Row Hold,The dumbbell bent-over row is a popular exercise to develop and strengthen th...,duration,back
+101,Paul Carter Romanian Deadlift,"The barbell stiff-legged deadlift targets the hamstrings, glutes, lower and u...",barbell,back
+102,Reverse-grip bent-over row,The reverse-grip bent-over row is a compound exercise used to build strength...,barbell,back
+103,Incline Dumbbell Row - Gethin Variation,The incline dumbbell row is an upper body isolation exercise targeting the lo...,dumbbell,back
+104,Bent-Over Dumbbell Row - Gethin Variation,The dumbbell bent-over row is a popular exercise to develop and strengthen th...,dumbbell,back
+105,Bent-Over Barbell Row - Gethin Variation,The barbell bent-over row is a compound exercise used to build strength and s...,barbell,back
+106,Bent Over Two-Dumbbell Row With Palms In,Bent Over Two-Dumbbell Row With Palms In exercise.,dumbbell,back
+107,Pendlay Row,"The Pendlay row, named after the well-known strength coach Glenn Pendlay, is...",barbell,back
+108,One-Arm Long Bar Row,The single-arm landmine bent-over row is a barbell exercise focused on the mu...,barbell,back
+109,UN Chest Supported Row,UN Chest Supported Row exercise.,dumbbell,back
+110,Single-Arm Landmine Row,Single-Arm Landmine Row exercise.,barbell,back
+111,Deadlift - Gethin Variation,The barbell deadlift is a compound exercise used to develop overall strength...,barbell,back
+112,One-Arm Dumbbell Row,The single-arm bench dumbbell row is a popular exercise for building the lati...,dumbbell,back
+113,Dumbbell Fix Bent-Over Dumbbell Row,Dumbbell Fix Bent-Over Dumbbell Row exercise.,dumbbell,back
+114,Dumbbell Fix Dumbbell Deadlift,Dumbbell Fix Dumbbell Deadlift exercise.,dumbbell,back
+115,Dumbbell Fix Single-Arm Dumbbell Row,Dumbbell Fix Single-Arm Dumbbell Row exercise.,dumbbell,back
+116,Dumbbell Seal Row - Gethin Variation,The dumbbell seal row is a weighted exercise targeting the muscles of the mid...,dumbbell,back
+117,Dumbbell bent-over row,The dumbbell bent-over row is a popular exercise to develop and strengthen th...,dumbbell,back
+118,Dumbbell kickstand deadlift,The dumbbell kickstand deadlift is a movement targeting the muscles of the ha...,dumbbell,back
+119,UNS Dumbbell Romanian Deadlift,UNS Dumbbell Romanian Deadlift exercise.,dumbbell,back
+120,Dumbbell renegade row,The dumbbell renegade row combines rowing and core training into a single dif...,dumbbell,back
+121,Dumbbell seal row,The dumbbell seal row is a weighted exercise targeting the muscles of the mid...,dumbbell,back
+122,Dumbbell stiff-legged deadlift,The dumbbell stiff-legged deadlift is a dumbbell exercise that targets the ha...,dumbbell,back
+123,UP Conventional Deadlift,The barbell deadlift is a compound exercise used to develop overall strength...,barbell,back
+124,Bent Over Barbell Row,The barbell bent-over row is a compound exercise used to build strength and s...,barbell,back
+125,Incline dumbbell row,The incline dumbbell row is an upper-body exercise targeting the lats (latiss...,dumbbell,back
+126,AM Single Arm Row,The single-arm bench dumbbell row is a popular exercise for building the lati...,dumbbell,back
+127,Single-arm dumbbell row,The single-arm dumbbell row is a popular exercise for building the latissimus...,dumbbell,back
+128,Yates Row Reverse Grip,Yates Row Reverse Grip exercise.,barbell,back
+129,Straight Bar Bench Mid Rows,Straight Bar Bench Mid Rows exercise.,barbell,back
+130,Band Resisted Dumbbell Row,Band Resisted Dumbbell Row exercise.,dumbbell,back
+131,TBS Bent-Over Dumbbell Row,The dumbbell bent-over row is a popular exercise to develop and strengthen th...,dumbbell,back
+132,TBS T-Bar Row,TBS T-Bar Row exercise.,barbell,back
+133,TBS Deficit Deadlift,The barbell deficit deadlift is a compound exercise targeting the posterior c...,barbell,back
+134,TBS Dumbbell Romanian Deadlift,"The dumbbell stiff-legged deadlift targets the hamstrings, glutes, low and up...",dumbbell,back
+135,Standing dumbbell upright row,The standing dumbbell upright row is a popular movement for building stronger...,dumbbell,back
+136,Single-arm inverted row,The single-arm inverted row is a bodyweight exercise targeting the muscles of...,barbell,back
+137,Single-arm bench dumbbell row,The single-arm bench dumbbell row is a popular exercise for building the lati...,dumbbell,back
+138,Barbell bent-over row,The barbell bent-over row is a compound exercise used to build strength and s...,barbell,back
+139,TBS Romanian Deadlift,"The barbell stiff-legged deadlift targets the hamstrings, glutes, lower and u...",barbell,back
+140,Barbell deadlift-,The barbell deadlift is a compound exercise used to develop overall strength...,barbell,back
+141,Single-arm barbell bent-over row,The single-arm barbell bent-over row is a barbell exercise focused on the mus...,barbell,back
+142,Barbell pull-over to press,The barbell pull-over to press is a complex that combines two popular exercis...,barbell,back
+143,Barbell seal row,The barbell seal row is a weighted exercise targeting the muscles of the midd...,barbell,back
+144,Yates Row,Yates Row exercise.,barbell,back
+145,TBS Pull-Up,TBS Pull-Up exercise.,reps only,back
+146,AM Pull-Up,The pull-up is a multi-joint bodyweight exercise that builds strength and mus...,reps only,back
+147,Neutral-grip pull-up,The neutral-grip pull-up is a multijoint bodyweight exercise in which the rep...,reps only,back
+148,Wide-Grip Rear Pull-Up,Wide-Grip Rear Pull-Up exercise.,reps only,back
+149,UP Chin-Up,UP Chin-Up exercise.,reps only,back
+150,Negative pull-up,The negative pull-up is a multijoint bodyweight exercise that focuses on just...,reps only,back
+151,Pull-up,The pull-up is a multijoint bodyweight exercise that builds strength and musc...,reps only,back
+152,King Maker Pull-Up,The pull-up is a multi-joint bodyweight exercise that builds strength and mus...,reps only,back
+153,Jump to pull-up,The jump to pull-up is a bodyweight exercise that targets the muscles of the...,reps only,back
+154,Chin-Up,The a chin-up is a variation of the pull-up exercise in which the reps are pe...,reps only,back
+155,Rack Pull with Bands,Rack Pull with Bands exercise.,barbell,back
+156,Rack pull,The rack pull is a variation of the deadlift performed from an elevated heigh...,barbell,back
+157,Seated Good Mornings,Seated Good Mornings exercise.,barbell,back
+158,Machine-assisted pull-up,The machine-assisted pull-up takes a classic back-building exercise and adds...,assisted bodyweight,back
+159,Machine seated row,"The machine seated row is a popular exercise targeting the back muscles, part...",machine/other,back
+160,Man-maker,"The man-maker is a sequence of exercises combining a dumbbell front squat, mi...",dumbbell,back
+161,Machine low row-,"The machine low row is a popular exercise targeting the back muscles, particu...",machine/other,back
+162,Middle Back Shrug,Middle Back Shrug exercise.,dumbbell,back
+163,Leverage High Row,The machine high row is an exercise targeting the lats and works the back ove...,machine/other,back
+164,UN Barbell Rack Pull,UN Barbell Rack Pull exercise.,barbell,back
+165,TBS Good Morning,"The barbell good morning is an exercise that targets glute, hamstring, and lo...",barbell,back
+166,Stiff Leg Barbell Good Morning,Stiff Leg Barbell Good Morning exercise.,barbell,back
+167,Seated Machine Row - Gethin Variation,"The machine seated row is an exercise targeting the back muscles, emphasizing...",machine/other,back
+168,Standing dumbbell shrug,The standing dumbbell shrug is a popular movement to build and strengthen the...,dumbbell,back
+169,PJR pull-over-,"The PJR pull-over is a triceps-focused version of the pull-over exercise, usu...",dumbbell,back
+170,UN Dumbbell RDL,UN Dumbbell RDL exercise.,dumbbell,back
+171,Standing Dumbbell Shrug - Gethin Variation,The standing dumbbell shrug is a popular movement to build and strengthen the...,dumbbell,back
+172,Smith machine upright row,The Smith machine upright row is an upper-body exercise targeting the muscles...,machine/other,back
+173,Smith machine bent-over row,The Smith machine bent-over row is an upper-body exercise targeting the muscl...,machine/other,back
+174,Single-arm machine high row,The single-arm machine high row is a machine-based exercise targeting the bac...,machine/other,back
+175,Board bench press,The board bench press is an upper-body exercise that is commonly performed as...,barbell,chest
+176,King Maker Incline Barbell Bench Press,The incline bench press is an upper body compound movement that targets the u...,barbell,chest
+177,Bench press,The bench press is a popular barbell exercise that builds strength and muscle...,barbell,chest
+178,Close-grip dumbbell bench press,The close-grip dumbbell bench press is a popular variation of the dumbbell be...,dumbbell,chest
+179,Single-arm decline dumbbell bench press,The single-arm decline dumbbell bench press is an upper-body exercise targeti...,dumbbell,chest
+180,Reverse-grip incline dumbbell bench press,The reverse-grip incline dumbbell bench press is an upper-body exercise targe...,dumbbell,chest
+181,Decline barbell bench press,The decline barbell bench press is a popular upper-body exercise targeting th...,barbell,chest
+182,Smith machine bench press throw,The Smith machine bench press throw is an exercise that helps develop pushing...,machine/other,chest
+183,Decline dumbbell bench press,The decline dumbbell bench press is a popular upper-body exercise targeting t...,dumbbell,chest
+184,Dumbbell Bench Press,The dumbbell bench press is a mainstay of workout enthusiasts worldwide. It’s...,dumbbell,chest
+185,TBS Close-Grip Bench Press,The close-grip bench pressis a compound exercise targeting the triceps and ch...,barbell,chest
+186,Dumbbell bench press-,The dumbbell bench press is a mainstay of lifters worldwide. It's a classic m...,dumbbell,chest
+187,Dumbbell push-up row,"The dumbbell push-up row combines pressing, rowing, and core stabilization in...",dumbbell,chest
+188,Paul Carter Incline Bench Press,The incline bench press is an upper body compound movement that targets the u...,barbell,chest
+189,Neutral-grip dumbbell bench press,The neutral-grip dumbbell bench press is a variation on a classic chest-build...,dumbbell,chest
+190,Close-grip bench press,The close-grip bench press is a popular exercise targeting the triceps and ch...,barbell,chest
+191,Single-arm incline dumbbell bench press,The single-arm incline dumbbell bench press is an upper-body exercise targeti...,dumbbell,chest
+192,Incline dumbbell bench press,The incline dumbbell bench press is a popular upper-body exercise targeting t...,dumbbell,chest
+193,UP Bench Press,The bench press is a compound exercise that builds strength and muscle in the...,barbell,chest
+194,Barbell Incline Bench Press Medium-Grip,The incline bench press is an upper body compound movement that targets the u...,barbell,chest
+195,Barbell Guillotine Bench Press,Barbell Guillotine Bench Press exercise.,barbell,chest
+196,Wide-grip bench press,"The wide-grip bench press is a compound exercise targeting the chest and, to...",barbell,chest
+197,Barbell Bench Press-Wide Grip,"The wide-grip bench pressis a compound exercise targeting the chest, primaril...",barbell,chest
+198,Barbell Bench Press - Medium Grip,The bench press is a compound exercise that builds strength and muscle in the...,barbell,chest
+199,UP Close-Grip Bench Press,The close-grip bench pressis a compound exercise targeting the triceps and ch...,barbell,chest
+200,Hammer Grip Incline DB Bench Press,Hammer Grip Incline DB Bench Press exercise.,dumbbell,chest
+201,Wide-Grip Decline Barbell Bench Press,Wide-Grip Decline Barbell Bench Press exercise.,barbell,chest
+202,King Maker Barbell Bench Press,The bench press is a compound exercise that builds strength and muscle in the...,barbell,chest
+203,AM Dumbbell Bench Press,The dumbbell bench press is a mainstay of workout enthusiasts worldwide. It’s...,dumbbell,chest
+204,Incline bench press,The incline bench press is a popular barbell exercise targeting the chest mus...,barbell,chest
+205,Wide push-up plank hold,The wide push-up plank hold is a full-body exercise targeting the core. Becau...,duration,chest
+206,Front Raise And Pullover,Front Raise And Pullover exercise.,barbell,chest
+207,Decline Dumbbell Press - Gethin Variation,The decline dumbbell bench press is an upper body isolation exercise targetin...,dumbbell,chest
+208,Dumbbell Fix Traveling Push-Up,Dumbbell Fix Traveling Push-Up exercise.,dumbbell,chest
+209,Decline dumbbell fly and press,The decline dumbbell fly and press is a dumbbell complex that targets the che...,dumbbell,chest
+210,Incline dumbbell fly and press,The incline dumbbell fly and press is a dumbbell complex that targets the che...,dumbbell,chest
+211,Dumbbell Chest Press - Gethin Variation,The dumbbell bench press is a mainstay of workout enthusiasts worldwide. It’s...,dumbbell,chest
+212,King Maker Standing Dumbbell Shoulder Press,The standing dumbbell shoulder press is a classic deltoid-builder (especially...,dumbbell,chest
+213,Dumbbell Floor Press - Gethin Variation,The dumbbell floor press limits the range of motion you would achieve with a...,dumbbell,chest
+214,Neck Press,Neck Press exercise.,barbell,chest
+215,Machine bench press,The machine bench press is a machine-based exercise targeting the chest and u...,machine/other,chest
+216,Single-arm dumbbell floor press,The single-arm dumbbell floor press is a multijoint pressing exercise perform...,dumbbell,chest
+217,Incline Dumbbell Press - Gethin Variation,The incline dumbbell bench press is an upper body exercise targeting the uppe...,dumbbell,chest
+218,Smith machine bench press,The Smith machine bench press is a machine-based movement targeting the chest...,machine/other,chest
+219,AM Flat Bench Barbell Press,The bench press is a compound exercise that builds strength and muscle in the...,barbell,chest
+220,UP Incline Dumbbell Press,The incline dumbbell bench press is an upper body exercise targeting the uppe...,dumbbell,chest
+221,Total Fitness Weighted Push-Up,The plate-weighted push-up is a simple way to make a classic bodyweight exerc...,weighted bodyweight,chest
+222,Single-arm kettlebell row,The single-arm kettlebell row is a popular muscle- and strength-building exer...,dumbbell,chest
+223,Spoto press,The Spoto press is a variation of the popular barbell exercise the bench pres...,barbell,chest
+224,Smith machine incline bench press-,The Smith machine incline bench press is a machine-based movement targeting t...,machine/other,chest
+225,Smith machine decline bench press,The Smith machine decline bench press is a machine-based exercise targeting t...,machine/other,chest
+226,TBS Dumbbell Incline Press,The incline dumbbell bench press is an upper body exercise targeting the uppe...,dumbbell,chest
+227,Smith Machine Incline Bench Press,The Smith machine incline bench press is a machine-based movement targeting t...,machine/other,chest
+228,Single-dumbbell push-up,The single-dumbbell push-up is a more difficult push-up variation where you b...,dumbbell,chest
+229,Smith Machine Close-Grip Bench Press,The Smith machine close-grip bench press is a machine-based movement targetin...,machine/other,chest
+230,Chin-up crunch,The chin-up crunch is an exercise targeting the core and overall upper-body s...,reps only,core
+231,Side plank hip dip,The side plank hip dip is a dynamic version of the side plank exercise focusi...,duration,core
+232,Hanging leg raise with throw down,The hanging leg raise with throw down is a more advanced version of the hangi...,reps only,core
+233,Side plank lateral raise,The side plank lateral raise is an exercise that combines an isometric side p...,duration,core
+234,Push-up to side plank,The push-up to side plank is an upper-body and core-focused exercise combinin...,duration,core
+235,Plank Push-Up,The plank up-down is a variation of the plank push-up that ends in an elbow p...,duration,core
+236,Plank leg raise,The plank leg raise is an isometric abdominal exercise that targets the muscl...,duration,core
+237,Dumbbell Fix Alternating Renegade Row,Dumbbell Fix Alternating Renegade Row exercise.,dumbbell,core
+238,Dumbbell crunch,The dumbbell crunch is a more difficult version of a highly popular abdominal...,dumbbell,core
+239,Standing dumbbell knee crunch-,The standing dumbbell knee crunch is a great way to train the abs while stand...,dumbbell,core
+240,Dumbbell Fix Dumbbell Front Squat,Dumbbell Fix Dumbbell Front Squat exercise.,dumbbell,core
+241,Single-arm dumbbell crunch,The single-arm dumbbell crunch is a more difficult version of a highly popula...,dumbbell,core
+242,Dumbbell hollow-body floor press,The dumbbell hollow-body floor press combines upper-body strength and core wo...,dumbbell,core
+243,Dumbbell Crunch - Gethin Variation,The dumbbell crunch is a more difficult version of a highly popular abdominal...,dumbbell,core
+244,Dumbbell straight-legged hip raise,The dumbbell straight-legged hip raise works the hips and glutes. It requires...,dumbbell,core
+245,Single-arm landmine pull and press,The single-arm landmine pull and press is an explosive rotational movement us...,barbell,core
+246,Decline bar press sit-up,The decline bar press sit-up is a weighted core exercise targeting the abdomi...,barbell,core
+247,Decline Crunch,The decline crunch is an effective core exercise targeting the rectus abdominis.,reps only,core
+248,Crunches,"The crunch is a popular core exercise targeting the rectus abdominis, or ""six...",reps only,core
+249,Side plank pulse,The side plank pulse is a dynamic version of the side plank exercise focusing...,duration,core
+250,Crunch - Hands Overhead,Crunch - Hands Overhead exercise.,reps only,core
+251,Crunch - Gethin Variation,"The crunch is a popular core exercise targeting the rectus abdominis, or ""six...",reps only,core
+252,Hand shift plank,The hand shift plank is a progression of the straight-arm plank exercise wher...,duration,core
+253,Cross-body plank march,The cross-body plank march is an exercise targeting the entire core but espec...,duration,core
+254,Cross-Body Crunch - Gethin Variation,"The cross-body sit-up is a bodyweight exercise targeting the ab muscles, the...",reps only,core
+255,Cross-Body Crunch,"The elbow-to-knee crunch is a bodyweight exercise targeting the ab muscles, t...",reps only,core
+256,Feet-elevated oblique crunch,The feet-elevated oblique crunch is a variation on the crunch exercise that t...,reps only,core
+257,Parallel bars leg raise,The parallel bars leg raise is a bodyweight exercise that targets the abs. It...,reps only,core
+258,Hanging Leg Raise - Variation Gethin,The hanging leg raise is an exercise targeting the abs and hip flexors. Inste...,reps only,core
+259,Copenhagen plank,The Copenhagen plank is an advanced version of the side plank performed with...,duration,core
+260,Single-leg curl up,The single-leg curl up is a bodyweight abdominal movement that teaches and re...,reps only,core
+261,Decline crunch-,The decline crunch is a popular bodyweight exercise targeting the rectus abdo...,reps only,core
+262,Knees tucked crunch,The knees tucked crunch is a core exercise that involves performing a crunch...,reps only,core
+263,Side plank,The side plank is a popular isometric abdominal exercise focusing on the obli...,duration,core
+264,Plank Walk,Plank Walk exercise.,duration,core
+265,Feet-elevated bench side plank,The feet-elevated bench side plank is an advanced version of the side plank p...,duration,core
+266,Plank up-down,The plank up-down is a variation of the plank push-up that ends in an elbow p...,duration,core
+267,Plank walk-out,The plank walk-out is an advanced plank variation targeting the core and shou...,duration,core
+268,Prison Push-Up,Prison Push-Up exercise.,reps only,core
+269,Push-Up Roll Out - Gethin Variation,Push-Up Roll Out - Gethin Variation exercise.,reps only,core
+270,Reach crunch,The reach crunch is a bodyweight core exercise that involves keeping the arms...,reps only,core
+271,Reverse crunch,"The reverse crunch is a popular exercise targeting the abdominals, particular...",reps only,core
+272,Flat Bench Lying Leg Raise,The lying leg lift is a popular bodyweight exercise targeting the muscles of...,reps only,core
+273,Flat Bench Lying Leg Raise - Gethin Variation,The lying leg lift is a popular bodyweight exercise targeting the muscles of...,reps only,core
+274,Plank To Sphinx,Plank To Sphinx exercise.,duration,core
+275,Side lunge cross-body heel-touch,The side lunge cross-body heel-touch is a lower-body exercise targeting the q...,reps only,core
+276,Elbow-to-knee crunch,"The elbow-to-knee crunch is a bodyweight exercise targeting the ab muscles, t...",reps only,core
+277,Elbow plank jack,The elbow plank jack is an isometric abdominal exercise with a dynamic lower-...,duration,core
+278,Elbow plank,The elbow plank is a popular isometric abdominal exercise. It is common in al...,duration,core
+279,Eiffel Tower leg raise,The Eiffel Tower leg raise is a bodyweight exercise targeting the muscles of...,reps only,core
+280,Double crunch,The double crunch is a bodyweight exercise focused on the muscles of the core...,reps only,core
+281,Plank Fire Hydrants,Plank Fire Hydrants exercise.,duration,core
+282,Cocoon crunch,"The cocoon crunch is a bodyweight exercise targeting the ab muscles, the rect...",reps only,core
+283,Pillar-To-Plank,Pillar-To-Plank exercise.,duration,core
+284,Gorilla Chin/Crunch,Gorilla Chin/Crunch exercise.,reps only,core
+285,Plank - Gethin Variation,The elbow plank is a popular isometric abdominal exercise. It is common in al...,duration,core
+286,Cross Crunch,Cross Crunch exercise.,reps only,core
+287,Hanging Leg Raises,Hanging Leg Raises exercise.,reps only,core
+288,Alternating hanging knee raise,"The alternating hanging knee raise is an exercise targeting the abs, but whic...",reps only,core
+289,Total Fitness Side Plank,The side plank is a popular isometric abdominal exercise focusing on the obli...,duration,core
+290,McGill Pull-Up,McGill Pull-Up exercise.,reps only,core
+291,McGill Modified Curl-Up,McGill Modified Curl-Up exercise.,reps only,core
+292,Hanging Oblique Knee Raise,The hanging oblique crunch an abdominal exercise that targets both the rectus...,reps only,core
+293,Alternating lying leg raise,The alternating lying leg lift is a popular bodyweight exercise targeting the...,reps only,core
+294,Jump Lunge,The alternating lunge jump is an explosive bodyweight exercise that targets t...,reps only,core
+295,Alternating High Knee Raise,Alternating High Knee Raise exercise.,reps only,core
+296,Tip-toe crunch,The tip-toe crunch is a variation on the crunch exercise that involves placin...,reps only,core
+297,Tyler Holt Hip-Dip,Tyler Holt Hip-Dip exercise.,reps only,core
+298,Tyler Holt Plank,Tyler Holt Plank exercise.,duration,core
+299,Lying oblique crunch,The lying oblique crunch is a bodyweight exercise targeting the oblique muscl...,reps only,core
+300,Dumbbell front raise and press,The dumbbell front raise and press combines two upper-body moves into one cha...,dumbbell,shoulders
+301,6 Way Shoulder Raise,6 Way Shoulder Raise exercise.,dumbbell,shoulders
+302,Incline dumbbell front raise,The incline dumbbell front raise is an upper-body exercise targeting the shou...,dumbbell,shoulders
+303,Seated Lateral Raise - Gethin Variation,The seated dumbbell lateral raiseis an iconic exercise for developing the sho...,dumbbell,shoulders
+304,Seated Dumbbell Press,The seated dumbbell shoulder pressis an exercise for building muscle and stre...,dumbbell,shoulders
+305,RG Seated Dumbbell Shoulder Press,RG Seated Dumbbell Shoulder Press exercise.,dumbbell,shoulders
+306,RG Forward-Leaning Dumbbell Upright Row,RG Forward-Leaning Dumbbell Upright Row exercise.,dumbbell,shoulders
+307,RG Alternating Seated Dumbbell Lateral Raise,RG Alternating Seated Dumbbell Lateral Raise exercise.,dumbbell,shoulders
+308,Paul Carter Barbell Seated Military Press,The seated barbell shoulder pressis a classic exercise for building muscle an...,barbell,shoulders
+309,Overhead dumbbell front raise,The overhead dumbbell front raise takes the dumbbell front raise one step fur...,dumbbell,shoulders
+310,Overhead bar front raise,The overhead bar front raise is an exercise targeting the muscles of the trap...,barbell,shoulders
+311,Machine Shoulder (Military) Press,The machine shoulder press is an upper body exercise targeting the deltoids.,barbell,shoulders
+312,King Maker Dumbbell Lateral Raise,The dumbbell lateral raise is an upper body isolation exercise for building s...,dumbbell,shoulders
+313,Incline Rear Delt Raises - Gethin Variation,The incline dumbbell reverse fly is an upper-body exercise targeting the post...,dumbbell,shoulders
+314,Seated barbell shoulder press,The seated barbell shoulder press is a classic exercise for building muscle a...,barbell,shoulders
+315,Incline Dumbbell Y Raise,Incline Dumbbell Y Raise exercise.,dumbbell,shoulders
+316,Head-on-bench dumbbell rear delt raise,The head-on-bench dumbbell rear delt raise is an exercise targeting the poste...,dumbbell,shoulders
+317,Dumbbell shoulder press with body rotation,The dumbbell shoulder press with body rotation is a twist on the traditional...,dumbbell,shoulders
+318,Dumbbell seesaw shoulder press,The dumbbell seesaw shoulder press is an exercise targeting the deltoids and...,dumbbell,shoulders
+319,Dumbbell lateral raise,The dumbbell lateral raise is a shoulder exercise that targets the medial or...,dumbbell,shoulders
+320,Dumbbell front raise to lateral raise,The dumbbell front raise to lateral raise is a dumbbell complex that combines...,dumbbell,shoulders
+321,Dumbbell front raise,The dumbbell front raise is a single-joint exercise targeting the shoulder mu...,dumbbell,shoulders
+322,Dumbbell Raise,Dumbbell Raise exercise.,dumbbell,shoulders
+323,Dumbbell Lying Rear Lateral Raise,The incline dumbbell reverse fly is an upper-body exercise targeting the post...,dumbbell,shoulders
+324,Seated Side Lateral Raise,The seated dumbbell lateral raiseis an iconic exercise for developing the sho...,dumbbell,shoulders
+325,Seated dumbbell lateral raise,The seated dumbbell lateral raise is an exercise that targets the shoulder mu...,dumbbell,shoulders
+326,Dumbbell Fix Standing Dumbbell Arnold Press,Dumbbell Fix Standing Dumbbell Arnold Press exercise.,dumbbell,shoulders
+327,Single-dumbbell front raise,The single-dumbbell front raise is an isolation movement that targets the sho...,dumbbell,shoulders
+328,UP Seated Dumbbell Overhead Press,The seated dumbbell shoulder pressis an exercise for building muscle and stre...,dumbbell,shoulders
+329,UP Dumbbell Lateral Raise,The dumbbell lateral raise is an upper body isolation exercise for building s...,dumbbell,shoulders
+330,TBS Barbell Military Press,The military press is a compound movement used to build size and strength in...,barbell,shoulders
+331,Standing palms-in shoulder press,The standing palms-in shoulder press is a dumbbell exercise targeting the sho...,dumbbell,shoulders
+332,Standing dumbbell shoulder press,The standing dumbbell shoulder press is a classic deltoid-building exercise t...,dumbbell,shoulders
+333,Standing barbell shoulder press,The standing barbell shoulder press is a compound movement used to build size...,barbell,shoulders
+334,Standing Dumbbell Scap Raise,Standing Dumbbell Scap Raise exercise.,dumbbell,shoulders
+335,Standing Bradford press,The standing Bradford press is an obscure yet effective shoulder exercise tha...,barbell,shoulders
+336,Standing Barbell Press Behind Neck,The standing behind-the-head press is a classic shoulder exercise that was us...,barbell,shoulders
+337,Smith Incline Shoulder Raise,Smith Incline Shoulder Raise exercise.,barbell,shoulders
+338,Single-arm standing shoulder press,The single-arm standing shoulder press is a popular exercise to build size an...,dumbbell,shoulders
+339,Seated dumbbell shoulder press,The seated dumbbell shoulder press is a popular exercise for building muscle...,dumbbell,shoulders
+340,Single-arm palm-in dumbbell shoulder press,The single-arm palm-in dumbbell shoulder press builds the shoulder muscles bu...,dumbbell,shoulders
+341,Single-arm lateral raise,The single-arm lateral raise is a shoulder exercise that targets the medial o...,dumbbell,shoulders
+342,Single-arm incline rear delt raise,The single-arm incline rear delt raise is an upper-body exercise targeting th...,dumbbell,shoulders
+343,Single-arm incline lateral raise,The single-arm incline lateral raise is an exercise targeting the lateral or...,dumbbell,shoulders
+344,Single-arm half-kneeling shoulder press,The single-arm half-kneeling shoulder press is a popular exercise to target t...,dumbbell,shoulders
+345,Single-arm dumbbell upright row,The single-arm dumbbell upright row is a popular movement for building strong...,dumbbell,shoulders
+346,Single-arm dumbbell arc row,The single-arm dumbbell arc row is an exercise for building the latissimus do...,dumbbell,shoulders
+347,Single-arm barbell lateral raise,The single-arm barbell lateral raise is an isolation exercise targeting the s...,barbell,shoulders
+348,Side Lateral Raise,The dumbbell lateral raise is an upper body isolation exercise for building s...,dumbbell,shoulders
+349,See-Saw Press (Alternating Side Press),See-Saw Press (Alternating Side Press) exercise.,dumbbell,shoulders
+350,Dumbbell Incline Shoulder Raise,Dumbbell Incline Shoulder Raise exercise.,dumbbell,shoulders
+351,Military press,The military press is a compound movement used to build size and strength in...,barbell,shoulders
+352,Dumbbell Fix Dumbbell Military Press,Dumbbell Fix Dumbbell Military Press exercise.,dumbbell,shoulders
+353,AM Dumbbell Side Raise,The dumbbell lateral raise is an upper body isolation exercise for building s...,dumbbell,shoulders
+354,Bradford/Rocky Presses,Bradford/Rocky Presses exercise.,barbell,shoulders
+355,Reverse Band Bench Press,Reverse Band Bench Press exercise.,barbell,arms
+356,Bench Press with Chains,Bench Press with Chains exercise.,barbell,arms
+357,Bench Press - Powerlifting,Bench Press - Powerlifting exercise.,barbell,arms
+358,Reverse-grip bench press,The reverse-grip bench press is a popular barbell exercise targeting the ches...,barbell,arms
+359,Straight-arm plank with biceps curl,The straight-arm plank with biceps curl is a hybrid movement that trains the...,dumbbell,arms
+360,Dumbbells-together incline bench press,The dumbbells-together incline bench press is an exercise targeting the pecto...,dumbbell,arms
+361,Biceps curl to shoulder press,The biceps curl to shoulder press is a dumbbell complex that combines two exe...,dumbbell,arms
+362,Dumbbell biceps curl to upright row,The dumbbell biceps curl to upright row is a dumbbell complex that combines t...,dumbbell,arms
+363,Lunge hold dumbbell curl,The lunge hold dumbbell curl is a challenging complex that combines an isomet...,duration,arms
+364,Dumbbell floor press,The dumbbell floor press is a multijoint pressing exercise performed lying on...,dumbbell,arms
+365,Pin Presses,Pin Presses exercise.,barbell,arms
+366,Floor Press,Floor Press exercise.,barbell,arms
+367,Floor Press with Chains,Floor Press with Chains exercise.,barbell,arms
+368,Lying Supine Dumbbell Curl,Lying Supine Dumbbell Curl exercise.,dumbbell,arms
+369,Lying High Bench Barbell Curl,Lying High Bench Barbell Curl exercise.,barbell,arms
+370,Lying Cable Curl - Gethin Variation,The lying cable biceps curl is an isolation exercise that eliminates the poss...,dumbbell,arms
+371,Incline Hammer Curls,Incline Hammer Curls exercise.,dumbbell,arms
+372,Standing Dumbbell Reverse Curl,"With the reverse-grip dumbbell curl, the palms face down, not up. This unorth...",dumbbell,arms
+373,Standing Inner-Biceps Curl,Standing Inner-Biceps Curl exercise.,dumbbell,arms
+374,JM Press With Bands,JM Press With Bands exercise.,barbell,arms
+375,JM Press,JM Press exercise.,barbell,arms
+376,Standing band biceps curl,The standing band biceps curl is an arm-focused exercise using a band for res...,barbell,arms
+377,One Arm Floor Press,One Arm Floor Press exercise.,barbell,arms
+378,Hammer Curls,This curl is performed simultaneously with dumbbells but without wrist supina...,dumbbell,arms
+379,Incline Dumbbell Curl - Gethin Variation,The incline dumbbell biceps curl is an isolation exercise targeting the bicep...,dumbbell,arms
+380,Hammer curl,"The hammer curl is a dumbbell movement that focuses on the biceps, brachialis...",dumbbell,arms
+381,Palms-Down Dumbbell Wrist Curl Over A Bench,Palms-Down Dumbbell Wrist Curl Over A Bench exercise.,dumbbell,arms
+382,Flexor Incline Dumbbell Curls,Flexor Incline Dumbbell Curls exercise.,dumbbell,arms
+383,Face-down incline dumbbell biceps curl,The face-down incline dumbbell biceps curl is an exercise targeting the bicep...,dumbbell,arms
+384,EZ-bar spider curl,The EZ-bar spider curl is an exercise targeting the biceps and performed face...,barbell,arms
+385,EZ-bar preacher curl,The EZ-bar preacher curl is a classic exercise for building bigger biceps. Th...,barbell,arms
+386,EZ-Bar Spider Curl - Gethin Variation,The EZ-bar spider curl is an isolation exercise targeting the biceps and perf...,barbell,arms
+387,Standing behind-the-back wrist curl,The standing behind-the-back wrist curl is a popular exercise to target the m...,barbell,arms
+388,Standing concentration curl,The standing concentration curl is a variation on the more common seated conc...,dumbbell,arms
+389,Dumbbell row to triceps kick-back,The dumbbell row to triceps kick-back is a dumbbell complex that combines two...,dumbbell,arms
+390,Dumbbell preacher curl,The dumbbell preacher curl is an exercise that focuses on building the biceps...,dumbbell,arms
+391,Dumbbell overhead hold with single-arm curl,The dumbbell overhead hold with single-arm curl combines an isometric overhea...,duration,arms
+392,Dumbbell biceps curl,The dumbbell biceps curl is a single-joint exercise for building bigger and s...,dumbbell,arms
+393,Side plank with dumbbell external rotation,The side plank with dumbbell external rotation is a movement that combines an...,dumbbell,arms
+394,Palms-out incline biceps curl,The palms-out incline biceps curl is an exercise targeting the biceps. It is...,dumbbell,arms
+395,Palms-Up Dumbbell Wrist Curl Over A Bench,Palms-Up Dumbbell Wrist Curl Over A Bench exercise.,dumbbell,arms
+396,Seated Biceps Hammer Curl,Seated Biceps Hammer Curl exercise.,dumbbell,arms
+397,Seated triceps press,The seated triceps press is a popular arm-building exercise that targets the...,dumbbell,arms
+398,Seated palms-up wrist curl,The seated palms-up wrist curl is an exercise targeting the forearms. It is u...,barbell,arms
+399,Seated palms-down wrist curl,The seated palms-down wrist curl is an exercise targeting the forearms. It is...,dumbbell,arms
+400,Seated hammer curl,The seated hammer curl is a popular exercise for building bigger biceps and f...,dumbbell,arms
+401,Seated finger curl,The seated finger curl is an exercise targeting the muscles of the hands and...,barbell,arms
+402,Seated dumbbell biceps curl,The seated dumbbell biceps curl is a popular exercise for building bigger bic...,dumbbell,arms
+403,Seated alternating biceps curl,The seated alternating biceps curl is an exercise that builds bigger and stro...,dumbbell,arms
+404,Seated Straigh-Bar Curl Superset,The seated wide-grip curl to close-grip curl is a variation on the classic se...,barbell,arms
+405,Seated One-Arm Dumbbell Palms-Up Wrist Curl,Seated One-Arm Dumbbell Palms-Up Wrist Curl exercise.,dumbbell,arms
+406,Seated One-Arm Dumbbell Palms-Down Wrist Curl,Seated One-Arm Dumbbell Palms-Down Wrist Curl exercise.,dumbbell,arms
+407,Seated Dumbbell Palms-Up Wrist Curl,Seated Dumbbell Palms-Up Wrist Curl exercise.,dumbbell,arms
+408,Seated Dumbbell Inner Biceps Curl,Seated Dumbbell Inner Biceps Curl exercise.,dumbbell,arms
+409,Seated Dumbbell Curl - Gethin Variation,The seated dumbbell biceps curl is a standard exercise for building bigger bi...,dumbbell,arms
+410,Seated Close-Grip Concentration Barbell Curl,Seated Close-Grip Concentration Barbell Curl exercise.,barbell,arms
+411,Seated Barbell Curl,Seated Barbell Curl exercise.,barbell,arms
+412,Palms-down wrist curl over bench,The palms-down wrist curl over bench is an exercise targeting the forearms. I...,barbell,arms
+413,Rolling triceps press,The rolling triceps press is a dynamic triceps exercise that is popular as a...,dumbbell,arms
+414,Reverse-grip dumbbell curl,"With the reverse-grip dumbbell curl, the palms face down, not up. This unorth...",dumbbell,arms
+415,Bear crawl push-up,The bear crawl push-up is a variation of the bear crawl hold with a push-up a...,reps only,full body
+416,Barbell thruster,The barbell thruster is a full-body exercise that incorporates both squatting...,barbell,full body
+417,Dumbbell Fix Dumbbell Mountain Climber,Dumbbell Fix Dumbbell Mountain Climber exercise.,dumbbell,full body
+418,King Maker Barbell Thruster,The barbell thruster is a full-body exercise that incorporates both squatting...,barbell,full body
+419,Dumbbell thruster,"The dumbbell thruster, which begins with a squat and ends with an overhead pr...",dumbbell,full body
+420,Dumbbell Fix Full Man Maker,Dumbbell Fix Full Man Maker exercise.,dumbbell,full body
+421,Dumbbell Fix Turkish Get-Up,Dumbbell Fix Turkish Get-Up exercise.,dumbbell,full body
+422,Half Turkish get-up,The half Turkish get-up is a kettlebell movement that focuses on the first po...,reps only,full body
+423,Bear crawl,The bear crawl is a popular bodyweight crawling exercise. While it looks simp...,reps only,full body
+424,Twisting Mountain Climbers,Twisting Mountain Climbers exercise.,reps only,full body
+425,Traveling bear crawl,The traveling bear crawl is a more advanced version of the bear crawl exercis...,reps only,full body
+426,Total Fitness Bear Crawl,The bear crawl is a popular bodyweight crawling exercise. While it looks simp...,reps only,full body
+427,Superhero burpee,The superhero burpee is an advanced variation of the burpee exercise. The mai...,reps only,full body
+428,Sprinter burpee,The sprinter burpee is an explosive version of the burpee exercise that adds...,reps only,full body
+429,Single-leg burpee,The single-leg burpee is an advanced variation of the burpee exercise that in...,reps only,full body
+430,King Maker Burpee,The burpee is a high-intensity exercise that recruits the entire body to buil...,reps only,full body
+431,Bear crawl donkey kick,The bear crawl donkey kick is a more advanced version of the bear crawl exerc...,reps only,full body
+432,Bear crawl up-down,The bear crawl up-down is a variation of the bear crawl that involves lowerin...,reps only,full body
+433,Gorilla burpee,The gorilla burpee is a variation of the burpee exercise that consists of a r...,reps only,full body
+434,Wide mountain climber,The wide mountain climber is a popular bodyweight exercise targeting the musc...,reps only,full body
+435,Bear crawl hold,The bear crawl hold is a static variation of the bear crawl exercise performe...,duration,full body
+436,Bear crawl shoulder tap,The bear crawl shoulder tap is a variation of the bear crawl that involves to...,reps only,full body
+437,Cross-body mountain climber,The cross-body mountain climber is a popular bodyweight exercise targeting th...,reps only,full body
+438,Bench mountain climber,"The bench mountain climber is a bodyweight exercise that works the core, shou...",reps only,full body
+439,Burpee to pull-up,The burpee to pull-up is a variation of the bodyweight burpee in which the ju...,reps only,full body
+440,Bear crawl fire feet,Bear crawl fire feet is a variation of the bear crawl that involves running i...,cardio,full body
+441,Vertical Mountain Climber,Vertical Mountain Climber exercise.,cardio,full body
+442,Burpee,The burpee is a high-intensity exercise that recruits the entire body to buil...,cardio,full body
+443,Burpee over kettlebell,The burpee over kettlebell is a more advanced version of a popular conditioni...,machine/other,full body
+444,Single-arm kettlebell thruster,The single-arm kettlebell thruster is a popular kettlebell movement that comb...,machine/other,full body
+445,Kettlebell thruster progression,The kettlebell thruster progression is a kettlebell combination movement that...,machine/other,full body
+446,Kettlebell thruster,The kettlebell thruster is a popular kettlebell movement that combines a kett...,machine/other,full body
+447,Reverse Burpee,Reverse Burpee exercise.,reps only,full body
+448,Mountain climber,The mountain climber is a popular bodyweight exercise targeting the muscles o...,reps only,full body
+449,Burpee box jump,The burpee box jump is an explosive bodyweight exercise that combines a burpe...,reps only,full body
+450,Burpee tuck jump,The burpee tuck jump is an explosive version of the burpee exercise that adds...,reps only,full body
+451,Wall mountain climber,The wall mountain climber is a challenging exercise targeting the shoulders a...,reps only,full body
+452,Burpee over barbell,"The burpee over barbell is an exercise that takes the burpee, a popular funct...",machine/other,full body
+453,Burpee Box-Jumps,Burpee Box-Jumps exercise.,machine/other,full body
+454,Bear crawl sled drag,The bear crawl sled drag is an advanced variation of the bear crawl exercise...,machine/other,full body
+455,Jerk Dip Squat,Jerk Dip Squat exercise.,barbell,Olympic
+456,Dumbbell clean and press,The dumbbell clean and press is a full-body movement that targets both the lo...,dumbbell,Olympic
+457,Squat Jerk,Squat Jerk exercise.,barbell,Olympic
+458,Front Squat (Clean Grip),Front Squat (Clean Grip) exercise.,barbell,Olympic
+459,Snatch-Grip Behind-The-Neck Overhead Press,Snatch-Grip Behind-The-Neck Overhead Press exercise.,barbell,Olympic
+460,Dumbbell clean and push-press,The dumbbell clean and push-press is a full-body movement that targets both t...,dumbbell,Olympic
+461,Clean and press,The clean and press is a full-body lift comprised of two movements: the clean...,barbell,Olympic
+462,Dumbbell Squat Snatch,Dumbbell Squat Snatch exercise.,dumbbell,Olympic
+463,Snatch Deadlift,Snatch Deadlift exercise.,barbell,Olympic
+464,Kneeling Jump Squat,Kneeling Jump Squat exercise.,barbell,Olympic
+465,Push-press,The push-press is an overhead press variation in which the barbell is pushed...,barbell,Olympic
+466,Romanian Deadlift from Deficit,Romanian Deadlift from Deficit exercise.,barbell,Olympic
+467,Frankenstein Squat,Frankenstein Squat exercise.,barbell,Olympic
+468,Olympic Squat,Olympic Squat exercise.,barbell,Olympic
+469,Behind-the-head push-press,The behind-the-head push-press is an overhead press variation in which the ba...,barbell,Olympic
+470,Clean Deadlift,Clean Deadlift exercise.,barbell,Olympic
+471,Snatch Pull,Snatch Pull exercise.,barbell,Olympic
+472,Single-Arm Dumbbell Snatch,Single-Arm Dumbbell Snatch exercise.,dumbbell,Olympic
+473,Single-arm dumbbell snatch-,The single-arm dumbbell snatch is an explosive exercise that builds full-body...,dumbbell,Olympic
+474,Dumbbell Clean And Jerk,Dumbbell Clean And Jerk exercise.,dumbbell,Olympic
+475,Isometric Neck Exercise - Front And Back,Isometric Neck Exercise - Front And Back exercise.,duration,other
+476,Isometric Neck Exercise - Sides,Isometric Neck Exercise - Sides exercise.,duration,other
+477,Neck Bridge Prone,Neck Bridge Prone exercise.,reps only,other
+478,Lying Face Down Plate Neck Resistance,Lying Face Down Plate Neck Resistance exercise.,machine/other,other
+479,Lying Face Up Plate Neck Resistance,Lying Face Up Plate Neck Resistance exercise.,machine/other,other
+480,Seated Head Harness Neck Resistance,Seated Head Harness Neck Resistance exercise.,machine/other,other
+481,Neck-SMR,Neck-SMR exercise.,duration,other
+482,Side Neck Stretch,Side Neck Stretch exercise.,duration,other
+483,Zercher squat,The Zercher squat is a barbell exercise in which the bar is placed in the cre...,barbell,legs
+484,Seated leg press-,"The seated leg press is a machine-based exercise that targets the quads, glut...",machine/other,legs
+485,Boss Everline Dumbbell Lunge Jump,Boss Everline Dumbbell Lunge Jump exercise.,dumbbell,legs
+486,Box Squat with Chains,Box Squat with Chains exercise.,barbell,legs
+487,Calf Press On The Leg Press Machine,The leg press calf raise is an exercise that uses the leg press machine to wo...,machine/other,legs
+488,Close-stance dumbbell front squat,The close-stance dumbbell front squat is a popular exercise for targeting the...,barbell,legs
+489,Dumbbell Alternating Lunge,Dumbbell Alternating Lunge exercise.,dumbbell,legs
+490,Seated Calf Raise - Gethin Variation,The machine seated calf raise is an exercise targeting the calf muscles of th...,machine/other,legs
+491,Seated Leg Press,"The seated leg press is a lower body exercise that targets the quads, adducto...",machine/other,legs
+492,Seesaw lunge,The seesaw lunge is a bodyweight exercise that combines both the forward and...,dumbbell,legs
+493,Smith Machine Calf Raise,The Smith machine standing calf raise is a machine-based exercise targeting t...,machine/other,legs
+494,Single-Arm Dumbbell Overhead Squat,Single-Arm Dumbbell Overhead Squat exercise.,dumbbell,legs
+495,Single-Leg Press,The single-leg leg press is an exercise targeting the quadriceps one leg at a...,machine/other,legs
+496,Single-Leg Press - Gethin Variation,The single-leg leg press is an exercise targeting the quadriceps one leg at a...,machine/other,legs
+497,Single-arm dumbbell front squat,"The single-arm dumbbell front squat is an exercise that targets the quads, gl...",dumbbell,legs
+498,Single-arm side deadlift,The single-arm side deadlift is a compound exercise that strengthens the glut...,barbell,legs
+499,Single-arm stiff-legged deadlift,The single-arm stiff-legged deadlift is a dumbbell exercise that targets the...,dumbbell,legs

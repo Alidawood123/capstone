@@ -1,91 +1,122 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Pressable, Text, Image, StatusBar, } from 'react-native';
+import {
+    StyleSheet,
+    View,
+    TouchableOpacity,
+    Text,
+    Image,
+    StatusBar,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-
 import FitnessHomeContent from './fitness-tabs/FitnessHomeContent';
 import FitnessTemplatesContent from './fitness-tabs/FitnessTemplatesContent';
 import FitnessHistoryContent from './fitness-tabs/FitnessHistoryContent';
 import FitnessAnalyticsContent from './fitness-tabs/FitnessAnalyticsContent';
 import FitnessProfileContent from './fitness-tabs/FitnessProfileContent';
 import EmptyWorkoutContent from '../components/fitness/home/EmptyWorkoutContent';
-
-import FitnessNavBar from '../components/fitness/FitnessNavigationBar';
+import FitnessNavigationBar from '../components/fitness/FitnessNavigationBar';
+import { addTemplate } from '../services/templateStorage';
 
 const BLUE = '#00b4d8';
-const GRAY = '#9ca3af';
 
 export default function FitnessPage({ onNavigateToLanding }) {
     const [activeTab, setActiveTab] = useState('home');
-    const [fitnessScreen, setFitnessScreen] = useState('tabs'); // 'tabs' | 'emptyworkout'
-    const [historyTab, setHistoryTab] = useState('historyWorkout');
+    const [fitnessScreen, setFitnessScreen] = useState('tabs');
+    const [workoutInitialData, setWorkoutInitialData] = useState(null);
     const insets = useSafeAreaInsets();
-
-    const toggleHistory = () => {
-        if (historyTab == 'historyWorkout') setHistoryTab('historyCalendar');
-        else setHistoryTab('historyWorkout');
-    }
-
-    
-
 
     return (
         <View style={styles.root}>
             <StatusBar barStyle="light-content" backgroundColor={BLUE} />
-            
             <View style={[styles.safeArea, { paddingTop: insets.top }]}>
-                {/* Blue header: logo left, title center (home only), back right (home only) */}
                 <View style={styles.header}>
                     <View style={styles.headerLeft}>
-                        <Image source={require('../../assets/logo.png')} style={styles.headerLogo} resizeMode="contain" />
+                        <Image
+                            source={require('../../assets/logo.png')}
+                            style={styles.headerLogo}
+                            resizeMode="contain"
+                        />
                     </View>
                     {fitnessScreen === 'emptyworkout' ? (
                         <>
-                            <Text style={styles.headerTitle} numberOfLines={1}> Empty Workout </Text>
-                            <Pressable style={styles.backButton} onPress={() => setFitnessScreen('tabs')} activeOpacity={0.8}>
+                            <Text style={styles.headerTitle} numberOfLines={1}>Empty Workout</Text>
+                            <TouchableOpacity
+                                style={styles.backButton}
+                                onPress={() => { setFitnessScreen('tabs'); setWorkoutInitialData(null); }}
+                                activeOpacity={0.8}
+                            >
                                 <Ionicons name="arrow-back" size={24} color="#fff" />
-                            </Pressable>
+                            </TouchableOpacity>
+                        </>
+                    ) : fitnessScreen === 'createtemplate' ? (
+                        <>
+                            <Text style={styles.headerTitle} numberOfLines={1}>Create template</Text>
+                            <TouchableOpacity style={styles.backButton} onPress={() => setFitnessScreen('tabs')} activeOpacity={0.8}>
+                                <Ionicons name="arrow-back" size={24} color="#fff" />
+                            </TouchableOpacity>
                         </>
                     ) : activeTab === 'home' ? (
                         <>
-                            <Text style={styles.headerTitle} numberOfLines={1}> welcome back! </Text>
-                            <Pressable style={styles.backButton} onPress={onNavigateToLanding} activeOpacity={0.8}>
+                            <Text style={styles.headerTitle} numberOfLines={1}>welcome back!</Text>
+                            <TouchableOpacity style={styles.backButton} onPress={onNavigateToLanding} activeOpacity={0.8}>
                                 <Ionicons name="arrow-back" size={24} color="#fff" />
-                            </Pressable>
+                            </TouchableOpacity>
                         </>
-                    ) : activeTab === 'history' ? (
+                    ) : activeTab === 'templates' ? (
                         <>
-                            <Text style={styles.headerTitle} numberOfLines={1}> History </Text>
-                            <Pressable style={styles.backButton} onPress={toggleHistory} activeOpacity={0.8}>
-                                <Ionicons name="calendar-outline" size={24} color="#fff" />
-                            </Pressable>
+                            <Text style={styles.headerTitle} numberOfLines={1}>Templates</Text>
+                            <TouchableOpacity style={styles.backButton} onPress={() => setFitnessScreen('createtemplate')} activeOpacity={0.8}>
+                                <Ionicons name="add" size={28} color="#fff" />
+                            </TouchableOpacity>
                         </>
                     ) : (
                         <View style={styles.headerSpacer} />
                     )}
                 </View>
 
-                {/* Main content - white area, routes by tab or empty workout */}
                 <View style={styles.content}>
                     {fitnessScreen === 'emptyworkout' ? (
-                        <EmptyWorkoutContent onAddExercises={() => {}} onCancelWorkout={() => setFitnessScreen('tabs')} />
+                        <EmptyWorkoutContent
+                            onAddExercises={() => {}}
+                            onCancelWorkout={() => { setFitnessScreen('tabs'); setWorkoutInitialData(null); }}
+                            initialTitle={workoutInitialData?.title}
+                            initialExercises={workoutInitialData?.exercises}
+                        />
+                    ) : fitnessScreen === 'createtemplate' ? (
+                        <EmptyWorkoutContent
+                            mode="template"
+                            onAddExercises={() => {}}
+                            onCancelWorkout={() => setFitnessScreen('tabs')}
+                            onSaveTemplate={async (t) => {
+                                await addTemplate(t);
+                                setFitnessScreen('tabs');
+                                setActiveTab('templates');
+                            }}
+                        />
                     ) : (
                         <>
-                            {activeTab === 'home' && (
-                                <FitnessHomeContent onStartEmptyWorkout={() => setFitnessScreen('emptyworkout')} />
+                            {activeTab === 'home' && <FitnessHomeContent onStartEmptyWorkout={() => setFitnessScreen('emptyworkout')} />}
+                            {activeTab === 'templates' && (
+                                <FitnessTemplatesContent
+                                    onUseTemplate={(template) => {
+                                        setWorkoutInitialData({
+                                            title: template.title || 'Untitled Workout',
+                                            exercises: template.exercises || [],
+                                        });
+                                        setFitnessScreen('emptyworkout');
+                                    }}
+                                />
                             )}
-                            {activeTab === 'templates' && <FitnessTemplatesContent />}
-                            {activeTab === 'history' && <FitnessHistoryContent historyTab={historyTab} />}
+                            {activeTab === 'history' && <FitnessHistoryContent />}
                             {activeTab === 'analytics' && <FitnessAnalyticsContent />}
                             {activeTab === 'profile' && <FitnessProfileContent />}
                         </>
                     )}
                 </View>
 
-                {/* Bottom navigation bar - hide when on empty workout */}
-                
-                {fitnessScreen === 'tabs' && ( 
-                    <FitnessNavBar activeTab={activeTab} setActiveTab={setActiveTab} /> 
+                {fitnessScreen === 'tabs' && (
+                    <FitnessNavigationBar activeTab={activeTab} onTabChange={setActiveTab} insets={insets} />
                 )}
             </View>
         </View>
@@ -93,14 +124,8 @@ export default function FitnessPage({ onNavigateToLanding }) {
 }
 
 const styles = StyleSheet.create({
-    root: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    safeArea: {
-        flex: 1,
-        backgroundColor: BLUE,
-    },
+    root: { flex: 1, backgroundColor: '#fff' },
+    safeArea: { flex: 1, backgroundColor: BLUE },
     header: {
         backgroundColor: BLUE,
         flexDirection: 'row',
@@ -109,23 +134,9 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
     },
-    headerLeft: {
-        width: 44,
-        height: 44,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    headerLogo: {
-        width: 50,
-        height: 50,
-    },
-    headerTitle: {
-        flex: 1,
-        fontSize: 20,
-        fontWeight: '600',
-        color: '#fff',
-        textAlign: 'center',
-    },
+    headerLeft: { width: 44, height: 44, justifyContent: 'center', alignItems: 'center' },
+    headerLogo: { width: 50, height: 50 },
+    headerTitle: { flex: 1, fontSize: 20, fontWeight: '600', color: '#fff', textAlign: 'center' },
     backButton: {
         width: 44,
         height: 44,
@@ -134,12 +145,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    headerSpacer: {
-        flex: 1,
-    },
-    content: {
-        flex: 1,
-        minHeight: 0,
-        backgroundColor: '#fff',
-    },
+    headerSpacer: { flex: 1 },
+    content: { flex: 1, minHeight: 0, backgroundColor: '#fff' },
 });
