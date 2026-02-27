@@ -54,12 +54,32 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
                     // Signed in
                     const user = userCredential.user;
                     console.log('User account created & signed in!', user);
+
+                    user.getIdToken().then((idToken) => {
+                        fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${idToken}`,
+                            },
+                            body: JSON.stringify({
+                                fullName: name,
+                                email: email
+                            }),
+                        })
+                    })
+
                     Toast.show({
                         type: 'success',
                         text1: 'Account created successfully!',
                     });
                 })
                 .catch((error) => {
+                    // Sign out in case of error in the backend profile creation
+                    if(auth.currentUser) {
+                        auth.signOut();
+                    }
+
                     const errorCode = error.code;
                     const errorMessage = error.message;
                     console.error('Error during sign up:', errorCode, errorMessage);
@@ -102,10 +122,33 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
             await signInWithCredential(auth, googleCredential);
             console.log('Signed in with Google credential!');
 
+            const user = auth.currentUser;
+            if (user) {
+                user.getIdToken().then((idToken) => {
+                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${idToken}`,
+                        },
+                        body: JSON.stringify({
+                            fullName: user.displayName || '',
+                            email: user.email
+                        }),
+                    })
+                })
+            }
+
+
             if (onNavigateToLanding) {
                 onNavigateToLanding();
             }
         } catch (error) {
+            // Sign out in case of error in the backend profile creation
+            if(auth.currentUser) {
+                auth.signOut();
+            }
+
             console.error('Error during Google sign-in:', error);
             Toast.show({
                 type: 'error',
@@ -137,11 +180,33 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
             await signInWithCredential(auth, facebookCredential);
             console.log('Signed in with Facebook credential!');
 
+            const user = auth.currentUser;
+            if (user) {
+                user.getIdToken().then((idToken) => {
+                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${idToken}`,
+                        },
+                        body: JSON.stringify({
+                            fullName: user.displayName || '',
+                            email: user.email
+                        }),
+                    })
+                })
+            }
+
             if (onNavigateToLanding) {
                 onNavigateToLanding();
             }
         }
         catch(error){
+            // Sign out in case of error in the backend profile creation
+            if(auth.currentUser) {
+                auth.signOut();
+            }
+
             console.error('Error during Facebook login:', error);
             Toast.show({
                 type: 'error',

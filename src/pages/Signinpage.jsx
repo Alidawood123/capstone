@@ -100,6 +100,34 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
                 const googleCredential = GoogleAuthProvider.credential(idToken);
                 await signInWithCredential(auth, googleCredential);
                 console.log('Signed in with Google credential!');
+
+                const user = auth.currentUser;
+                if (user) {
+                    user.getIdToken().then((idToken) => {
+                        fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/basic-profile', {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${idToken}`,
+                            },
+                        }).then(response => {
+                            if (response.status === 404) {
+                                // If profile doesn't exist, create it
+                                fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${idToken}`,
+                                    },
+                                    body: JSON.stringify({
+                                        fullName: user.displayName || '',
+                                        email: user.email
+                                    }),
+                                })
+                            }
+                        })
+                    })
+                }
     
                 if (onNavigateToLanding) {
                     onNavigateToLanding();
@@ -129,6 +157,35 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
             const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
             await signInWithCredential(auth, facebookCredential);
             console.log('Signed in with Facebook credential!');
+
+            const user = auth.currentUser;
+            if (user) {
+                user.getIdToken().then((idToken) => {
+                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/basic-profile', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${idToken}`,
+                        }
+                    }).then(response => {
+                        if (response.status === 404) {
+                            // If profile doesn't exist, create it
+                            fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${idToken}`,
+                                },
+                                body: JSON.stringify({
+                                    fullName: user.displayName || '',
+                                    email: user.email
+                                }),
+                            })
+                        }
+                    })
+                })
+            }
+
             if (onNavigateToLanding) {
                 onNavigateToLanding();
             }
