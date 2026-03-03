@@ -14,9 +14,17 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { getAuth, signInWithEmailAndPassword, signInWithCredential, GoogleAuthProvider, FacebookAuthProvider } from '@react-native-firebase/auth';
+import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    signInWithCredential, 
+    GoogleAuthProvider, 
+    FacebookAuthProvider, 
+    AppleAuthProvider 
+} from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 import Toast from 'react-native-toast-message';
 
@@ -199,6 +207,65 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
         }
     };
 
+    const handleAppleSignIn = async () => {
+        try {
+            if(!appleAuth.isSupported)
+                throw new Error('Apple Sign In is not supported on this device');
+
+            const appleAuthRequestResponse = await appleAuth.performRequest({
+                requestedOperation: appleAuth.Operation.LOGIN,
+                requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+            });
+
+            const { identityToken, email, fullName, nonce } = appleAuthRequestResponse;
+
+            if (!identityToken) {
+                throw new Error('Apple Sign-In failed - no identity token returned');
+            }
+
+            const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
+            await signInWithCredential(auth, appleCredential);
+
+            const user = auth.currentUser;
+            if (user) {
+                user.getIdToken().then((idToken) => {
+                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/basic-profile', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${idToken}`,
+                        }
+                    }).then(response => {
+                        if (response.status === 404) {
+                            // If profile doesn't exist, create it
+                            fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${idToken}`,
+                                },
+                                body: JSON.stringify({
+                                    fullName: user.displayName || '',
+                                    email: user.email
+                                }),
+                            })
+                        }
+                    })
+                })
+            }
+
+            console.log('Signed in with Apple credential!');
+        }
+        catch (error) {
+            console.error('Error during Apple sign-in:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Apple sign-in failed',
+                text2: error.message,
+            });
+        }
+    }
+
     // Validates email format - checks for @ and . characters
     const isValidEmail = email.includes('@') && email.includes('.');
     // Allow sign-in without validation for testing - always enable button
@@ -353,7 +420,7 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
                             <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignIn}>
                                 <Ionicons name="logo-google" size={24} color="#DB4437" />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.socialButton}>
+                            <TouchableOpacity style={styles.socialButton} onPress={handleAppleSignIn}>
                                 <Ionicons name="logo-apple" size={24} color="#000" />
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.socialButton} onPress={handleFacebookSignIn}>

@@ -14,9 +14,16 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { getAuth, createUserWithEmailAndPassword, signInWithCredential, GoogleAuthProvider, FacebookAuthProvider } from '@react-native-firebase/auth';
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithCredential, 
+    GoogleAuthProvider, 
+    FacebookAuthProvider 
+} from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 import Toast from 'react-native-toast-message';
 
@@ -214,6 +221,57 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
                 text2: error.message,
             });
             return;
+        }
+    }
+
+    const handleAppleSignUp = async () => {
+        try {
+            if(!appleAuth.isSupported)
+                throw new Error('Apple Sign Up is not supported on this device');
+
+            const appleAuthRequestResponse = await appleAuth.performRequest({
+                requestedOperation: appleAuth.Operation.LOGIN,
+                requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+            });
+
+            const { identityToken, email, fullName, nonce } = appleAuthRequestResponse;
+
+            if (!identityToken) {
+                throw new Error('Apple Sign-In failed - no identity token returned');
+            }
+
+            const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
+            await signInWithCredential(auth, appleCredential);
+
+            const user = auth.currentUser;
+            if (user) {
+                user.getIdToken().then((idToken) => {
+                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${idToken}`,
+                        },
+                        body: JSON.stringify({
+                            fullName: user.displayName || '',
+                            email: user.email
+                        }),
+                    })
+                })
+            }
+
+            console.log('Signed in with Apple credential!');
+            if (onNavigateToLanding) {
+                onNavigateToLanding();
+            }
+        }
+        catch (error) {
+            console.error('Error during Apple sign-in:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Apple sign-in failed',
+                text2: error.message,
+            });
         }
     }
 
@@ -438,7 +496,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
                                 <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignUp}>
                                     <Ionicons name="logo-google" size={24} color="#DB4437" />
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.socialButton}>
+                                <TouchableOpacity style={styles.socialButton} onPress={handleAppleSignUp}>
                                     <Ionicons name="logo-apple" size={24} color="#000" />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.socialButton} onPress={handleFacebookSignUp}>

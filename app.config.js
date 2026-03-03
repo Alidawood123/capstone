@@ -2,7 +2,7 @@ export default ({config}) => {
     return {
             ...config,
             expo: {
-                name: "my-app",
+                name: "Arc Wellness",
                 slug: "betterhelp-test",
                 version: "1.0.0",
                 orientation: "portrait",
@@ -20,6 +20,9 @@ export default ({config}) => {
                     supportsTablet: true,
                     infoPlist: {
                         ITSAppUsesNonExemptEncryption: false
+                    },
+                    entitlements: {
+                        "com.apple.developer.applesignin": ["Default"]
                     }
                 },
                 android: {
