@@ -13,6 +13,23 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { getAuth } from '@react-native-firebase/auth';
 
+import {
+    saveFullName,
+    saveDob,
+
+    addDailyGoal,
+    toggleDailyGoal,
+    deleteDailyGoal,
+
+    addMonthlyGoal,
+    toggleMonthlyGoal,
+    deleteMonthlyGoal,
+
+    addYearlyGoal,
+    toggleYearlyGoal,
+    deleteYearlyGoal,
+} from '../../services/profileService';
+
 const BLUE = '#00b4d8';
 const GRAY = '#9ca3af';
 const LIGHT_BLUE = '#e0f7fc';
@@ -294,7 +311,9 @@ export default function FitnessProfileContent() {
                     setMeasurement(m.bodyType, m.measurementValue.toString());
                 });
 
-                setDaily(data.dailyGoals);
+                data.dailyGoals.forEach(goal => {
+                    setDaily((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                })
                 setMonthly(data.monthlyGoals);
                 setYearly(data.yearlyGoals);
                 setDefaultRest(data.defaultRestTimer);
@@ -311,43 +330,70 @@ export default function FitnessProfileContent() {
 
     const handleSaveFullName = async (newName) => {
         setName(newName);
-        if(newName === "")
-            return;
-
-        console.log('Saving full name:', newName);
-
-        // Save full name to backend
-        fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/update-name', {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${await user.getIdToken()}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ newName: newName })
-        }).then(res => res.json()).then(data => {
-            console.log('Full name updated successfully:', data);
-        }).catch(err => {
-            console.error('Failed to update full name:', err);
-        });
+        saveFullName(user, newName);
     };
 
     const handleSaveDob = async (newDob) => {
         setDob(newDob);
-        if(newDob === "") return;
+        saveDob(user, newDob);
+    };
 
-        fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/update-date-of-birth', {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${await user.getIdToken()}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ newDateOfBirth: newDob })
-        }).then(res => res.json()).then(data => {
-            console.log('Date of birth updated successfully:', data);
-        }).catch(err => {
-            console.error('Failed to update date of birth:', err);
+    const handleAddDailyGoal = async (goal) => {
+        addDailyGoal(user, goal, setDaily);
+    };
+
+    const handleToggleDailyGoal = async (index) => {
+        setDaily((prev) => {
+            const updated = [...prev];
+            updated[index].done = !updated[index].done;
+
+            toggleDailyGoal(user, updated[index]);
+
+            return updated;
         });
     };
+
+    const handleDeleteDailyGoal = async (index) => {
+        deleteDailyGoal(user, daily[index].id, setDaily);
+    }
+
+    const handleAddMonthlyGoal = async (goal) => {
+        addMonthlyGoal(user, goal, setMonthly);
+    };
+
+    const handleToggleMonthlyGoal = async (index) => {
+        setMonthly((prev) => {
+            const updated = [...prev];
+            updated[index].done = !updated[index].done;
+
+            toggleMonthlyGoal(user, updated[index]);
+
+            return updated;
+        });
+    };
+
+    const handleDeleteMonthlyGoal = async (index) => {
+        deleteMonthlyGoal(user, monthly[index].id, setMonthly);
+    }
+
+    const handleAddYearlyGoal = async (goal) => {
+        addYearlyGoal(user, goal, setYearly);
+    };
+
+    const handleToggleYearlyGoal = async (index) => {
+        setYearly((prev) => {
+            const updated = [...prev];
+            updated[index].done = !updated[index].done;
+
+            toggleYearlyGoal(user, updated[index]);
+
+            return updated;
+        });
+    };
+
+    const handleDeleteYearlyGoal = async (index) => {
+        deleteYearlyGoal(user, yearly[index].id, setYearly);
+    }
 
     return (
         <ScrollView
@@ -418,25 +464,25 @@ export default function FitnessProfileContent() {
                 <GoalGroup
                     label="Daily Goals"
                     goals={daily}
-                    onAdd={(t) => addGoal(setDaily, t)}
-                    onToggle={(i) => toggleGoal(setDaily, i)}
-                    onDelete={(i) => deleteGoal(setDaily, i)}
+                    onAdd={(t) => handleAddDailyGoal(t)}
+                    onToggle={(i) => handleToggleDailyGoal(i)}
+                    onDelete={(i) => handleDeleteDailyGoal(i)}
                 />
                 <View style={styles.divider} />
                 <GoalGroup
                     label="Monthly Goals"
                     goals={monthly}
-                    onAdd={(t) => addGoal(setMonthly, t)}
-                    onToggle={(i) => toggleGoal(setMonthly, i)}
-                    onDelete={(i) => deleteGoal(setMonthly, i)}
+                    onAdd={(t) => handleAddMonthlyGoal(t)}
+                    onToggle={(i) => handleToggleMonthlyGoal(i)}
+                    onDelete={(i) => handleDeleteMonthlyGoal(i)}
                 />
                 <View style={styles.divider} />
                 <GoalGroup
                     label="Yearly Resolutions"
                     goals={yearly}
-                    onAdd={(t) => addGoal(setYearly, t)}
-                    onToggle={(i) => toggleGoal(setYearly, i)}
-                    onDelete={(i) => deleteGoal(setYearly, i)}
+                    onAdd={(t) => handleAddYearlyGoal(t)}
+                    onToggle={(i) => handleToggleYearlyGoal(i)}
+                    onDelete={(i) => handleDeleteYearlyGoal(i)}
                 />
             </Section>
 
