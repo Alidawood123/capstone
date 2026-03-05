@@ -33,7 +33,6 @@ export default function NavigatePage({ page, setPage }) {
                     onNavigateToSignIn={navigateToSignIn}
                     onNavigateToLanding={navigateToLanding}
                 />
-                <Toast />
             </>;
 
         case 'landing':
@@ -45,7 +44,6 @@ export default function NavigatePage({ page, setPage }) {
                     onNavigateToTrophy={navigateToTrophy}
                     onNavigateToSettings={navigateToSettings}
                 />
-                <Toast />
             </>;
 
         case 'fitness':
@@ -66,7 +64,6 @@ export default function NavigatePage({ page, setPage }) {
                     onNavigateToSignUp={navigateToSignUp}
                     onNavigateToLanding={navigateToLanding}
                 />
-                <Toast />
             </>;    
     }
 }

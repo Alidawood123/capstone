@@ -5,6 +5,7 @@ import NavigatePage from './src/components/NavigatePages';
 
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { Settings } from 'react-native-fbsdk-next';
+import Toast from 'react-native-toast-message';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('signin');
@@ -19,6 +20,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigatePage page={currentPage} setPage={setCurrentPage} />
+      <Toast />
     </SafeAreaProvider>
   );
 }

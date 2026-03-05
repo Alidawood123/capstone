@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     View,
@@ -10,6 +10,8 @@ import {
     Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+import { getAuth } from '@react-native-firebase/auth';
 
 const BLUE = '#00b4d8';
 const GRAY = '#9ca3af';
@@ -175,6 +177,8 @@ const MEASUREMENT_FIELDS = [
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function FitnessProfileContent() {
+    const auth = getAuth();
+    const user = auth.currentUser;
 
     // ── Collapsible sections ───────────────────────────────────────────────────
     // FIX: collapsed state and toggleSection are defined here and passed
@@ -259,7 +263,91 @@ export default function FitnessProfileContent() {
         );
     };
 
+    useEffect(() => {
+        // Load profile data from backend
 
+        async function loadBasicProfile() {
+            fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/basic-profile', {
+                headers: {
+                    'Authorization': `Bearer ${await user.getIdToken()}`, 
+                }
+            }).then(res => res.json()).then(data => {
+                setName(data.fullName);
+                setDob(data.dateOfBirth);
+            }).catch(err => {
+                console.error('Failed to load profile:', err);
+            });
+        };
+
+        async function loadFullProfile() {
+            fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/full-profile', {
+                headers: {
+                    'Authorization': `Bearer ${await user.getIdToken()}`, 
+                }
+            }).then(res => res.json()).then(data => {
+                console.log(data)
+
+                setName(data.fullName);
+                setDob(new Date(data.dateOfBirth).toLocaleDateString());
+                
+                data.bodyMeasurements.forEach(m => {
+                    setMeasurement(m.bodyType, m.measurementValue.toString());
+                });
+
+                setDaily(data.dailyGoals);
+                setMonthly(data.monthlyGoals);
+                setYearly(data.yearlyGoals);
+                setDefaultRest(data.defaultRestTimer);
+
+                console.log(measurements)
+            }).catch(err => {
+                console.error('Failed to load full profile:', err);
+            });
+        };
+
+        loadFullProfile();
+
+    }, []);
+
+    const handleSaveFullName = async (newName) => {
+        setName(newName);
+        if(newName === "")
+            return;
+
+        console.log('Saving full name:', newName);
+
+        // Save full name to backend
+        fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/update-name', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${await user.getIdToken()}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ newName: newName })
+        }).then(res => res.json()).then(data => {
+            console.log('Full name updated successfully:', data);
+        }).catch(err => {
+            console.error('Failed to update full name:', err);
+        });
+    };
+
+    const handleSaveDob = async (newDob) => {
+        setDob(newDob);
+        if(newDob === "") return;
+
+        fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/update-date-of-birth', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${await user.getIdToken()}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ newDateOfBirth: newDob })
+        }).then(res => res.json()).then(data => {
+            console.log('Date of birth updated successfully:', data);
+        }).catch(err => {
+            console.error('Failed to update date of birth:', err);
+        });
+    };
 
     return (
         <ScrollView
@@ -272,13 +360,13 @@ export default function FitnessProfileContent() {
                 <LabeledInput
                     label="Full Name"
                     value={name}
-                    onChangeText={setName}
+                    onChangeText={newName => handleSaveFullName(newName)}
                     placeholder="Your name"
                 />
                 <LabeledInput
                     label="Date of Birth"
                     value={dob}
-                    onChangeText={setDob}
+                    onChangeText={newText => handleSaveDob(newText)}
                     placeholder="MM/DD/YYYY"
                     keyboardType="numbers-and-punctuation"
                 />
