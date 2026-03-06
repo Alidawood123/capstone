@@ -30,7 +30,11 @@ export default function FitnessHistoryContent() {
     useEffect(() => {
         loadWorkouts();
     }, [loadWorkouts]);
-
+    
+    useEffect(() => {
+        console.log(JSON.stringify(workoutHistory, null, 2));
+    }, [workoutHistory]);
+    
     if (loading) {
         return (
             <View style={[styles.content, styles.centered]}>

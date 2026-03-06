@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import NavigatePage from './src/components/NavigatePages';
 
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -17,8 +18,10 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <NavigatePage page={currentPage} setPage={setCurrentPage} />
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <NavigatePage page={currentPage} setPage={setCurrentPage} />
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
