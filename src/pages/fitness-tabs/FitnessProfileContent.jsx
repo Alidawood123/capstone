@@ -16,6 +16,7 @@ import { getAuth } from '@react-native-firebase/auth';
 import {
     saveFullName,
     saveDob,
+    saveMeasurements,
 
     addDailyGoal,
     toggleDailyGoal,
@@ -302,7 +303,7 @@ export default function FitnessProfileContent() {
                     'Authorization': `Bearer ${await user.getIdToken()}`, 
                 }
             }).then(res => res.json()).then(data => {
-                console.log(data)
+                // console.log(data)
 
                 setName(data.fullName);
                 setDob(new Date(data.dateOfBirth).toLocaleDateString());
@@ -314,11 +315,15 @@ export default function FitnessProfileContent() {
                 data.dailyGoals.forEach(goal => {
                     setDaily((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
                 })
-                setMonthly(data.monthlyGoals);
-                setYearly(data.yearlyGoals);
+                data.monthlyGoals.forEach(goal => {
+                    setMonthly((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                });
+                data.yearlyGoals.forEach(goal => {
+                    setYearly((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                });
                 setDefaultRest(data.defaultRestTimer);
 
-                console.log(measurements)
+                // console.log(measurements)
             }).catch(err => {
                 console.error('Failed to load full profile:', err);
             });
@@ -337,6 +342,14 @@ export default function FitnessProfileContent() {
         setDob(newDob);
         saveDob(user, newDob);
     };
+
+    const handleSaveMeasurement = (key, value) => {
+        setMeasurements((prev) => {
+            const updated = { ...prev, [key]: value };
+            saveMeasurements(user, updated);
+            return updated;
+        });
+    }
 
     const handleAddDailyGoal = async (goal) => {
         addDailyGoal(user, goal, setDaily);
@@ -452,7 +465,7 @@ export default function FitnessProfileContent() {
                         key={f.key}
                         label={f.label}
                         value={measurements[f.key] ?? ''}
-                        onChangeText={(v) => setMeasurement(f.key, v)}
+                        onChangeText={(v) => handleSaveMeasurement(f.key, v)}
                         keyboardType="decimal-pad"
                         suffix={f.type === 'weight' ? weightUnit : sizeUnit}
                     />

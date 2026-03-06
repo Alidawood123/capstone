@@ -36,6 +36,30 @@ export const saveDob = async (user, newDob) => {
     });
 };
 
+export const saveMeasurements = async (user, measurements) => {
+    if (!measurements || Object.keys(measurements).length === 0) return;
+
+    console.log(measurements);
+
+    try {
+        const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/body-measurements/update', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${await user.getIdToken()}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ bodyMeasurements: Object.entries(measurements).map(([key, value]) => ({ bodyType: key, measurementValue: parseFloat(value) })) })
+        });
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        console.log('Body measurements updated successfully');
+    } catch (err) {
+        console.error('Failed to update body measurements:', err);
+    }
+};
+
 export const addDailyGoal = async (user, goal, setDailyGoalFunc) => {
     fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/daily-goals/add', {
         method: 'POST',
