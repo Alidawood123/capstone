@@ -18,9 +18,14 @@ import EmptyWorkoutContent from '../components/fitness/home/EmptyWorkoutContent'
 import FitnessNavigationBar from '../components/fitness/FitnessNavigationBar';
 import { addTemplate } from '../services/templateStorage';
 
+import { getAuth } from '@react-native-firebase/auth';
+
 const BLUE = '#00b4d8';
 
 export default function FitnessPage({ onNavigateToLanding }) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
     const [activeTab, setActiveTab] = useState('home');
     const [fitnessScreen, setFitnessScreen] = useState('tabs');
     const [workoutInitialData, setWorkoutInitialData] = useState(null);
@@ -89,7 +94,7 @@ export default function FitnessPage({ onNavigateToLanding }) {
                             onAddExercises={() => {}}
                             onCancelWorkout={() => setFitnessScreen('tabs')}
                             onSaveTemplate={async (t) => {
-                                await addTemplate(t);
+                                await addTemplate(user, t);
                                 setFitnessScreen('tabs');
                                 setActiveTab('templates');
                             }}

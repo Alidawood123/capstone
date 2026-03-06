@@ -24,6 +24,8 @@ import {
 import { addUserExercise, deleteUserExercise } from '../../../services/userExerciseService';
 import { addWorkout } from '../../../services/workoutStorage';
 
+import { getAuth } from '@react-native-firebase/auth';
+
 const BLUE = '#00b4d8';
 const GREEN = '#22c55e';
 const SWIPE_DELETE_WIDTH = 72;
@@ -194,6 +196,9 @@ export default function EmptyWorkoutContent({
     initialExercises,
     onSaveTemplate,
 }) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
     const isTemplateMode = mode === 'template';
     const [workoutTitle, setWorkoutTitle] = useState(
         isTemplateMode ? 'Untitled template' : 'Untitled Workout'
@@ -524,12 +529,12 @@ export default function EmptyWorkoutContent({
         try {
             const workout = {
                 title: workoutTitle,
-                date: startDate.toISOString(),
+                date: startDate.toLocaleDateString(),
                 durationSeconds: elapsedSeconds,
-                completedAt: new Date().toISOString(),
+                completedAt: new Date().toLocaleDateString(),
                 exercises: addedItems,
             };
-            await addWorkout(workout);
+            await addWorkout(user, workout);
             if (onCancelWorkout) onCancelWorkout();
         } catch (error) {
             console.error('Failed to save workout:', error);
