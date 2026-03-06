@@ -6,15 +6,22 @@ import FitnessHistoryCard from './FitnessHistoryCard';
 const GREEN = '#22c55e';
 const BLUE = '#2563eb';
 
+function toLocalDateString(date) {
+    const d = new Date(date);
+    const offset = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - offset * 60 * 1000);
+    return local.toISOString().split("T")[0];
+}
+
 export default function FitnessHistoryCalendar({ workoutHistory = [], onRefresh }) {
     const [selectedDate, setSelectedDate] = useState(null);
 
     const markedDates = useMemo(() => {
         const marks = {};
-        const hasWorkout = new Set(workoutHistory.map((w) => w.isoDate).filter(Boolean));
+        const hasWorkout = new Set(workoutHistory.map((w) => toLocalDateString(w.date)).filter(Boolean));
 
-        hasWorkout.forEach((isoDate) => {
-            marks[isoDate] = { marked: true, dotColor: GREEN };
+        hasWorkout.forEach((date) => {
+            marks[date] = { marked: true, dotColor: GREEN };
         });
 
         if (selectedDate) {
@@ -29,7 +36,7 @@ export default function FitnessHistoryCalendar({ workoutHistory = [], onRefresh 
     }, [workoutHistory, selectedDate]);
 
     const selectedWorkouts = useMemo(() => {
-        return workoutHistory.filter((w) => w.isoDate === selectedDate);
+        return workoutHistory.filter((w) => toLocalDateString(w.date) === selectedDate);
     }, [workoutHistory, selectedDate]);
 
     return (

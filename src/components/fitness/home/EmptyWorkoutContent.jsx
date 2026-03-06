@@ -529,9 +529,9 @@ export default function EmptyWorkoutContent({
         try {
             const workout = {
                 title: workoutTitle,
-                date: startDate.toLocaleDateString(),
+                date: startDate.toISOString(),
                 durationSeconds: elapsedSeconds,
-                completedAt: new Date().toLocaleDateString(),
+                completedAt: new Date().toISOString(),
                 exercises: addedItems,
             };
             await addWorkout(user, workout);
