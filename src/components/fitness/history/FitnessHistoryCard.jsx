@@ -59,18 +59,38 @@ export default function FitnessHistoryCard({ workout }) {
 
     const miniStat = [
         { icon: "time-outline", text: `${length}` },
-        { icon: "barbell-outline", text: `${totalSets} sets` },
+        { icon: "barbell-outline", text: `${totalSets} exercises` },
         { icon: "stats-chart-outline", text: `${totalLbs} lbs total` }
     ];
 
     const workoutItem = workoutItems[0];
     
 
-
+// Implement Backend Logic Functions
     
-    const removeWorkout = (WorkoutID) => {
-        console.log(`Removing ${WorkoutID}`)
+    const handleRemoveWorkout = () => {
+        const workoutId = workout?.id;
+        
+        // Backend Remove Workout Goes Here
+        // removeWorkout(workoutId);
 
+        console.log(`Removing ${workout.title}`);
+        
+        setEditOpen(false);
+    }
+
+
+    function handleSaveWorkout(updatedWorkout) {
+        const workoutId = updatedWorkout?.id;
+
+        console.log("Saving workout:", workoutId);
+        console.log("Saving workout:", updatedWorkout.title);
+        console.log(updatedWorkout);
+        console.log(JSON.stringify(updatedWorkout, null, 2));
+        // Backend Update Workout Goes Here
+        // updateWorkout(workoutId, updatedWorkout);
+
+        setEditOpen(false);
     }
 
     const displayActions = () => (
@@ -79,7 +99,7 @@ export default function FitnessHistoryCard({ workout }) {
                 <Ionicons name="pencil-outline" size={20} color="#fff" />
             </Pressable>
 
-            <Pressable style={[styles.actionBtn, styles.deleteBtn]} onPress={() => removeWorkout(workout.title)}>
+            <Pressable style={[styles.actionBtn, styles.deleteBtn]} onPress={handleRemoveWorkout}>
                 <Ionicons name="trash-outline" size={20} color="#fff" />
             </Pressable>
         </View>
@@ -88,12 +108,7 @@ export default function FitnessHistoryCard({ workout }) {
     return (
 
         <View style={styles.swipeWrap}>
-            <Swipeable
-                renderRightActions={displayActions}
-                overshootRight={true}
-                overshootFriction={8}
-                rightThreshold={100}
-            >
+            <Swipeable renderRightActions={displayActions} overshootRight={true} overshootFriction={8} rightThreshold={100} >
                 <View style={styles.root}>
                     <View style={styles.titleRow}>
                         <Ionicons name="barbell-outline" size={24} color="#111" />
@@ -139,10 +154,10 @@ export default function FitnessHistoryCard({ workout }) {
                             open={editOpen}
                             onClose={() => setEditOpen(false)}
                             workout={workout}
-                            onSave={(updated) => {setEditOpen(false);}}
+                            saveWorkout={handleSaveWorkout}
+                            removeWorkout={handleRemoveWorkout}
                             miniStat={miniStat}
                         />
-
                     </View>
                 </View>
             </Swipeable>
@@ -238,27 +253,27 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
     miniStatRow: {
-  flexDirection: "row",
-  flexWrap: "wrap",
-  gap: 8,
-  paddingVertical: 12,
-},
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 8,
+        paddingVertical: 12,
+    },
 
-chip: {
-  flexDirection: "row",
-  alignItems: "center",
-  gap: 6,
-  backgroundColor: "#f3f4f6",
-  paddingHorizontal: 10,
-  paddingVertical: 6,
-  borderRadius: 999,
-},
+    chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#f3f4f6",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    },
 
-chipText: {
-  color: "#111",
-  fontSize: 13,
-  fontWeight: "600",
-},
+    chipText: {
+    color: "#111",
+    fontSize: 13,
+    fontWeight: "600",
+    },
 
 });
 

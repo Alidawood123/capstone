@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -14,20 +14,62 @@ function fmtSetValue(set) {
     return "—";
 }
 
-export default function EditExerciseCard({ exerciseObj, defaultOpen = false, onToggleSetComplete, onUpdateSet, onAddSet, onRemoveSet, onRemoveExercise}) {
+
+
+
+export default function EditExerciseCard({ removeExercise, exerciseObj, defaultOpen = false}) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const [editingSetIndex, setEditingSetIndex] = useState(null);
 
     const name = exerciseObj?.exercises?.[0]?.title || "Exercise";
-    const sets = Array.isArray(exerciseObj?.sets) ? exerciseObj.sets : [];
-    const completedSets = sets.filter((s) => s?.completed).length;
 
-    const renderSetRightActions = (setIndex) => (
-        <Pressable style={styles.removeSetAction} onPress={() => onRemoveSet?.(exerciseObj, setIndex)}>
-            <Ionicons name="trash-outline" size={18} color="#fff" />
-            <Text style={styles.removeSetActionText}>Remove</Text>
-        </Pressable>
-    );
+    const [sets, setSets] = useState(
+        Array.isArray(exerciseObj?.sets) ? exerciseObj.sets : []
+    );    const completedSets = sets.filter((s) => s?.completed).length;
+
+
+    function defaultSet() {
+        return { weight: "", reps: "", time: "", completed: false };
+    }
+
+    function removeSet(index) {
+        const updatedSets = sets.filter((_, i) => i !== index);
+
+        setSets(updatedSets);
+        exerciseObj.sets = updatedSets;
+    }
+
+    function updateSet(index, field, value) {
+        const updatedSets = sets.map((s, i) =>
+            i === index ? { ...s, [field]: value } : s
+        );
+
+        setSets(updatedSets);
+        exerciseObj.sets = updatedSets;
+    }
+
+    function completeSet(index) {
+        const updatedSets = sets.map((s, i) =>
+            i === index ? { ...s, completed: !s.completed } : s
+        );
+
+        setSets(updatedSets);
+        exerciseObj.sets = updatedSets;
+    }
+    function handleRemoveExercise() {
+        removeExercise(exerciseObj.id);
+    }
+
+
+    function addSet() {
+        setSets((prev) => {
+            const newIndex = prev.length;
+            setEditingSetIndex(newIndex);
+            return [...prev, defaultSet()];
+        });
+    }
+
+
 
     return (
         <View style={styles.exerciseCard}>
@@ -36,11 +78,7 @@ export default function EditExerciseCard({ exerciseObj, defaultOpen = false, onT
                     {name} ({completedSets}/{sets.length})
                 </Text>
 
-                <Ionicons
-                    name={isOpen ? "chevron-up" : "chevron-down"}
-                    size={18}
-                    color="#374151"
-                />
+                <Ionicons name={isOpen ? "chevron-up" : "chevron-down"} size={18} color="#374151" />
             </Pressable>
 
             {isOpen && (
@@ -55,17 +93,17 @@ export default function EditExerciseCard({ exerciseObj, defaultOpen = false, onT
 
                                     <View style={styles.setActions}>
                                         {/* Complete Set */}
-                                        <Pressable style={[styles.iconBtn, s?.completed && styles.iconBtnDone]} onPress={() => onToggleSetComplete?.(exerciseObj, i)}>
+                                        <Pressable style={[styles.iconBtn, s?.completed && styles.iconBtnDone]} onPress={() => completeSet(i)}>
                                             <Ionicons name={s?.completed ? "checkmark-circle" : "ellipse-outline"} size={18} color={s?.completed ? "#16a34a" : "#6b7280"} />
                                         </Pressable>
                                         
-                                        {/* Edit Set */}
+                                        {/* Opens Set Values */}
                                         <Pressable style={styles.iconBtn} onPress={() => setEditingSetIndex(isEditing ? null : i)}>
                                             <Ionicons name={isEditing ? "chevron-up-outline" : "create-outline"} size={18} color="#374151" />
                                         </Pressable>
 
                                         {/* Remove Set */}
-                                        <Pressable style={styles.iconBtn} onPress={() => onRemoveSet?.(exerciseObj, i)}>
+                                        <Pressable style={styles.iconBtn} onPress={() => removeSet(i)}>
                                             <Ionicons name="trash-outline" size={18} color="#dc2626" />
                                         </Pressable>
                                     </View>
@@ -79,24 +117,18 @@ export default function EditExerciseCard({ exerciseObj, defaultOpen = false, onT
                                 ) : (
                                     <View style={styles.editBox}>
                                         <View style={styles.inputGroup}>
-                                            <Text style={styles.inputLabel}>Weight</Text>
-                                            <TextInput
-                                                style={styles.input}
-                                                value={String(s?.weight ?? "")}
-                                                keyboardType="numeric"
-                                                placeholder="0"
-                                                onChangeText={(text) => onUpdateSet?.(exerciseObj, i, { weight: text })}
+                                            <Text style={styles.inputLabel}>Weight (lbs)</Text>
+                                            <TextInput style={styles.input} value={String(s?.weight ?? "")}
+                                                keyboardType="numeric" placeholder="0"
+                                                onChangeText={(text) => updateSet(i, "weight", text)}
                                             />
                                         </View>
 
                                         <View style={styles.inputGroup}>
                                             <Text style={styles.inputLabel}>Reps</Text>
-                                            <TextInput
-                                                style={styles.input}
-                                                value={String(s?.reps ?? "")}
-                                                keyboardType="numeric"
-                                                placeholder="0"
-                                                onChangeText={(text) => onUpdateSet?.(exerciseObj, i, { reps: text })}
+                                            <TextInput style={styles.input} value={String(s?.reps ?? "")}
+                                                keyboardType="numeric" placeholder="0"
+                                                onChangeText={(text) => updateSet(i, "reps", text)}
                                             />
                                         </View>
                                     </View>
@@ -107,13 +139,13 @@ export default function EditExerciseCard({ exerciseObj, defaultOpen = false, onT
 
                     <View style={styles.bottomActions}>
                         {/* Add Set */}
-                        <Pressable style={styles.addBtn} onPress={() => onAddSet?.(exerciseObj)}>
+                        <Pressable style={styles.addBtn} onPress={() => addSet()}>
                             <Ionicons name="add" size={18} color="#111" />
                             <Text style={styles.addBtnText}>Add Set</Text>
                         </Pressable>
 
                         {/* Remove Exercise */}
-                        <Pressable style={styles.removeExerciseBtn} onPress={() => onRemoveExercise?.(exerciseObj)}>
+                        <Pressable style={styles.removeExerciseBtn} onPress={handleRemoveExercise}>
                             <Ionicons name="trash-outline" size={18} color="#fff" />
                             <Text style={styles.removeExerciseText}>Remove Exercise</Text>
                         </Pressable>

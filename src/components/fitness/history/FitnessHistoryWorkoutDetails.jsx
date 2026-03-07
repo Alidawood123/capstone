@@ -21,7 +21,7 @@ export default function WorkoutDetailsFrame({ open, onClose, workout, miniStat})
         day: "numeric",
         year: "numeric"
     });
-
+    
 
 
     return (
@@ -85,11 +85,13 @@ export default function WorkoutDetailsFrame({ open, onClose, workout, miniStat})
 
                     {/* Notes */}
                         <View style={styles.notesRow}>
-                            <Text style={styles.notesLabel}>Workout Notes</Text>
-                            <View style={styles.notesRight}>
-                                <Ionicons name="pencil-outline" size={18} color="#111" />
-                                <Text style={styles.notesAdd}>Add</Text>
-                            </View>
+                            <Text style={{color: "#6b7280", fontWeight: "700"}}>Workout Notes</Text>
+                        </View>
+
+                        <View style={styles.notesBox}>
+                            <Text style={styles.notesTextDisplay}>
+                                {workout?.notes?.trim() ? workout.notes : ""}
+                            </Text>
                         </View>
                     </ScrollView>
                 </Pressable>
@@ -159,9 +161,21 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
     },
-    notesLabel: { color: "#6b7280", fontWeight: "700" },
-    notesRight: { flexDirection: "row", alignItems: "center", gap: 6 },
-    notesAdd: { color: "#111", fontWeight: "700" },
+
+    notesBox: {
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: "#e5e7eb",
+        borderRadius: 12,
+        padding: 12,
+        backgroundColor: "#fafafa",
+    },
+
+    notesTextDisplay: {
+        fontSize: 14,
+        color: "#374151",
+        lineHeight: 20,
+    },
 });
 
 /* 
