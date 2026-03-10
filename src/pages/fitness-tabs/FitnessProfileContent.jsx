@@ -271,6 +271,7 @@ function ImportModal({ visible, onClose, onImport }) {
 export default function FitnessProfileContent() {
     const auth = getAuth();
     const user = auth.currentUser;
+    const [authToken, setAuthToken] = useState();
 
     // ── Collapsible sections ───────────────────────────────────────────────────
     // FIX: collapsed state and toggleSection are defined here and passed
@@ -330,15 +331,37 @@ export default function FitnessProfileContent() {
             }
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsMultipleSelection: true,
+                allowsMultipleSelection: false,
                 quality: 0.8,
             });
             if (!result.canceled) {
-                const newPics = result.assets.map((a) => ({
+                const { fileName, fileSize, uri } = result.assets[0];
+                const nameParts = fileName.split('.');
+                const fileType = nameParts[nameParts.length - 1];
+                const formData = new FormData();
+                formData.append('progressPicture', {
+                    uri: uri,
+                    name: `progress_${Date.now()}.${fileType}`,
+                    size: fileSize,
+                    type: `image/${fileType}`,
+                });
+
+                const newPic = result.assets.map((a) => ({
                     uri: a.uri,
                     date: new Date().toLocaleDateString(),
                 }));
-                setPictures((prev) => [...prev, ...newPics]);
+                fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/upload-progress-picture', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${await user.getIdToken()}`,
+                    },
+                    body: formData,
+                }).then(() => {
+                    console.log('Photo uploaded successfully');
+                }).catch((err) => {
+                    Alert.alert('Error', err.message)
+                });
+                setPictures((prev) => [...prev, newPic]);
             }
         } catch (e) {
             Alert.alert('Error', e.message);
@@ -354,10 +377,33 @@ export default function FitnessProfileContent() {
             }
             const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
             if (!result.canceled) {
-                setPictures((prev) => [
-                    ...prev,
-                    { uri: result.assets[0].uri, date: new Date().toLocaleDateString() },
-                ]);
+                const { fileName, fileSize, uri } = result.assets[0];
+
+                console.log(result.assets[0]);
+
+                const nameParts = fileName.split('.');
+                const fileType = nameParts[nameParts.length - 1];
+                const formData = new FormData();
+                formData.append('progressPicture', {
+                    uri: uri,
+                    name: `progress_${Date.now()}.${fileType}`,
+                    size: fileSize,
+                    type: `image/${fileType}`,
+                });
+
+                fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/upload-progress-picture', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${await user.getIdToken()}`,
+                    },
+                    body: formData,
+                }).then(() => {
+                    console.log('Photo uploaded successfully');
+                }).catch((err) => {
+                    Alert.alert('Error', err.message);
+                });
+
+                setPictures((prev) => [...prev, { uri: result.assets[0].uri, date: new Date().toLocaleDateString() }]);
             }
         } catch (e) {
             Alert.alert('Error', e.message);
@@ -365,8 +411,31 @@ export default function FitnessProfileContent() {
     };
 
     const removePicture = (i) => {
+        const selectedPicture = pictures[i];
+
+        if (!selectedPicture?.uri) {
+            Alert.alert('Error', 'Could not find the selected photo.');
+            return;
+        }
+
         Alert.alert('Remove Photo', 'Delete this progress photo?', [
-            { text: 'Delete', style: 'destructive', onPress: () => setPictures((p) => p.filter((_, idx) => idx !== i)) },
+            { text: 'Delete', style: 'destructive', onPress: () => 
+                {
+                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/delete-progress-picture?pictureUrl=' + encodeURIComponent(selectedPicture.uri) + '&pictureId=' + encodeURIComponent(selectedPicture.id), {
+                        method: 'delete',
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`,
+                        }
+                    }).then(() => {
+                        console.log('Photo deleted successfully');
+                        setPictures((prev) => prev.filter((_, idx) => idx !== i));
+
+                    }).catch((err) => {
+                        Alert.alert('Error', err.message);
+                    });
+
+                }
+            },
             { text: 'Cancel', style: 'cancel' },
         ]);
     };
@@ -437,14 +506,12 @@ export default function FitnessProfileContent() {
         }
     };
 
-    const initials = name.trim()
-        ? name.trim().split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
-        : '?';
-
     useEffect(() => {
 
         // Load profile data from backend
         async function loadFullProfile() {
+            setAuthToken(await user.getIdToken());
+
             fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/full-profile', {
                 headers: {
                     'Authorization': `Bearer ${await user.getIdToken()}`, 
@@ -462,15 +529,22 @@ export default function FitnessProfileContent() {
                 data.dailyGoals.forEach(goal => {
                     setDaily((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
                 })
+
                 data.monthlyGoals.forEach(goal => {
                     setMonthly((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
                 });
+
                 data.yearlyGoals.forEach(goal => {
                     setYearly((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
                 });
-                setDefaultRest(data.defaultRestTimer);
 
-                // console.log(measurements)
+                data.progressPictures.forEach(picURL => {
+                    console.log(picURL);
+                    const parseURL = process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/download-progress-picture?pictureUrl=' + picURL.url;
+                    setPictures((prev) => [...prev, { id: picURL._id, uri: parseURL, date: picURL.date }]);
+                })
+
+                setDefaultRest(data.defaultRestTimer);
             }).catch(err => {
                 console.error('Failed to load full profile:', err);
             });
@@ -666,14 +740,14 @@ export default function FitnessProfileContent() {
                             <Ionicons name="add-circle-outline" size={32} color={BLUE} />
                             <Text style={styles.addPictureLabel}>Add Photo</Text>
                         </TouchableOpacity>
-                        {pictures.map((pic, i) => (
+                        {pictures !== null && pictures.map((pic, i) => (
                             <TouchableOpacity
                                 key={i}
                                 onPress={() => removePicture(i)}
                                 activeOpacity={0.85}
                                 style={{ marginRight: 10 }}
                             >
-                                <Image source={{ uri: pic.uri }} style={styles.pictureThumbnail} resizeMode="cover" />
+                                <Image source={{ uri: pic.uri, headers: { Authorization: `Bearer ${authToken}` } }} style={styles.pictureThumbnail} resizeMode="cover" />
                                 <View style={styles.picDateBadge}>
                                     <Text style={styles.picDateText}>{pic.date}</Text>
                                 </View>
