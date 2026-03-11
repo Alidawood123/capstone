@@ -12,6 +12,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { getTemplates } from '../../services/templateStorage';
 
+import { getAuth } from '@react-native-firebase/auth';
+
 const BLUE = '#00b4d8';
 const GRAY = '#6b7280';
 
@@ -27,6 +29,9 @@ function formatRestDisplay(seconds) {
 }
 
 export default function FitnessTemplatesContent({ onUseTemplate }) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -35,7 +40,7 @@ export default function FitnessTemplatesContent({ onUseTemplate }) {
     const loadTemplates = useCallback(async () => {
         setLoading(true);
         try {
-            const list = await getTemplates();
+            const list = await getTemplates(user);
             setTemplates(list);
         } catch (error) {
             console.error('Failed to load templates:', error);
@@ -105,7 +110,7 @@ export default function FitnessTemplatesContent({ onUseTemplate }) {
                 >
                     {templates.map((template) => (
                         <TouchableOpacity
-                            key={template.id}
+                            key={template._id}
                             style={styles.templateRow}
                             onPress={() => openTemplateModal(template)}
                             activeOpacity={0.7}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     View,
@@ -8,14 +8,80 @@ import {
     ScrollView,
     Switch,
     Alert,
+    Share,
+    Modal,
+    Image
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+import * as ImagePicker from 'expo-image-picker';
+
+import { getAuth } from '@react-native-firebase/auth';
+
+import {
+    saveFullName,
+    saveDob,
+    saveMeasurements,
+
+    addDailyGoal,
+    toggleDailyGoal,
+    deleteDailyGoal,
+
+    addMonthlyGoal,
+    toggleMonthlyGoal,
+    deleteMonthlyGoal,
+
+    addYearlyGoal,
+    toggleYearlyGoal,
+    deleteYearlyGoal,
+} from '../../services/profileService';
+
+// ─── Theme ────────────────────────────────────────────────────────────────────
 const BLUE = '#00b4d8';
 const GRAY = '#9ca3af';
 const LIGHT_BLUE = '#e0f7fc';
 const BORDER = '#e5e7eb';
 const LIGHT_GRAY = '#f3f4f6';
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+const REST_PRESETS = [30, 60, 90, 120, 180, 300];
+const formatRest = (s) =>
+    s >= 60 ? `${Math.floor(s / 60)}m${s % 60 > 0 ? ` ${s % 60}s` : ''}` : `${s}s`;
+
+const MEASUREMENT_FIELDS = [
+    { key: 'weight',    label: 'Weight',    type: 'weight' },
+    { key: 'height',    label: 'Height',    type: 'size' },
+    { key: 'chest',     label: 'Chest',     type: 'size' },
+    { key: 'waist',     label: 'Waist',     type: 'size' },
+    { key: 'hips',      label: 'Hips',      type: 'size' },
+    { key: 'neck',      label: 'Neck',      type: 'size' },
+    { key: 'shoulders', label: 'Shoulders', type: 'size' },
+    { key: 'biceps',    label: 'Biceps',    type: 'size' },
+    { key: 'forearms',  label: 'Forearms',  type: 'size' },
+    { key: 'thighs',    label: 'Thighs',    type: 'size' },
+    { key: 'calves',    label: 'Calves',    type: 'size' },
+];
+
+// ─── CSV helpers ──────────────────────────────────────────────────────────────
+function buildCSV(rows) {
+    return rows
+        .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+}
+
+function parseCSV(text) {
+    const map = {};
+    for (const line of text.trim().split(/\r?\n/)) {
+        const m = line.match(/^"((?:[^"]|"")*)","((?:[^"]|"")*)"$/);
+        if (m) map[m[1].replace(/""/g, '"')] = m[2].replace(/""/g, '"');
+    }
+    return map;
+}
+
+const goalsFromPipe = (str) =>
+    str?.trim()
+        ? str.split(' | ').filter(Boolean).map((text) => ({ text, done: false }))
+        : [];
 
 // ─── Reusable sub-components ──────────────────────────────────────────────────
 
@@ -152,29 +218,60 @@ function Section({ id, icon, title, collapsed, toggleSection, children }) {
     );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-
-const REST_PRESETS = [30, 60, 90, 120, 180, 300];
-const formatRest = (s) =>
-    s >= 60 ? `${Math.floor(s / 60)}m${s % 60 > 0 ? ` ${s % 60}s` : ''}` : `${s}s`;
-
-const MEASUREMENT_FIELDS = [
-    { key: 'weight',    label: 'Weight',    type: 'weight' },
-    { key: 'height',    label: 'Height',    type: 'size' },
-    { key: 'chest',     label: 'Chest',     type: 'size' },
-    { key: 'waist',     label: 'Waist',     type: 'size' },
-    { key: 'hips',      label: 'Hips',      type: 'size' },
-    { key: 'neck',      label: 'Neck',      type: 'size' },
-    { key: 'shoulders', label: 'Shoulders', type: 'size' },
-    { key: 'biceps',    label: 'Biceps',    type: 'size' },
-    { key: 'forearms',  label: 'Forearms',  type: 'size' },
-    { key: 'thighs',    label: 'Thighs',    type: 'size' },
-    { key: 'calves',    label: 'Calves',    type: 'size' },
-];
+// ─── Import Modal ─────────────────────────────────────────────────────────────
+function ImportModal({ visible, onClose, onImport }) {
+    const [text, setText] = useState('');
+    const handleImport = () => {
+        if (!text.trim()) { Alert.alert('Empty Input', 'Please paste your CSV data first.'); return; }
+        onImport(text.trim());
+        setText('');
+    };
+    const handleClose = () => { setText(''); onClose(); };
+    return (
+        <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
+            <View style={styles.modalRoot}>
+                <View style={styles.modalHeader}>
+                    <Text style={styles.modalTitle}>Import from CSV</Text>
+                    <TouchableOpacity onPress={handleClose} style={styles.modalCloseBtn}>
+                        <Ionicons name="close" size={22} color={GRAY} />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.modalInstructions}>
+                    <Ionicons name="information-circle-outline" size={18} color={BLUE} />
+                    <Text style={styles.modalInstructionText}>
+                        Export your profile first, then copy the CSV text and paste it below to restore your data.
+                    </Text>
+                </View>
+                <TextInput
+                    style={styles.csvTextArea}
+                    value={text}
+                    onChangeText={setText}
+                    placeholder="Paste your exported CSV text here..."
+                    placeholderTextColor={GRAY}
+                    multiline
+                    autoCorrect={false}
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    textAlignVertical="top"
+                />
+                <TouchableOpacity style={styles.actionBtn} onPress={handleImport} activeOpacity={0.85}>
+                    <Ionicons name="cloud-upload-outline" size={20} color="#fff" />
+                    <Text style={styles.actionBtnText}>Import</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalCancelBtn} onPress={handleClose}>
+                    <Text style={styles.modalCancelBtnText}>Cancel</Text>
+                </TouchableOpacity>
+            </View>
+        </Modal>
+    );
+}
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function FitnessProfileContent() {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const [authToken, setAuthToken] = useState();
 
     // ── Collapsible sections ───────────────────────────────────────────────────
     // FIX: collapsed state and toggleSection are defined here and passed
@@ -214,13 +311,133 @@ export default function FitnessProfileContent() {
     const toggleGoal = (setter, i)    => setter((p) => p.map((g, idx) => idx === i ? { ...g, done: !g.done } : g));
     const deleteGoal = (setter, i)    => setter((p) => p.filter((_, idx) => idx !== i));
 
-    // ── Progress Pictures ──────────────────────────────────────────────────────
+    // ── Progress pictures ──────────────────────────────────────────────────────
     const [pictures, setPictures] = useState([]);
-    const handleAddPicture = () => {
-        Alert.alert(
-            'Progress Picture',
-            'Wire this up with expo-image-picker:\n\nconst result = await ImagePicker.launchImageLibraryAsync(...)'
-        );
+
+    const handleAddPictureMenu = () => {
+        Alert.alert('Add Progress Photo', 'Choose a source', [
+            { text: 'Take Photo',          onPress: handleTakePicture  },
+            { text: 'Choose from Library', onPress: handlePickPicture  },
+            { text: 'Cancel', style: 'cancel' },
+        ]);
+    };
+
+    const handlePickPicture = async () => {
+        try {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission needed', 'Please allow photo library access in Settings.');
+                return;
+            }
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsMultipleSelection: false,
+                quality: 0.8,
+            });
+            if (!result.canceled) {
+                const { fileName, fileSize, uri } = result.assets[0];
+                const nameParts = fileName.split('.');
+                const fileType = nameParts[nameParts.length - 1];
+                const formData = new FormData();
+                formData.append('progressPicture', {
+                    uri: uri,
+                    name: `progress_${Date.now()}.${fileType}`,
+                    size: fileSize,
+                    type: `image/${fileType}`,
+                });
+
+                const newPic = result.assets.map((a) => ({
+                    uri: a.uri,
+                    date: new Date().toLocaleDateString(),
+                }));
+                fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/upload-progress-picture', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${await user.getIdToken()}`,
+                    },
+                    body: formData,
+                }).then(() => {
+                    console.log('Photo uploaded successfully');
+                }).catch((err) => {
+                    Alert.alert('Error', err.message)
+                });
+                setPictures((prev) => [...prev, newPic]);
+            }
+        } catch (e) {
+            Alert.alert('Error', e.message);
+        }
+    };
+
+    const handleTakePicture = async () => {
+        try {
+            const { status } = await ImagePicker.requestCameraPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission needed', 'Please allow camera access in Settings.');
+                return;
+            }
+            const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
+            if (!result.canceled) {
+                const { fileName, fileSize, uri } = result.assets[0];
+
+                console.log(result.assets[0]);
+
+                const nameParts = fileName.split('.');
+                const fileType = nameParts[nameParts.length - 1];
+                const formData = new FormData();
+                formData.append('progressPicture', {
+                    uri: uri,
+                    name: `progress_${Date.now()}.${fileType}`,
+                    size: fileSize,
+                    type: `image/${fileType}`,
+                });
+
+                fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/upload-progress-picture', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${await user.getIdToken()}`,
+                    },
+                    body: formData,
+                }).then(() => {
+                    console.log('Photo uploaded successfully');
+                }).catch((err) => {
+                    Alert.alert('Error', err.message);
+                });
+
+                setPictures((prev) => [...prev, { uri: result.assets[0].uri, date: new Date().toLocaleDateString() }]);
+            }
+        } catch (e) {
+            Alert.alert('Error', e.message);
+        }
+    };
+
+    const removePicture = (i) => {
+        const selectedPicture = pictures[i];
+
+        if (!selectedPicture?.uri) {
+            Alert.alert('Error', 'Could not find the selected photo.');
+            return;
+        }
+
+        Alert.alert('Remove Photo', 'Delete this progress photo?', [
+            { text: 'Delete', style: 'destructive', onPress: () => 
+                {
+                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/delete-progress-picture?pictureUrl=' + encodeURIComponent(selectedPicture.uri) + '&pictureId=' + encodeURIComponent(selectedPicture.id), {
+                        method: 'delete',
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`,
+                        }
+                    }).then(() => {
+                        console.log('Photo deleted successfully');
+                        setPictures((prev) => prev.filter((_, idx) => idx !== i));
+
+                    }).catch((err) => {
+                        Alert.alert('Error', err.message);
+                    });
+
+                }
+            },
+            { text: 'Cancel', style: 'cancel' },
+        ]);
     };
 
     // ── Rest Timer ─────────────────────────────────────────────────────────────
@@ -232,213 +449,398 @@ export default function FitnessProfileContent() {
         setCustomRest('');
     };
 
-    // ── Export CSV ─────────────────────────────────────────────────────────────
-    const handleExport = () => {
+    // ── Import modal ───────────────────────────────────────────────────────────
+    const [importVisible, setImportVisible] = useState(false);
+
+    // ── Export ─────────────────────────────────────────────────────────────────
+    const handleExport = async () => {
         const rows = [
             ['Field', 'Value'],
             ['Name', name],
             ['Date of Birth', dob],
             ['Units', useMetric ? 'Metric' : 'Imperial'],
-            ...MEASUREMENT_FIELDS.map((f) => [
+            ...FIELDS.map((f) => [
                 f.label,
-                measurements[f.key]
-                    ? `${measurements[f.key]} ${f.type === 'weight' ? weightUnit : sizeUnit}`
-                    : '',
+                meas[f.key] ? `${meas[f.key]} ${f.type === 'weight' ? wUnit : sUnit}` : '',
             ]),
-            ['Default Rest Timer', formatRest(defaultRest)],
+            ['Default Rest Timer', fmtRest(defaultRest)],
+            ['Rest Timer Seconds', String(defaultRest)],
             ['Daily Goals',        daily.map((g) => g.text).join(' | ')],
             ['Monthly Goals',      monthly.map((g) => g.text).join(' | ')],
             ['Yearly Resolutions', yearly.map((g) => g.text).join(' | ')],
         ];
-        const csv = rows
-            .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))
-            .join('\n');
-        Alert.alert(
-            'Export Ready',
-            'Use expo-file-system + expo-sharing:\n\nawait FileSystem.writeAsStringAsync(uri, csv);\nawait Sharing.shareAsync(uri);'
-        );
+        try {
+            await Share.share({ message: buildCSV(rows), title: 'Fitness Profile CSV' });
+        } catch (e) {
+            Alert.alert('Export Failed', e.message);
+        }
     };
 
+    // ── Import ─────────────────────────────────────────────────────────────────
+    const handleImport = (text) => {
+        try {
+            const m = parseCSV(text);
+            if (!Object.keys(m).length) {
+                Alert.alert('Invalid Data', 'Could not parse the CSV. Make sure you pasted the full exported text.');
+                return;
+            }
+            if (m['Name']          != null) setName(m['Name']);
+            if (m['Date of Birth'] != null) setDob(m['Date of Birth']);
+            if (m['Units']         != null) setUseMetric(m['Units'] === 'Metric');
+            FIELDS.forEach((f) => {
+                if (m[f.label] != null)
+                    setMeas((prev) => ({ ...prev, [f.key]: m[f.label].replace(/\s*(kg|lbs|cm|in)$/, '').trim() }));
+            });
+            if (m['Rest Timer Seconds']) {
+                const v = parseInt(m['Rest Timer Seconds'], 10);
+                if (!isNaN(v) && v > 0) setDefaultRest(v);
+            }
+            if (m['Daily Goals']        != null) setDaily(goalsFromPipe(m['Daily Goals']));
+            if (m['Monthly Goals']      != null) setMonthly(goalsFromPipe(m['Monthly Goals']));
+            if (m['Yearly Resolutions'] != null) setYearly(goalsFromPipe(m['Yearly Resolutions']));
+            setCollapsed({ personal: false, measurements: false, goals: false, pictures: false, rest: false, data: false });
+            setImportVisible(false);
+            Alert.alert('Import Successful', 'Your profile data has been restored.');
+        } catch (e) {
+            Alert.alert('Import Failed', e.message);
+        }
+    };
 
+    useEffect(() => {
+
+        // Load profile data from backend
+        async function loadFullProfile() {
+            setAuthToken(await user.getIdToken());
+
+            fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/full-profile', {
+                headers: {
+                    'Authorization': `Bearer ${await user.getIdToken()}`, 
+                }
+            }).then(res => res.json()).then(data => {
+                // console.log(data)
+
+                setName(data.fullName);
+                setDob(new Date(data.dateOfBirth).toLocaleDateString());
+                
+                data.bodyMeasurements.forEach(m => {
+                    setMeasurement(m.bodyType, m.measurementValue.toString());
+                });
+
+                data.dailyGoals.forEach(goal => {
+                    setDaily((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                })
+
+                data.monthlyGoals.forEach(goal => {
+                    setMonthly((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                });
+
+                data.yearlyGoals.forEach(goal => {
+                    setYearly((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                });
+
+                data.progressPictures.forEach(picURL => {
+                    console.log(picURL);
+                    const parseURL = process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/download-progress-picture?pictureUrl=' + picURL.url;
+                    setPictures((prev) => [...prev, { id: picURL._id, uri: parseURL, date: picURL.date }]);
+                })
+
+                setDefaultRest(data.defaultRestTimer);
+            }).catch(err => {
+                console.error('Failed to load full profile:', err);
+            });
+        };
+
+        loadFullProfile();
+
+    }, []);
+
+    const handleSaveFullName = async (newName) => {
+        setName(newName);
+        saveFullName(user, newName);
+    };
+
+    const handleSaveDob = async (newDob) => {
+        setDob(newDob);
+        saveDob(user, newDob);
+    };
+
+    const handleSaveMeasurement = (key, value) => {
+        setMeasurements((prev) => {
+            const updated = { ...prev, [key]: value };
+            saveMeasurements(user, updated);
+            return updated;
+        });
+    }
+
+    const handleAddDailyGoal = async (goal) => {
+        addDailyGoal(user, goal, setDaily);
+    };
+
+    const handleToggleDailyGoal = async (index) => {
+        setDaily((prev) => {
+            const updated = [...prev];
+            updated[index].done = !updated[index].done;
+
+            toggleDailyGoal(user, updated[index]);
+
+            return updated;
+        });
+    };
+
+    const handleDeleteDailyGoal = async (index) => {
+        deleteDailyGoal(user, daily[index].id, setDaily);
+    }
+
+    const handleAddMonthlyGoal = async (goal) => {
+        addMonthlyGoal(user, goal, setMonthly);
+    };
+
+    const handleToggleMonthlyGoal = async (index) => {
+        setMonthly((prev) => {
+            const updated = [...prev];
+            updated[index].done = !updated[index].done;
+
+            toggleMonthlyGoal(user, updated[index]);
+
+            return updated;
+        });
+    };
+
+    const handleDeleteMonthlyGoal = async (index) => {
+        deleteMonthlyGoal(user, monthly[index].id, setMonthly);
+    }
+
+    const handleAddYearlyGoal = async (goal) => {
+        addYearlyGoal(user, goal, setYearly);
+    };
+
+    const handleToggleYearlyGoal = async (index) => {
+        setYearly((prev) => {
+            const updated = [...prev];
+            updated[index].done = !updated[index].done;
+
+            toggleYearlyGoal(user, updated[index]);
+
+            return updated;
+        });
+    };
+
+    const handleDeleteYearlyGoal = async (index) => {
+        deleteYearlyGoal(user, yearly[index].id, setYearly);
+    }
 
     return (
-        <ScrollView
-            style={styles.root}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-        >
-            {/* ── Personal Info ── */}
-            <Section id="personal" icon="person-circle-outline" title="Personal Info" collapsed={collapsed} toggleSection={toggleSection}>
-                <LabeledInput
-                    label="Full Name"
-                    value={name}
-                    onChangeText={setName}
-                    placeholder="Your name"
-                />
-                <LabeledInput
-                    label="Date of Birth"
-                    value={dob}
-                    onChangeText={setDob}
-                    placeholder="MM/DD/YYYY"
-                    keyboardType="numbers-and-punctuation"
-                />
-
-            </Section>
-
-            {/* ── Measurements & Units (merged) ── */}
-            <Section id="measurements" icon="body-outline" title="Body Measurements" collapsed={collapsed} toggleSection={toggleSection}>
-                {/* Unit toggle at the top */}
-                <View style={styles.switchRow}>
-                    <View>
-                        <Text style={styles.switchLabel}>
-                            {useMetric ? 'Metric (kg, cm, km)' : 'Imperial (lbs, in, mi)'}
-                        </Text>
-                        <Text style={styles.switchSub}>Affects all measurements & distances</Text>
-                    </View>
-                    <Switch
-                        value={useMetric}
-                        onValueChange={setUseMetric}
-                        trackColor={{ false: BORDER, true: BLUE }}
-                        thumbColor="#fff"
-                    />
-                </View>
-                <View style={styles.unitBadgeRow}>
-                    {[['Weight', weightUnit], ['Size', sizeUnit], ['Distance', distUnit]].map(([l, v]) => (
-                        <View key={l} style={styles.unitBadge}>
-                            <Text style={styles.unitBadgeLabel}>{l}</Text>
-                            <Text style={styles.unitBadgeValue}>{v}</Text>
-                        </View>
-                    ))}
-                </View>
-                {/* Divider between unit toggle and measurement fields */}
-                <View style={[styles.divider, { marginTop: 16 }]} />
-                {/* Body measurement fields */}
-                {MEASUREMENT_FIELDS.map((f) => (
+        <>
+            <ScrollView
+                style={styles.root}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+            >
+                {/* ── Personal Info ── */}
+                <Section id="personal" icon="person-circle-outline" title="Personal Info" collapsed={collapsed} toggleSection={toggleSection}>
                     <LabeledInput
-                        key={f.key}
-                        label={f.label}
-                        value={measurements[f.key] ?? ''}
-                        onChangeText={(v) => setMeasurement(f.key, v)}
-                        keyboardType="decimal-pad"
-                        suffix={f.type === 'weight' ? weightUnit : sizeUnit}
+                        label="Full Name"
+                        value={name}
+                        onChangeText={newName => handleSaveFullName(newName)}
+                        placeholder="Your name"
                     />
-                ))}
-            </Section>
+                    <LabeledInput
+                        label="Date of Birth"
+                        value={dob}
+                        onChangeText={newText => handleSaveDob(newText)}
+                        placeholder="MM/DD/YYYY"
+                        keyboardType="numbers-and-punctuation"
+                    />
 
-            {/* ── Goals & Resolutions ── */}
-            <Section id="goals" icon="flag-outline" title="Goals & Resolutions" collapsed={collapsed} toggleSection={toggleSection}>
-                <GoalGroup
-                    label="Daily Goals"
-                    goals={daily}
-                    onAdd={(t) => addGoal(setDaily, t)}
-                    onToggle={(i) => toggleGoal(setDaily, i)}
-                    onDelete={(i) => deleteGoal(setDaily, i)}
-                />
-                <View style={styles.divider} />
-                <GoalGroup
-                    label="Monthly Goals"
-                    goals={monthly}
-                    onAdd={(t) => addGoal(setMonthly, t)}
-                    onToggle={(i) => toggleGoal(setMonthly, i)}
-                    onDelete={(i) => deleteGoal(setMonthly, i)}
-                />
-                <View style={styles.divider} />
-                <GoalGroup
-                    label="Yearly Resolutions"
-                    goals={yearly}
-                    onAdd={(t) => addGoal(setYearly, t)}
-                    onToggle={(i) => toggleGoal(setYearly, i)}
-                    onDelete={(i) => deleteGoal(setYearly, i)}
-                />
-            </Section>
+                </Section>
 
-            {/* ── Progress Pictures ── */}
-            <Section id="pictures" icon="camera-outline" title="Progress Pictures" collapsed={collapsed} toggleSection={toggleSection}>
-                <Text style={styles.hintText}>
-                    Document your transformation over time. Photos are stored locally.
-                </Text>
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    style={{ marginTop: 12 }}
-                >
-                    <TouchableOpacity
-                        style={styles.addPictureBox}
-                        onPress={handleAddPicture}
-                        activeOpacity={0.8}
-                    >
-                        <Ionicons name="add-circle-outline" size={32} color={BLUE} />
-                        <Text style={styles.addPictureLabel}>Add Photo</Text>
-                    </TouchableOpacity>
-                    {pictures.map((_, i) => (
-                        <View key={i} style={styles.pictureThumbnail} />
-                    ))}
-                </ScrollView>
-                <Text style={styles.hintTextSm}>Requires expo-image-picker.</Text>
-            </Section>
-
-            {/* ── Default Rest Timer ── */}
-            <Section id="rest" icon="timer-outline" title="Default Rest Timer" collapsed={collapsed} toggleSection={toggleSection}>
-                <Text style={styles.hintText}>
-                    Select a preset or enter a custom duration applied between sets.
-                </Text>
-                <View style={styles.presetRow}>
-                    {REST_PRESETS.map((s) => (
-                        <ChipButton
-                            key={s}
-                            label={formatRest(s)}
-                            active={defaultRest === s}
-                            onPress={() => setDefaultRest(s)}
+                {/* ── Measurements & Units (merged) ── */}
+                <Section id="measurements" icon="body-outline" title="Body Measurements" collapsed={collapsed} toggleSection={toggleSection}>
+                    {/* Unit toggle at the top */}
+                    <View style={styles.switchRow}>
+                        <View>
+                            <Text style={styles.switchLabel}>
+                                {useMetric ? 'Metric (kg, cm, km)' : 'Imperial (lbs, in, mi)'}
+                            </Text>
+                            <Text style={styles.switchSub}>Affects all measurements & distances</Text>
+                        </View>
+                        <Switch
+                            value={useMetric}
+                            onValueChange={setUseMetric}
+                            trackColor={{ false: BORDER, true: BLUE }}
+                            thumbColor="#fff"
+                        />
+                    </View>
+                    <View style={styles.unitBadgeRow}>
+                        {[['Weight', weightUnit], ['Size', sizeUnit], ['Distance', distUnit]].map(([l, v]) => (
+                            <View key={l} style={styles.unitBadge}>
+                                <Text style={styles.unitBadgeLabel}>{l}</Text>
+                                <Text style={styles.unitBadgeValue}>{v}</Text>
+                            </View>
+                        ))}
+                    </View>
+                    {/* Divider between unit toggle and measurement fields */}
+                    <View style={[styles.divider, { marginTop: 16 }]} />
+                    {/* Body measurement fields */}
+                    {MEASUREMENT_FIELDS.map((f) => (
+                        <LabeledInput
+                            key={f.key}
+                            label={f.label}
+                            value={measurements[f.key] ?? ''}
+                            onChangeText={(v) => handleSaveMeasurement(f.key, v)}
+                            keyboardType="decimal-pad"
+                            suffix={f.type === 'weight' ? weightUnit : sizeUnit}
                         />
                     ))}
-                </View>
-                <View style={styles.customRestRow}>
-                    <TextInput
-                        style={styles.customRestInput}
-                        value={customRest}
-                        onChangeText={setCustomRest}
-                        placeholder="Custom (sec)"
-                        placeholderTextColor="#9ca3af"
-                        keyboardType="number-pad"
+                </Section>
+
+                {/* ── Goals & Resolutions ── */}
+                <Section id="goals" icon="flag-outline" title="Goals & Resolutions" collapsed={collapsed} toggleSection={toggleSection}>
+                    <GoalGroup
+                        label="Daily Goals"
+                        goals={daily}
+                        onAdd={(t) => handleAddDailyGoal(t)}
+                        onToggle={(i) => handleToggleDailyGoal(i)}
+                        onDelete={(i) => handleDeleteDailyGoal(i)}
                     />
-                    <TouchableOpacity
-                        style={styles.customRestBtn}
-                        onPress={applyCustomRest}
-                        activeOpacity={0.85}
-                    >
-                        <Text style={styles.customRestBtnText}>Set</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.currentRestBadge}>
-                    <Ionicons name="time-outline" size={18} color={BLUE} />
-                    <Text style={styles.currentRestText}>
-                        Current default:{' '}
-                        <Text style={{ fontWeight: '700', color: BLUE }}>
-                            {formatRest(defaultRest)}
-                        </Text>
+                    <View style={styles.divider} />
+                    <GoalGroup
+                        label="Monthly Goals"
+                        goals={monthly}
+                        onAdd={(t) => handleAddMonthlyGoal(t)}
+                        onToggle={(i) => handleToggleMonthlyGoal(i)}
+                        onDelete={(i) => handleDeleteMonthlyGoal(i)}
+                    />
+                    <View style={styles.divider} />
+                    <GoalGroup
+                        label="Yearly Resolutions"
+                        goals={yearly}
+                        onAdd={(t) => handleAddYearlyGoal(t)}
+                        onToggle={(i) => handleToggleYearlyGoal(i)}
+                        onDelete={(i) => handleDeleteYearlyGoal(i)}
+                    />
+                </Section>
+
+                {/* ── Progress Pictures ── */}
+                <Section id="pictures" icon="camera-outline" title="Progress Pictures" collapsed={collapsed} toggleSection={toggleSection}>
+                    <Text style={styles.hintText}>
+                        Document your transformation over time. Photos are stored locally.
                     </Text>
-                </View>
-            </Section>
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        style={{ marginTop: 12 }}
+                    >
+                        <TouchableOpacity
+                            style={styles.addPictureBox}
+                            onPress={handleAddPictureMenu}
+                            activeOpacity={0.8}
+                        >
+                            <Ionicons name="add-circle-outline" size={32} color={BLUE} />
+                            <Text style={styles.addPictureLabel}>Add Photo</Text>
+                        </TouchableOpacity>
+                        {pictures !== null && pictures.map((pic, i) => (
+                            <TouchableOpacity
+                                key={i}
+                                onPress={() => removePicture(i)}
+                                activeOpacity={0.85}
+                                style={{ marginRight: 10 }}
+                            >
+                                <Image source={{ uri: pic.uri, headers: { Authorization: `Bearer ${authToken}` } }} style={styles.pictureThumbnail} resizeMode="cover" />
+                                <View style={styles.picDateBadge}>
+                                    <Text style={styles.picDateText}>{pic.date}</Text>
+                                </View>
+                                <View style={styles.picRemoveBadge}>
+                                    <Ionicons name="close-circle" size={20} color="#ef4444" />
+                                </View>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                    {pictures.length > 0 && (
+                        <Text style={styles.hintTextSm}>
+                            {pictures.length} photo{pictures.length !== 1 ? 's' : ''} added — tap to remove
+                        </Text>
+                    )}
+                </Section>
 
-            {/* ── Export Fitness Data ── */}
-            <Section id="export" icon="download-outline" title="Export Fitness Data" collapsed={collapsed} toggleSection={toggleSection}>
-                <Text style={styles.hintText}>
-                    Download all your profile data — measurements, goals, and settings — as a CSV file.
-                </Text>
-                <TouchableOpacity
-                    style={styles.exportBtn}
-                    onPress={handleExport}
-                    activeOpacity={0.85}
-                >
-                    <Ionicons name="document-text-outline" size={22} color="#fff" />
-                    <Text style={styles.exportBtnText}>Export as CSV</Text>
-                </TouchableOpacity>
-                <Text style={styles.hintTextSm}>
-                    Requires expo-file-system + expo-sharing.
-                </Text>
-            </Section>
+                {/* ── Default Rest Timer ── */}
+                <Section id="rest" icon="timer-outline" title="Default Rest Timer" collapsed={collapsed} toggleSection={toggleSection}>
+                    <Text style={styles.hintText}>
+                        Select a preset or enter a custom duration applied between sets.
+                    </Text>
+                    <View style={styles.presetRow}>
+                        {REST_PRESETS.map((s) => (
+                            <ChipButton
+                                key={s}
+                                label={formatRest(s)}
+                                active={defaultRest === s}
+                                onPress={() => setDefaultRest(s)}
+                            />
+                        ))}
+                    </View>
+                    <View style={styles.customRestRow}>
+                        <TextInput
+                            style={styles.customRestInput}
+                            value={customRest}
+                            onChangeText={setCustomRest}
+                            placeholder="Custom (sec)"
+                            placeholderTextColor="#9ca3af"
+                            keyboardType="number-pad"
+                        />
+                        <TouchableOpacity
+                            style={styles.customRestBtn}
+                            onPress={applyCustomRest}
+                            activeOpacity={0.85}
+                        >
+                            <Text style={styles.customRestBtnText}>Set</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.currentRestBadge}>
+                        <Ionicons name="time-outline" size={18} color={BLUE} />
+                        <Text style={styles.currentRestText}>
+                            Current default:{' '}
+                            <Text style={{ fontWeight: '700', color: BLUE }}>
+                                {formatRest(defaultRest)}
+                            </Text>
+                        </Text>
+                    </View>
+                </Section>
 
-        </ScrollView>
+                {/* ── Export & Import Data ──────────────────────────────────── */}
+                <Section id="data" icon="swap-vertical-outline" title="Export & Import Data" collapsed={collapsed} toggleSection={toggleSection}>
+                    <Text style={styles.hintText}>
+                        Export your profile data as CSV text to back it up, or paste a previous export to restore everything.
+                    </Text>
+                    <TouchableOpacity style={styles.exportBtn} onPress={handleExport} activeOpacity={0.85}>
+                        <Ionicons name="document-text-outline" size={22} color="#fff" />
+                        <Text style={styles.exportBtnText}>Export as CSV</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.hintTextSm}>
+                        Opens your device share sheet — copy, email, or save the CSV text.
+                    </Text>
+                    <View style={styles.orRow}>
+                        <View style={styles.orLine} />
+                        <Text style={styles.orText}>OR</Text>
+                        <View style={styles.orLine} />
+                    </View>
+                    <TouchableOpacity style={styles.importBtn} onPress={() => setImportVisible(true)} activeOpacity={0.85}>
+                        <Ionicons name="cloud-upload-outline" size={22} color={BLUE} />
+                        <Text style={styles.importBtnText}>Import from CSV</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.hintTextSm}>
+                        Paste previously exported CSV text to restore your full profile.
+                    </Text>
+                </Section>
+
+            </ScrollView>
+            
+            <ImportModal
+                visible={importVisible}
+                onClose={() => setImportVisible(false)}
+                onImport={handleImport}
+            />
+        </>
     );
 }
 
@@ -709,6 +1111,9 @@ const styles = StyleSheet.create({
         backgroundColor: LIGHT_GRAY,
         marginRight: 10,
     },
+    picDateBadge:     { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.5)', borderBottomLeftRadius: 12, borderBottomRightRadius: 12, paddingVertical: 3, alignItems: 'center' },
+    picDateText:      { fontSize: 9, color: '#fff', fontWeight: '600' },
+    picRemoveBadge:   { position: 'absolute', top: -6, right: -6 },
 
     // Rest Timer
     presetRow: {
@@ -795,6 +1200,12 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
 
+    orRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 14 },
+    orLine:        { flex: 1, height: 1, backgroundColor: BORDER },
+    orText:        { fontSize: 12, color: GRAY, fontWeight: '600' },
+    importBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: '#fff', paddingVertical: 16, borderRadius: 14, borderWidth: 2, borderColor: BLUE },
+    importBtnText: { fontSize: 16, fontWeight: '700', color: BLUE },
+
     // Hints
     hintText: {
         fontSize: 13,
@@ -806,4 +1217,17 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#9ca3af',
     },
+
+    // Modals
+    modalRoot:            { flex: 1, backgroundColor: '#f9fafb', padding: 20, paddingTop: 40 },
+    modalHeader:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+    modalTitle:           { fontSize: 18, fontWeight: '700', color: '#111827' },
+    modalCloseBtn:        { padding: 4 },
+    modalInstructions:    { flexDirection: 'row', gap: 8, alignItems: 'flex-start', backgroundColor: LIGHT_BLUE, borderRadius: 12, padding: 12, marginBottom: 16 },
+    modalInstructionText: { flex: 1, fontSize: 13, color: '#374151', lineHeight: 18 },
+    csvTextArea:          { flex: 1, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: BORDER, padding: 14, fontSize: 13, color: '#111', fontFamily: 'monospace', marginBottom: 14, minHeight: 200 },
+    actionBtn:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: BLUE, paddingVertical: 16, borderRadius: 14, marginBottom: 10 },
+    actionBtnText:        { fontSize: 16, fontWeight: '700', color: '#fff' },
+    modalCancelBtn:       { alignItems: 'center', paddingVertical: 14 },
+    modalCancelBtnText:   { fontSize: 15, color: GRAY, fontWeight: '600' },
 });
