@@ -6,14 +6,25 @@ import FitnessHistoryCard from './FitnessHistoryCard';
 const GREEN = '#22c55e';
 const BLUE = '#2563eb';
 
+<<<<<<< Updated upstream
 export default function HistoryCalendar({ workoutHistory = [] }) {
+=======
+export default function FitnessHistoryCalendar({ workoutHistory = [], onRefresh }) {
+>>>>>>> Stashed changes
     const [selectedDate, setSelectedDate] = useState(null);
 
     const markedDates = useMemo(() => {
         const marks = {};
+<<<<<<< Updated upstream
 
         workoutHistory.forEach((w) => {
             marks[w.isoDate] = { selected: true, selectedColor: GREEN };
+=======
+        const hasWorkout = new Set(workoutHistory.map((w) => w.isoDate).filter(Boolean));
+
+        hasWorkout.forEach((isoDate) => {
+            marks[isoDate] = { marked: true, dotColor: GREEN };
+>>>>>>> Stashed changes
         });
 
         if (selectedDate) marks[selectedDate] = { selected: true, selectedColor: BLUE };
@@ -24,7 +35,11 @@ export default function HistoryCalendar({ workoutHistory = [] }) {
 
 
     const selectedWorkouts = useMemo(() => {
+<<<<<<< Updated upstream
         return workoutHistory.filter((w) => w.isoDate === selectedDate);    
+=======
+        return workoutHistory.filter((w) => w.isoDate === selectedDate);
+>>>>>>> Stashed changes
     }, [workoutHistory, selectedDate]);
 
     return (

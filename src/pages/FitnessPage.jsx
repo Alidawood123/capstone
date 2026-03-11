@@ -10,8 +10,11 @@ import FitnessAnalyticsContent from './fitness-tabs/FitnessAnalyticsContent';
 import FitnessProfileContent from './fitness-tabs/FitnessProfileContent';
 import EmptyWorkoutContent from '../components/fitness/home/EmptyWorkoutContent';
 
+<<<<<<< Updated upstream
 import FitnessNavBar from '../components/fitness/FitnessNavigationBar';
 
+=======
+>>>>>>> Stashed changes
 const BLUE = '#00b4d8';
 const GRAY = '#9ca3af';
 
@@ -68,7 +71,27 @@ export default function FitnessPage({ onNavigateToLanding }) {
                 {/* Main content - white area, routes by tab or empty workout */}
                 <View style={styles.content}>
                     {fitnessScreen === 'emptyworkout' ? (
+<<<<<<< Updated upstream
                         <EmptyWorkoutContent onAddExercises={() => {}} onCancelWorkout={() => setFitnessScreen('tabs')} />
+=======
+                        <EmptyWorkoutContent
+                            onAddExercises={() => {}}
+                            onCancelWorkout={() => { setFitnessScreen('tabs'); setWorkoutInitialData(null); }}
+                            initialTitle={workoutInitialData?.title}
+                            initialExercises={workoutInitialData?.exercises}
+                        />
+                    ) : fitnessScreen === 'createtemplate' ? (
+                        <EmptyWorkoutContent
+                            mode="template"
+                            onAddExercises={() => {}}
+                            onCancelWorkout={() => setFitnessScreen('tabs')}
+                            onSaveTemplate={async (t) => {
+                                await addTemplate(t);
+                                setFitnessScreen('tabs');
+                                setActiveTab('templates');
+                            }}
+                        />
+>>>>>>> Stashed changes
                     ) : (
                         <>
                             {activeTab === 'home' && (

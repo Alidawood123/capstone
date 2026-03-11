@@ -1,5 +1,6 @@
 import {React, useState} from 'react';
 
+<<<<<<< Updated upstream
 import { StyleSheet, View, Text, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -91,6 +92,44 @@ export default function FitnessHistoryContent({ historyTab }) {
 
     ]
 
+=======
+/** Normalize stored workout to include isoDate (YYYY-MM-DD) for calendar. */
+function withIsoDate(workout) {
+    const dateStr = workout.date || workout.completedAt || '';
+    const isoDate = dateStr ? dateStr.slice(0, 10) : '';
+    return { ...workout, isoDate };
+}
+
+export default function FitnessHistoryContent() {
+    const [workoutHistory, setWorkoutHistory] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const loadWorkouts = useCallback(async () => {
+        setLoading(true);
+        try {
+            const workouts = await getWorkouts();
+            setWorkoutHistory(workouts.map(withIsoDate));
+        } catch (error) {
+            console.error('Failed to load workout history:', error);
+            setWorkoutHistory([]);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadWorkouts();
+    }, [loadWorkouts]);
+
+    if (loading) {
+        return (
+            <View style={[styles.content, styles.centered]}>
+                <ActivityIndicator size="large" color="#00b4d8" />
+                <Text style={styles.loadingText}>Loading history...</Text>
+            </View>
+        );
+    }
+>>>>>>> Stashed changes
 
     return (
         <View style={{ flex: 1 }}>

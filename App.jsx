@@ -13,12 +13,28 @@ export default function App() {
     GoogleSignin.configure({
       webClientId: process.env.EXPO_PUBLIC_FIREBASE_WEB_ID,
     });
-    Settings.setAppID(process.env.EXPO_PUBLIC_FACEBOOK_APP_ID);
+
+    const facebookAppId = process.env.EXPO_PUBLIC_FACEBOOK_APP_ID;
+    const facebookClientToken = process.env.EXPO_PUBLIC_FACEBOOK_CLIENT_TOKEN;
+
+    if (facebookAppId) {
+      Settings.setAppID(facebookAppId);
+      if (facebookClientToken) {
+        Settings.setClientToken(facebookClientToken);
+      }
+      Settings.initializeSDK();
+    } else {
+      console.warn('Facebook App ID is missing. Facebook SDK was not initialized.');
+    }
   }, []);
 
   return (
     <SafeAreaProvider>
       <NavigatePage page={currentPage} setPage={setCurrentPage} />
+<<<<<<< Updated upstream
+=======
+      <Toast />
+>>>>>>> Stashed changes
     </SafeAreaProvider>
   );
 }
