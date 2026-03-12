@@ -5,28 +5,17 @@ import {
     Text,
     TouchableOpacity,
     ScrollView,
-    Modal,
-    Pressable,
     ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getTemplates } from '../../services/templateStorage';
 
+import Template from '../../components/fitness/modals/Template';
+
 import { getAuth } from '@react-native-firebase/auth';
 
 const BLUE = '#00b4d8';
 const GRAY = '#6b7280';
-
-/** Format rest seconds for display */
-function formatRestDisplay(seconds) {
-    const sec = Math.max(0, Math.floor(Number(seconds) || 0));
-    if (sec >= 60) {
-        const m = Math.floor(sec / 60);
-        const s = sec % 60;
-        return `${m}:${String(s).padStart(2, '0')}`;
-    }
-    return `${sec}s`;
-}
 
 export default function FitnessTemplatesContent({ onUseTemplate }) {
     const auth = getAuth();
@@ -130,71 +119,12 @@ export default function FitnessTemplatesContent({ onUseTemplate }) {
                 </ScrollView>
             )}
 
-            <Modal
+            <Template
                 visible={modalVisible}
-                transparent
-                animationType="fade"
-                onRequestClose={closeModal}
-            >
-                <Pressable style={styles.modalBackdrop} onPress={closeModal}>
-                    <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle} numberOfLines={1}>
-                                {selectedTemplate?.title || 'Template'}
-                            </Text>
-                            <TouchableOpacity
-                                style={styles.modalCloseButton}
-                                onPress={closeModal}
-                                hitSlop={12}
-                            >
-                                <Ionicons name="close" size={24} color={GRAY} />
-                            </TouchableOpacity>
-                        </View>
-                        <ScrollView
-                            style={styles.modalScroll}
-                            contentContainerStyle={styles.modalScrollContent}
-                            showsVerticalScrollIndicator={true}
-                        >
-                            {selectedTemplate?.exercises?.length ? (
-                                selectedTemplate.exercises.map((item, idx) => {
-                                    const sets = Array.isArray(item.sets) ? item.sets : [];
-                                    const name =
-                                        item.type === 'superset'
-                                            ? 'Superset'
-                                            : (item.exercises && item.exercises[0]?.title) || 'Exercise';
-                                    return (
-                                        <View key={item.id || idx} style={styles.detailBlock}>
-                                            <Text style={styles.detailExerciseName}>{name}</Text>
-                                            {item.exercises?.map((ex) => (
-                                                <Text key={ex.id} style={styles.detailSubName}>
-                                                    {ex.title}
-                                                </Text>
-                                            ))}
-                                            <Text style={styles.detailSets}>
-                                                {sets.length} set{sets.length !== 1 ? 's' : ''}
-                                                {sets.some((s) => s.restSeconds != null) &&
-                                                    ` · Rest ${formatRestDisplay(sets[0]?.restSeconds ?? 60)}`}
-                                            </Text>
-                                        </View>
-                                    );
-                                })
-                            ) : (
-                                <Text style={styles.detailEmpty}>No exercises in this template.</Text>
-                            )}
-                        </ScrollView>
-                        <View style={styles.modalActions}>
-                            <TouchableOpacity
-                                style={styles.useTemplateButton}
-                                onPress={handleUseTemplate}
-                                activeOpacity={0.85}
-                            >
-                                <Ionicons name="play" size={22} color="#fff" />
-                                <Text style={styles.useTemplateButtonText}>Use template</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </Pressable>
-                </Pressable>
-            </Modal>
+                template={selectedTemplate}
+                onClose={closeModal}
+                onUseTemplate={handleUseTemplate}
+                />
         </View>
     );
 }
@@ -263,91 +193,5 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: GRAY,
         marginTop: 4,
-    },
-    modalBackdrop: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 24,
-    },
-    modalCard: {
-        width: '100%',
-        maxWidth: 400,
-        maxHeight: '80%',
-        backgroundColor: '#fff',
-        borderRadius: 16,
-        overflow: 'hidden',
-    },
-    modalHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 16,
-        paddingHorizontal: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e5e7eb',
-    },
-    modalTitle: {
-        flex: 1,
-        fontSize: 20,
-        fontWeight: '600',
-        color: '#111827',
-    },
-    modalCloseButton: {
-        padding: 4,
-    },
-    modalScroll: {
-        maxHeight: 320,
-    },
-    modalScrollContent: {
-        padding: 20,
-        paddingBottom: 16,
-    },
-    detailBlock: {
-        marginBottom: 16,
-        paddingBottom: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f3f4f6',
-    },
-    detailExerciseName: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#111827',
-    },
-    detailSubName: {
-        fontSize: 14,
-        color: GRAY,
-        marginTop: 2,
-    },
-    detailSets: {
-        fontSize: 13,
-        color: GRAY,
-        marginTop: 4,
-    },
-    detailEmpty: {
-        fontSize: 14,
-        color: GRAY,
-        fontStyle: 'italic',
-    },
-    modalActions: {
-        padding: 20,
-        paddingTop: 12,
-        borderTopWidth: 1,
-        borderTopColor: '#e5e7eb',
-    },
-    useTemplateButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 10,
-        backgroundColor: BLUE,
-        paddingVertical: 14,
-        borderRadius: 12,
-    },
-    useTemplateButtonText: {
-        fontSize: 17,
-        fontWeight: '600',
-        color: '#fff',
-    },
+    }
 });

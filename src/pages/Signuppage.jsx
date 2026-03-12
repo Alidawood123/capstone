@@ -29,7 +29,7 @@ import Toast from 'react-native-toast-message';
 
 // SignupPage Component - A modern sign-up screen with email/password authentication
 // Features: name, email validation, password visibility toggle, confirm password, loading state, social login buttons
-export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) {
+export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) {
     const auth = getAuth();
 
     // State for form inputs
@@ -97,9 +97,9 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
                     });
                 });
 
-            // Navigate to landing page after successful sign-up
-            if (onNavigateToLanding) {
-                onNavigateToLanding();
+            // Navigate to fitness page after successful sign-up
+            if (onNavigateToFitness) {
+                onNavigateToFitness();
             }
         }, 2000);
     };
@@ -147,8 +147,8 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
             }
 
 
-            if (onNavigateToLanding) {
-                onNavigateToLanding();
+            if (onNavigateToFitness) {
+                onNavigateToFitness();
             }
         } catch (error) {
             // Sign out in case of error in the backend profile creation
@@ -204,8 +204,8 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
                 })
             }
 
-            if (onNavigateToLanding) {
-                onNavigateToLanding();
+            if (onNavigateToFitness) {
+                onNavigateToFitness();
             }
         }
         catch(error){
@@ -261,8 +261,8 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToLanding }) 
             }
 
             console.log('Signed in with Apple credential!');
-            if (onNavigateToLanding) {
-                onNavigateToLanding();
+            if (onNavigateToFitness) {
+                onNavigateToFitness();
             }
         }
         catch (error) {

@@ -6,10 +6,26 @@ import NavigatePage from './src/components/NavigatePages';
 
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { Settings } from 'react-native-fbsdk-next';
+import { getAuth } from '@react-native-firebase/auth';
 import Toast from 'react-native-toast-message';
 
 export default function App() {
+  const auth = getAuth();
+
   const [currentPage, setCurrentPage] = useState('signin');
+  const navigateToSignUp = () => {
+    if(auth.currentUser) {
+      auth.signOut();
+    }
+    setCurrentPage('signup');
+  };
+  const navigateToSignIn = () => {
+    if(auth.currentUser) {
+      auth.signOut();
+    }
+    setCurrentPage('signin');
+  };
+  const navigateToFitness = () => setCurrentPage('fitness');
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -21,7 +37,7 @@ export default function App() {
   return (
     <GestureHandlerRootView>
       <SafeAreaProvider>
-        <NavigatePage page={currentPage} setPage={setCurrentPage} />
+        <NavigatePage currentPage={currentPage} onNavigateToFitness={navigateToFitness} onNavigateToSignIn={navigateToSignIn} onNavigateToSignUp={navigateToSignUp} />
         <Toast />
       </SafeAreaProvider>
     </GestureHandlerRootView>

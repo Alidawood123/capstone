@@ -30,7 +30,7 @@ import Toast from 'react-native-toast-message';
 
 // SigninPage Component - A modern login screen with email/password authentication
 // Features: email validation, password visibility toggle, loading state, social login buttons
-export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) {
+export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness }) {
     const auth = getAuth();
 
     // State for form inputs
@@ -67,9 +67,8 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
                 text2: `Welcome back, ${user.email}!`,
             });
 
-            // Navigate to landing page
-            if (onNavigateToLanding) {
-                onNavigateToLanding();
+            if (onNavigateToFitness) {
+                onNavigateToFitness();
             }
         })
         .catch((error) => {
@@ -137,8 +136,8 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
                     })
                 }
     
-                if (onNavigateToLanding) {
-                    onNavigateToLanding();
+                if (onNavigateToFitness) {
+                    onNavigateToFitness();
                 }
             } catch (error) {
                 console.error('Error during Google sign-in:', error);
@@ -194,8 +193,8 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
                 })
             }
 
-            if (onNavigateToLanding) {
-                onNavigateToLanding();
+            if (onNavigateToFitness) {
+                onNavigateToFitness();
             }
         } catch (error) {
             console.error('Error during Facebook login:', error);
@@ -255,6 +254,10 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToLanding }) 
             }
 
             console.log('Signed in with Apple credential!');
+
+            if (onNavigateToFitness) {
+                onNavigateToFitness();
+            }
         }
         catch (error) {
             console.error('Error during Apple sign-in:', error);

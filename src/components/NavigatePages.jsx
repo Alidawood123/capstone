@@ -1,69 +1,50 @@
-import Toast from 'react-native-toast-message';
-import auth from '@react-native-firebase/auth';
+import { getAuth } from '@react-native-firebase/auth';
+import { useEffect, useState } from 'react';
 
 import SigninPage from '../pages/Signinpage';
 import SignupPage from '../pages/Signuppage';
-import LandingPage from '../pages/LandingPage';
 import FitnessPage from '../pages/FitnessPage';
-import NutritionPage from '../pages/NutritionPage';
-import TrophyPage from '../pages/TrophyPage';
-import SettingsPage from '../pages/SettingsPage';
 
-export default function NavigatePage({ page, setPage }) {
-    
-    // Main Pages
-    const navigateToSignUp = () => setPage('signup');
-    
-    const navigateToSignIn = () => {
-        auth().signOut();
-        setPage('signin');
-    };
+export default function NavigatePage({ currentPage, onNavigateToSignUp, onNavigateToSignIn, onNavigateToFitness }) {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    const navigateToLanding = () => setPage('landing');
-    const navigateToFitness = () => setPage('fitness');
-    const navigateToNutrition = () => setPage('nutrition');
-    const navigateToTrophy = () => setPage('trophy');
-    const navigateToSettings = () => setPage('settings');
+    const auth = getAuth();
+    const user = auth.currentUser;
 
-    // Switch Pages
-    switch (page) {
-        case 'signup':
-            return <>
-                <SignupPage
-                    onNavigateToSignIn={navigateToSignIn}
-                    onNavigateToLanding={navigateToLanding}
-                />
-            </>;
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setIsLoggedIn(!!user);
+        });
 
-        case 'landing':
-            return <>
-                <LandingPage
-                    onNavigateToSignIn={navigateToSignIn}
-                    onNavigateToNutrition={navigateToNutrition}
-                    onNavigateToFitness={navigateToFitness}
-                    onNavigateToTrophy={navigateToTrophy}
-                    onNavigateToSettings={navigateToSettings}
-                />
-            </>;
+        return () => unsubscribe();
+    }, [auth]);
 
-        case 'fitness':
-            return <FitnessPage onNavigateToLanding={navigateToLanding} />;
+    if(!isLoggedIn)
+    {
+        // Switch Pages
+        switch (currentPage) {
+            case 'signup':
+                return <>
+                    <SignupPage
+                        onNavigateToSignIn={onNavigateToSignIn}
+                        onNavigateToFitness={onNavigateToFitness}
+                    />
+                </>;
 
-        case 'nutrition':
-            return <NutritionPage onNavigateToLanding={navigateToLanding} />;
+            case 'fitness':
+                return <FitnessPage onNavigateToSignIn={onNavigateToSignIn} />;
 
-        case 'trophy':
-            return <TrophyPage onNavigateToLanding={navigateToLanding} />;
-
-        case 'settings':
-            return <SettingsPage onNavigateToLanding={navigateToLanding} />;
-
-        default:
-            return <>
-                <SigninPage
-                    onNavigateToSignUp={navigateToSignUp}
-                    onNavigateToLanding={navigateToLanding}
-                />
-            </>;    
+            default:
+                return <>
+                    <SigninPage
+                        onNavigateToSignUp={onNavigateToSignUp}
+                        onNavigateToFitness={onNavigateToFitness}
+                    />
+                </>;    
+        }
+    }
+    else
+    {
+        return <FitnessPage onNavigateToSignIn={onNavigateToSignIn} />;
     }
 }

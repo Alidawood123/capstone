@@ -17,18 +17,20 @@ import FitnessProfileContent from './fitness-tabs/FitnessProfileContent';
 import EmptyWorkoutContent from '../components/fitness/home/EmptyWorkoutContent';
 import FitnessNavigationBar from '../components/fitness/FitnessNavigationBar';
 import { addTemplate } from '../services/templateStorage';
+import Settings from '../components/fitness/modals/Settings';
 
 import { getAuth } from '@react-native-firebase/auth';
 
 const BLUE = '#00b4d8';
 
-export default function FitnessPage({ onNavigateToLanding }) {
+export default function FitnessPage({ onNavigateToSignIn }) {
     const auth = getAuth();
     const user = auth.currentUser;
 
     const [activeTab, setActiveTab] = useState('home');
     const [fitnessScreen, setFitnessScreen] = useState('tabs');
     const [workoutInitialData, setWorkoutInitialData] = useState(null);
+    const [showSettings, setShowSettings] = useState(false);
     const insets = useSafeAreaInsets();
 
     return (
@@ -64,8 +66,8 @@ export default function FitnessPage({ onNavigateToLanding }) {
                     ) : activeTab === 'home' ? (
                         <>
                             <Text style={styles.headerTitle} numberOfLines={1}>welcome back!</Text>
-                            <TouchableOpacity style={styles.backButton} onPress={onNavigateToLanding} activeOpacity={0.8}>
-                                <Ionicons name="arrow-back" size={24} color="#fff" />
+                            <TouchableOpacity style={styles.backButton} onPress={() => setShowSettings(true)} activeOpacity={0.8}>
+                                <Ionicons name="settings-outline" size={24} color="#fff" />
                             </TouchableOpacity>
                         </>
                     ) : activeTab === 'templates' ? (
@@ -124,6 +126,8 @@ export default function FitnessPage({ onNavigateToLanding }) {
                     <FitnessNavigationBar activeTab={activeTab} onTabChange={setActiveTab} insets={insets} />
                 )}
             </View>
+
+            <Settings visible={showSettings} onClose={() => setShowSettings(false)} onSignOut={onNavigateToSignIn} />
         </View>
     );
 }
