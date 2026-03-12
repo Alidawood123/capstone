@@ -84,8 +84,61 @@ export const addWorkout = async (user, workout) => {
     {
       console.log(res);
     }
+    else
+    {
+      console.log('Workout added successfully');
+    }
   }
   catch (error) {
     console.error('Error adding workout:', error);
   }
 };
+
+export const updateWorkout = async (user, workoutId, updatedWorkout) => {
+  try{
+    const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-history/update-history?workoutId=' + workoutId, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${await user.getIdToken()}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title: updatedWorkout.title, notes: updatedWorkout.notes || '', exercises: updatedWorkout.exercises })
+    });
+
+    if(!res.ok)
+    {
+      console.log(res);
+    }
+    else
+    {
+      console.log('Workout updated successfully');
+    }
+  }
+  catch (error) {
+    console.error('Error updating workout:', error);
+  }
+}
+
+export const removeWorkout = async (user, workoutId) => {
+  try{
+    const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-history/delete-history?workoutId=' + workoutId, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${await user.getIdToken()}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if(!res.ok)
+    {
+      console.log(res);
+    }
+    else
+    {
+      console.log(`Removed workout with ID: ${workoutId}`);
+    }
+  }
+  catch (error) {
+    console.error('Error removing workout:', error);
+  }
+}

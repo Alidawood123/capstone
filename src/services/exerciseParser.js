@@ -149,6 +149,12 @@ export const getAllExercises = () => {
   return getAllExercisesWithUserExercises();
 };
 
+export const getAllExercisesExcludeAlreadyAdded = (existingExercises) => {
+  const allExercises = getAllExercisesWithUserExercises();
+  const existingIds = new Set(existingExercises.map((e) => e.id));
+  return allExercises.filter((exercise) => !existingIds.has(exercise.id));
+}
+
 export const getBodyParts = () => {
   const exercises = parseCSVData();
   const bodyParts = new Set(exercises.map((e) => e.bodyPart).filter(Boolean));

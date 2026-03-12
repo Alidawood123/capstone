@@ -5,6 +5,13 @@ import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import WorkoutDetailsFrame from "./FitnessHistoryWorkoutDetails";
 import WorkoutEditFrame from "./FitnessHistoryEdits";
 
+import { getAuth } from "@react-native-firebase/auth";
+
+import {
+    removeWorkout,
+    updateWorkout
+} from '../../../services/workoutStorage';
+
 function formatDuration(seconds) {
     const s = Math.max(0, Math.floor(Number(seconds) || 0));
     const m = Math.floor(s / 60);
@@ -17,8 +24,12 @@ function formatDuration(seconds) {
     return `${mm}:${String(ss).padStart(2, '0')}`;
 }
 
-export default function FitnessHistoryCard({ workout }) {
+export default function FitnessHistoryCard({ workout, setWorkoutHistory }) {
     if (!workout) return null;
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
 
@@ -66,29 +77,27 @@ export default function FitnessHistoryCard({ workout }) {
     const workoutItem = workoutItems[0];
     
 
-// Implement Backend Logic Functions
-    
+    // Implement Backend Logic Functions
     const handleRemoveWorkout = () => {
-        const workoutId = workout?.id;
+        const workoutId = workout.workoutId;
         
-        // Backend Remove Workout Goes Here
-        // removeWorkout(workoutId);
-
-        console.log(`Removing ${workout.title}`);
+        removeWorkout(user, workoutId);
         
+        setWorkoutHistory((prev) => prev.filter((w) => w.workoutId !== workoutId));
         setEditOpen(false);
     }
 
 
     function handleSaveWorkout(updatedWorkout) {
-        const workoutId = updatedWorkout?.id;
+        const workoutId = updatedWorkout.workoutId;
 
         console.log("Saving workout:", workoutId);
         console.log("Saving workout:", updatedWorkout.title);
         console.log(updatedWorkout);
         console.log(JSON.stringify(updatedWorkout, null, 2));
-        // Backend Update Workout Goes Here
-        // updateWorkout(workoutId, updatedWorkout);
+        
+        updateWorkout(user, workoutId, updatedWorkout);
+        setWorkoutHistory((prev) => prev.map((w) => w.workoutId === workoutId ? { ...w, ...updatedWorkout } : w));
 
         setEditOpen(false);
     }

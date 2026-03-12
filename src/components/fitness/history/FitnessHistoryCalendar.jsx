@@ -13,7 +13,7 @@ function toLocalDateString(date) {
     return local.toISOString().split("T")[0];
 }
 
-export default function FitnessHistoryCalendar({ workoutHistory = [], onRefresh }) {
+export default function FitnessHistoryCalendar({ workoutHistory = [], setWorkoutHistory, onRefresh }) {
     const [selectedDate, setSelectedDate] = useState(null);
 
     const markedDates = useMemo(() => {
@@ -60,6 +60,7 @@ export default function FitnessHistoryCalendar({ workoutHistory = [], onRefresh 
                         <FitnessHistoryCard
                             key={`${workout.completedAt || workout.date}-${i}`}
                             workout={workout}
+                            setWorkoutHistory={setWorkoutHistory}
                         />
                     ))
                 )}

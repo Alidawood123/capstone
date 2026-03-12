@@ -34,7 +34,7 @@ export default function FitnessHistoryContent() {
 
     useEffect(() => {
         loadWorkouts();
-    }, [loadWorkouts]);
+    }, [workoutHistory.length]); // Reload when workout count changes
     
     useEffect(() => {
         console.log(JSON.stringify(workoutHistory, null, 2));
@@ -51,7 +51,7 @@ export default function FitnessHistoryContent() {
 
     return (
         <View style={styles.content}>
-            <FitnessHistoryCalendar workoutHistory={workoutHistory} onRefresh={loadWorkouts} />
+            <FitnessHistoryCalendar workoutHistory={workoutHistory} setWorkoutHistory={setWorkoutHistory} onRefresh={loadWorkouts} />
         </View>
     );
 }
