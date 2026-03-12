@@ -266,6 +266,27 @@ function ImportModal({ visible, onClose, onImport }) {
     );
 }
 
+function convertImperialToMetric(value, type) {
+    if(!value) return '';
+
+    if (type === 'weight') {
+        return (parseFloat(value) * 0.453592).toFixed(1); // lbs to kg
+    } else if (type === 'size') {
+        return (parseFloat(value) * 2.54).toFixed(1); // in to cm
+    }
+    return value;
+}
+
+function convertMetricToImperial(value, type) {
+    if(!value) return '';
+    if (type === 'weight') {
+        return (parseFloat(value) * 2.20462).toFixed(1); // kg to lbs
+    } else if (type === 'size') {
+        return (parseFloat(value) * 0.393701).toFixed(1); // cm to in
+    }
+    return value;
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function FitnessProfileContent() {
@@ -523,7 +544,7 @@ export default function FitnessProfileContent() {
                 setDob(new Date(data.dateOfBirth).toLocaleDateString());
                 
                 data.bodyMeasurements.forEach(m => {
-                    setMeasurement(m.bodyType, m.measurementValue.toString());
+                    setMeasurement(m.bodyType, m.measurementValue !== null ? m.measurementValue.toString() : '');
                 });
 
                 data.dailyGoals.forEach(goal => {
@@ -566,7 +587,11 @@ export default function FitnessProfileContent() {
 
     const handleSaveMeasurement = (key, value) => {
         setMeasurements((prev) => {
-            const updated = { ...prev, [key]: value };
+            let updated;
+            if(!useMetric) 
+                updated = { ...prev, [key]: value };
+            else
+                updated = { ...prev, [key]: convertMetricToImperial(value, MEASUREMENT_FIELDS.find(f => f.key === key)?.type) };
             saveMeasurements(user, updated);
             return updated;
         });
@@ -687,7 +712,7 @@ export default function FitnessProfileContent() {
                         <LabeledInput
                             key={f.key}
                             label={f.label}
-                            value={measurements[f.key] ?? ''}
+                            value={!useMetric ? (measurements[f.key] ?? '') : (convertImperialToMetric(measurements[f.key], f.type) ?? '')}
                             onChangeText={(v) => handleSaveMeasurement(f.key, v)}
                             keyboardType="decimal-pad"
                             suffix={f.type === 'weight' ? weightUnit : sizeUnit}
