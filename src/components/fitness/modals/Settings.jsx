@@ -9,13 +9,46 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+import { getAuth, deleteUser } from '@react-native-firebase/auth';
+
 const BLUE = '#00b4d8';
 
 export default function Settings({ visible, onClose, onSignOut }) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
     const handleSignOut = () => {
         onClose();
         if (onSignOut) onSignOut();
     };
+
+    const handleDeleteAccount = async () => {
+        fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/delete-profile', {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${await user.getIdToken()}`,
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to delete profile on backend');
+            }
+
+            deleteUser(user)
+                .then(() => {
+                    console.log('User account deleted successfully');
+                    onClose();
+                    if (onSignOut) onSignOut();
+                })
+                .catch((error) => {
+                    console.error('Error deleting user account:', error);
+                    alert('Error deleting account. Please try again.');
+                });
+        }). catch(error => {
+            console.error('Error deleting profile on backend:', error);
+            alert('Error deleting account. Please try again.');
+        })
+    }
 
     return (
         <Modal
@@ -45,6 +78,13 @@ export default function Settings({ visible, onClose, onSignOut }) {
                         >
                             <Ionicons name="log-out-outline" size={22} color="#fff" />
                             <Text style={styles.signOutText}>Sign Out</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.signOutButton}
+                            onPress={handleDeleteAccount}
+                            activeOpacity={0.85}
+                        >
+                            <Text style={styles.signOutText}>Delete Account</Text>
                         </TouchableOpacity>
                     </View>
                 </Pressable>

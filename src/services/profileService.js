@@ -36,6 +36,38 @@ export const saveDob = async (user, newDob) => {
     });
 };
 
+export const saveDefaultRestTimer = async (user, newRestTimer) => {
+    if(newRestTimer === "") return;
+
+    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/update-default-rest-timer', {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${await user.getIdToken()}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newRestTimer: parseInt(newRestTimer) })
+    }).then(res => res.json()).then(data => {
+        console.log('Default rest timer updated successfully:', data);
+    }).catch(err => {
+        console.error(err)
+    });
+}
+
+export const getDefaultRestTimer = async (user, setDefaultRes) => {
+    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/get-default-rest-timer', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${await user.getIdToken()}`,
+        },
+    }).then(res => res.json()).then(data => {
+        console.log('Default rest timer retrieved successfully:', data);
+        setDefaultRes(data.defaultRestTimer);
+    }).catch(err => {
+        console.error('Failed to retrieve default rest timer:', err);
+        return 60;
+    })
+}
+
 export const saveMeasurements = async (user, measurements) => {
     if (!measurements || Object.keys(measurements).length === 0) return;
 

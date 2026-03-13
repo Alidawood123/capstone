@@ -22,6 +22,7 @@ import {
     saveFullName,
     saveDob,
     saveMeasurements,
+    saveDefaultRestTimer,
 
     addDailyGoal,
     toggleDailyGoal,
@@ -657,6 +658,14 @@ export default function FitnessProfileContent() {
         deleteYearlyGoal(user, yearly[index].id, setYearly);
     }
 
+    const handleSaveDefaultRest = async (seconds, isCustom) => {
+        saveDefaultRestTimer(user, seconds);
+        if(!isCustom)
+            setDefaultRest(seconds);
+        else
+            applyCustomRest();
+    }
+
     return (
         <>
             <ScrollView
@@ -803,7 +812,7 @@ export default function FitnessProfileContent() {
                                 key={s}
                                 label={formatRest(s)}
                                 active={defaultRest === s}
-                                onPress={() => setDefaultRest(s)}
+                                onPress={() => handleSaveDefaultRest(s)}
                             />
                         ))}
                     </View>
@@ -818,7 +827,7 @@ export default function FitnessProfileContent() {
                         />
                         <TouchableOpacity
                             style={styles.customRestBtn}
-                            onPress={applyCustomRest}
+                            onPress={() => handleSaveDefaultRest(customRest, true)}
                             activeOpacity={0.85}
                         >
                             <Text style={styles.customRestBtnText}>Set</Text>

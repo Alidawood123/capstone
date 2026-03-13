@@ -18,10 +18,14 @@ import {
     ensureExercisesLoaded,
 } from '../../../services/exerciseParser';
 import { addWorkout } from '../../../services/workoutStorage';
+import {
+    getDefaultRestTimer
+} from '../../../services/profileService';
 
 import ExercisePicker from '../modals/ExercisePicker';
 
 import { getAuth } from '@react-native-firebase/auth';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const BLUE = '#00b4d8';
 const GREEN = '#22c55e';
@@ -35,10 +39,6 @@ function formatElapsed(seconds) {
         return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-const getDefaultRestSeconds = async () => {
-    return 60;
 }
 
 /** Format rest seconds as "1:30" (min:sec) if >= 60, else "45s" */
@@ -226,7 +226,7 @@ export default function EmptyWorkoutContent({
     }, []);
 
     useEffect(() => {
-        getDefaultRestSeconds().then((val) => setSavedDefaultRest(val));
+        getDefaultRestTimer(user, setSavedDefaultRest);
     }, []);
 
     useEffect(() => {
@@ -329,7 +329,7 @@ export default function EmptyWorkoutContent({
     const handleSetCompleteToggle = (itemId, setIndex, completed, restSeconds) => {
         updateSet(itemId, setIndex, 'completed', completed);
         if (completed && (restSeconds ?? 60) > 0) {
-            setRestCountdown({ itemId, setIndex, remainingSeconds: restSeconds ?? 60 });
+            setRestCountdown({ itemId, setIndex, remainingSeconds: restSeconds });
         } else if (!completed && isRestCountdownActive(itemId, setIndex)) {
             setRestCountdown(null);
         }
@@ -511,9 +511,9 @@ export default function EmptyWorkoutContent({
                                                 {isEditingRest(item.id, setIndex) ? (
                                                     <TextInput
                                                         style={styles.restInput}
-                                                        defaultValue={formatRestDisplay(set.restSeconds ?? 60)}
+                                                        defaultValue={formatRestDisplay(set.restSeconds)}
                                                         placeholder="0:00 or 45s"
-                                                        placeholderTextColor="#9ca3af"
+                                                        placeholderTextColor="#020203"
                                                         keyboardType="numbers-and-punctuation"
                                                         onBlur={(e) =>
                                                             handleRestBlur(item.id, setIndex, e.nativeEvent.text)
@@ -538,7 +538,7 @@ export default function EmptyWorkoutContent({
                                                         <Text style={styles.restSemicolonText}>
                                                             {isRestCountdownActive(item.id, setIndex)
                                                                 ? formatRestDisplay(restCountdown.remainingSeconds)
-                                                                : formatRestDisplay(set.restSeconds ?? 60)}
+                                                                : formatRestDisplay(set.restSeconds)}
                                                         </Text>
                                                         <Text style={styles.restSemicolonColon}>:</Text>
                                                     </TouchableOpacity>
@@ -551,7 +551,7 @@ export default function EmptyWorkoutContent({
                                                         item.id,
                                                         setIndex,
                                                         !set.completed,
-                                                        set.restSeconds ?? 60
+                                                        set.restSeconds
                                                     )
                                                 }
                                             >

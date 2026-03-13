@@ -1,14 +1,10 @@
 import React from 'react';
 
 import { StyleSheet, View, Text, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import backButtonStyle from '../../styles/backButton'
 
-
-// LandingPage Component - The first page users see after logging in
 export default function FitnessAnalyticsContent() {
     return (
-        <View>
+        <View style={styles.container}>
             <Text>FitnessAnalyticsContent Page</Text>
             <Text>Analytics coming soon!</Text>
             
@@ -16,5 +12,8 @@ export default function FitnessAnalyticsContent() {
     );
 }
 
-// Local StyleSheet For NutritionPage 
-const styles = StyleSheet.create({  });
+const styles = StyleSheet.create({ 
+    container: {
+        flex: 1
+    }
+});
