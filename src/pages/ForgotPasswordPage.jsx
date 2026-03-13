@@ -157,12 +157,12 @@ export default function SigninPage({ onNavigateToSignIn }) {
                                     {isLoading ? (
                                         <View style={styles.loadingContainer}>
                                             <ActivityIndicator color="#fff" size="small" />
-                                            <Text style={styles.loadingText}>Signing in...</Text>
+                                            <Text style={styles.loadingText}>Sending reset link...</Text>
                                         </View>
                                     ) : (
                                         // Show button text with arrow icon when not loading
                                         <View style={styles.buttonContent}>
-                                            <Text style={styles.signInButtonText}>Sign In</Text>
+                                            <Text style={styles.signInButtonText}>Send Reset Link</Text>
                                             <View style={styles.arrowContainer}>
                                                 <Ionicons name="arrow-forward" size={20} color="#fff" />
                                             </View>
