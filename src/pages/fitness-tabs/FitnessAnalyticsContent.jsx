@@ -6,14 +6,11 @@ import backButtonStyle from '../../styles/backButton'
 
 
 // LandingPage Component - The first page users see after logging in
-export default function FitnessAnalyticsContent({ onNavigateToLanding }) {
+export default function FitnessAnalyticsContent() {
     return (
         <View>
-            <Pressable onPress={onNavigateToLanding} style={backButtonStyle.backButton} activeOpacity={0.8}>
-                <Ionicons name="arrow-back" size={24} color="white" />
-            </Pressable>
             <Text>FitnessAnalyticsContent Page</Text>
-
+            <Text>Analytics coming soon!</Text>
             
         </View>
     );

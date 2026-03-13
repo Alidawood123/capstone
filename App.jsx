@@ -25,6 +25,8 @@ export default function App() {
     }
     setCurrentPage('signin');
   };
+
+  const navigateToForgotPassword = () => setCurrentPage('forgotpassword');
   const navigateToFitness = () => setCurrentPage('fitness');
 
   useEffect(() => {
@@ -37,7 +39,12 @@ export default function App() {
   return (
     <GestureHandlerRootView>
       <SafeAreaProvider>
-        <NavigatePage currentPage={currentPage} onNavigateToFitness={navigateToFitness} onNavigateToSignIn={navigateToSignIn} onNavigateToSignUp={navigateToSignUp} />
+        <NavigatePage 
+          currentPage={currentPage} 
+          onNavigateToFitness={navigateToFitness} 
+          onNavigateToSignIn={navigateToSignIn} 
+          onNavigateToSignUp={navigateToSignUp} 
+          onNavigateToForgotPassword={navigateToForgotPassword} />
         <Toast />
       </SafeAreaProvider>
     </GestureHandlerRootView>

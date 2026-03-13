@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import SigninPage from '../pages/Signinpage';
 import SignupPage from '../pages/Signuppage';
 import FitnessPage from '../pages/FitnessPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 
-export default function NavigatePage({ currentPage, onNavigateToSignUp, onNavigateToSignIn, onNavigateToFitness }) {
+export default function NavigatePage({ currentPage, onNavigateToSignUp, onNavigateToSignIn, onNavigateToFitness, onNavigateToForgotPassword }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const auth = getAuth();
@@ -34,11 +35,15 @@ export default function NavigatePage({ currentPage, onNavigateToSignUp, onNaviga
             case 'fitness':
                 return <FitnessPage onNavigateToSignIn={onNavigateToSignIn} />;
 
+            case 'forgotpassword':
+                return <ForgotPasswordPage onNavigateToSignIn={onNavigateToSignIn} />;
+
             default:
                 return <>
                     <SigninPage
                         onNavigateToSignUp={onNavigateToSignUp}
                         onNavigateToFitness={onNavigateToFitness}
+                        onNavigateToForgotPassword={onNavigateToForgotPassword}
                     />
                 </>;    
         }

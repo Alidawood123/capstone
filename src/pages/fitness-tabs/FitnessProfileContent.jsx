@@ -541,7 +541,10 @@ export default function FitnessProfileContent() {
                 // console.log(data)
 
                 setName(data.fullName);
-                setDob(new Date(data.dateOfBirth).toLocaleDateString());
+                if(data.dateOfBirth)
+                    setDob(new Date(data.dateOfBirth).toLocaleDateString());
+                else
+                    setDob('');
                 
                 data.bodyMeasurements.forEach(m => {
                     setMeasurement(m.bodyType, m.measurementValue !== null ? m.measurementValue.toString() : '');

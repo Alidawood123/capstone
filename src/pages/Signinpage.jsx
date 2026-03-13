@@ -30,7 +30,7 @@ import Toast from 'react-native-toast-message';
 
 // SigninPage Component - A modern login screen with email/password authentication
 // Features: email validation, password visibility toggle, loading state, social login buttons
-export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness }) {
+export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness, onNavigateToForgotPassword }) {
     const auth = getAuth();
 
     // State for form inputs
@@ -370,7 +370,7 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness }) 
                         </View>
 
                         {/* Forgot Password Link */}
-                        <TouchableOpacity style={styles.forgotPassword}>
+                        <TouchableOpacity style={styles.forgotPassword} onPress={onNavigateToForgotPassword}>
                             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                         </TouchableOpacity>
 
