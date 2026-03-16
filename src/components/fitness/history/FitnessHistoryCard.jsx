@@ -6,6 +6,7 @@ import WorkoutDetailsFrame from "./FitnessHistoryWorkoutDetails";
 import WorkoutEditFrame from "./FitnessHistoryEdits";
 
 import { getAuth } from "@react-native-firebase/auth";
+import Toast from "react-native-toast-message";
 
 import {
     removeWorkout,
@@ -81,9 +82,22 @@ export default function FitnessHistoryCard({ workout, setWorkoutHistory }) {
     const handleRemoveWorkout = () => {
         const workoutId = workout.workoutId;
         
-        removeWorkout(user, workoutId);
-        
-        setWorkoutHistory((prev) => prev.filter((w) => w.workoutId !== workoutId));
+        removeWorkout(user, workoutId).then(() => {
+            setWorkoutHistory((prev) => prev.filter((w) => w.workoutId !== workoutId));
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Workout removed successfully.'
+            });
+        }).catch((err) => {
+            console.log(err);
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to remove workout.'
+            });
+        });
+
         setEditOpen(false);
     }
 

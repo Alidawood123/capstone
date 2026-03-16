@@ -25,7 +25,7 @@ import {
 import ExercisePicker from '../modals/ExercisePicker';
 
 import { getAuth } from '@react-native-firebase/auth';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import Toast from 'react-native-toast-message';
 
 const BLUE = '#00b4d8';
 const GREEN = '#22c55e';
@@ -335,7 +335,7 @@ export default function EmptyWorkoutContent({
         }
     };
 
-    const handleCompleteWorkout = async () => {
+    const handleCompleteWorkout = () => {
         if (completingWorkout) return;
         setCompletingWorkout(true);
         try {
@@ -346,10 +346,12 @@ export default function EmptyWorkoutContent({
                 completedAt: new Date().toISOString(),
                 exercises: addedItems,
             };
-            await addWorkout(user, workout);
-            if (onCancelWorkout) onCancelWorkout();
+            addWorkout(user, workout).then(() => {    
+                if (onCancelWorkout) onCancelWorkout();
+            });
         } catch (error) {
             console.error('Failed to save workout:', error);
+
         } finally {
             setCompletingWorkout(false);
         }
