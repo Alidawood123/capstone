@@ -193,15 +193,15 @@ const styles = StyleSheet.create({
         margin: 10,
         borderRadius: 14,
         overflow: 'hidden',
-
         borderWidth: 1,
         borderColor: '#dbeafe',
         backgroundColor: '#6366f1',
     },
-
     root: {
         backgroundColor: '#fff',
         padding: 16,
+        elevation: 3,
+        margin: 10,
     },
     titleRow: {
         flexDirection: 'row',
@@ -245,7 +245,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#454545',
     },
-
     actions: {
         flexDirection: 'row',
         alignItems: 'stretch',
@@ -256,10 +255,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-
     editBtn: { backgroundColor: '#6366f1' },
     deleteBtn: { backgroundColor: '#ef4444' },
-
     moreBtn: {
         marginTop: 8,
         paddingTop: 5,
@@ -281,23 +278,20 @@ const styles = StyleSheet.create({
         gap: 8,
         paddingVertical: 12,
     },
-
     chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: "#f3f4f6",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        backgroundColor: "#f3f4f6",
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 999,
     },
-
     chipText: {
-    color: "#111",
-    fontSize: 13,
-    fontWeight: "600",
+        color: "#111",
+        fontSize: 13,
+        fontWeight: "600",
     },
-
 });
 
 

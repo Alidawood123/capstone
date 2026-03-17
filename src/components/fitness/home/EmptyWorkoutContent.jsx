@@ -27,6 +27,7 @@ import ExercisePicker from '../modals/ExercisePicker';
 import { getAuth } from '@react-native-firebase/auth';
 import Toast from 'react-native-toast-message';
 
+
 const BLUE = '#00b4d8';
 const GREEN = '#22c55e';
 const SWIPE_DELETE_WIDTH = 72;
@@ -51,6 +52,7 @@ function formatRestDisplay(seconds) {
         return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
     }
     return `${m}:${String(s).padStart(2, "0")}`;
+
 }
 
 /** Parse rest input: "90", "1:30", "45s" -> seconds */
