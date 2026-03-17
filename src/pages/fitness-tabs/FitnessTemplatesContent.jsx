@@ -13,6 +13,8 @@ import { getTemplates } from '../../services/templateStorage';
 import Template from '../../components/fitness/modals/Template';
 
 import { getAuth } from '@react-native-firebase/auth';
+import { deleteTemplate } from '../../services/templateStorage';
+import Toast from 'react-native-toast-message';
 
 const BLUE = '#00b4d8';
 const GRAY = '#6b7280';
@@ -76,6 +78,21 @@ export default function FitnessTemplatesContent({ onUseTemplate }) {
         }
     };
 
+    const handleDeleteTemplate = async () => {
+        await deleteTemplate(user, selectedTemplate.templateId)
+            .then(() => {
+                Toast.show({ type: 'success', text1: 'Template deleted' });
+                closeModal();
+                loadTemplates();
+            })
+            .catch((error) => {
+                console.error('Error deleting template:', error);
+                Toast.show({ type: 'error', text1: 'Failed to delete template' });
+                closeModal();
+            });
+    }
+    
+
     return (
         <View style={styles.content}>
             {loading ? (
@@ -124,6 +141,7 @@ export default function FitnessTemplatesContent({ onUseTemplate }) {
                 template={selectedTemplate}
                 onClose={closeModal}
                 onUseTemplate={handleUseTemplate}
+                onDeleteTemplate={handleDeleteTemplate}
                 />
         </View>
     );

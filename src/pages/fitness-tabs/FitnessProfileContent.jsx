@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
 import {
     StyleSheet,
     View,
@@ -12,11 +13,12 @@ import {
     Modal,
     Image
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 
 import { getAuth } from '@react-native-firebase/auth';
+import Toast from 'react-native-toast-message';
 
 import {
     saveFullName,
@@ -43,6 +45,7 @@ const GRAY = '#9ca3af';
 const LIGHT_BLUE = '#e0f7fc';
 const BORDER = '#e5e7eb';
 const LIGHT_GRAY = '#f3f4f6';
+const GREEN = '#22c55e';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const REST_PRESETS = [30, 60, 90, 120, 180, 300];
@@ -86,11 +89,12 @@ const goalsFromPipe = (str) =>
 
 // ─── Reusable sub-components ──────────────────────────────────────────────────
 
-function SectionHeader({ icon, title }) {
+function SectionHeader({ icon, title, isDirty }) {
     return (
         <View style={styles.sectionHeader}>
             <Ionicons name={icon} size={20} color={BLUE} />
             <Text style={styles.sectionTitle}>{title}</Text>
+            {isDirty && <View style={styles.dirtyDot} />}
         </View>
     );
 }
@@ -195,9 +199,8 @@ function GoalGroup({ label, goals, onAdd, onToggle, onDelete }) {
     );
 }
 
-// ─── Section wrapper — defined OUTSIDE main component to prevent
-//     re-mounting on every keystroke (which kills TextInput focus) ─────────────
-function Section({ id, icon, title, collapsed, toggleSection, children }) {
+// ─── Section wrapper ──────────────────────────────────────────────────────────
+function Section({ id, icon, title, collapsed, toggleSection, isDirty, children }) {
     return (
         <Card style={{ marginBottom: 14 }}>
             <TouchableOpacity
@@ -205,7 +208,7 @@ function Section({ id, icon, title, collapsed, toggleSection, children }) {
                 onPress={() => toggleSection(id)}
                 activeOpacity={0.7}
             >
-                <SectionHeader icon={icon} title={title} />
+                <SectionHeader icon={icon} title={title} isDirty={isDirty} />
                 <Ionicons
                     name={collapsed[id] ? 'chevron-down' : 'chevron-up'}
                     size={20}
@@ -268,23 +271,16 @@ function ImportModal({ visible, onClose, onImport }) {
 }
 
 function convertImperialToMetric(value, type) {
-    if(!value) return '';
-
-    if (type === 'weight') {
-        return (parseFloat(value) * 0.453592).toFixed(1); // lbs to kg
-    } else if (type === 'size') {
-        return (parseFloat(value) * 2.54).toFixed(1); // in to cm
-    }
+    if (!value) return '';
+    if (type === 'weight') return (parseFloat(value) * 0.453592).toFixed(1);
+    if (type === 'size')   return (parseFloat(value) * 2.54).toFixed(1);
     return value;
 }
 
 function convertMetricToImperial(value, type) {
-    if(!value) return '';
-    if (type === 'weight') {
-        return (parseFloat(value) * 2.20462).toFixed(1); // kg to lbs
-    } else if (type === 'size') {
-        return (parseFloat(value) * 0.393701).toFixed(1); // cm to in
-    }
+    if (!value) return '';
+    if (type === 'weight') return (parseFloat(value) * 2.20462).toFixed(1);
+    if (type === 'size')   return (parseFloat(value) * 0.393701).toFixed(1);
     return value;
 }
 
@@ -294,10 +290,22 @@ export default function FitnessProfileContent() {
     const auth = getAuth();
     const user = auth.currentUser;
     const [authToken, setAuthToken] = useState();
+    const [isSaving, setIsSaving] = useState(false);
+
+    // ── Dirty tracking — which sections have unsaved changes ──────────────────
+    const [dirty, setDirty] = useState({
+        personal:     false,
+        measurements: false,
+        rest:         false,
+    });
+    const markDirty = (section) =>
+        setDirty((prev) => ({ ...prev, [section]: true }));
+    const clearDirty = () =>
+        setDirty({ personal: false, measurements: false, rest: false });
+
+    const isAnyDirty = dirty.personal || dirty.measurements || dirty.rest;
 
     // ── Collapsible sections ───────────────────────────────────────────────────
-    // FIX: collapsed state and toggleSection are defined here and passed
-    // directly into each Section via a closure — no prop-passing needed
     const [collapsed, setCollapsed] = useState({
         personal:     false,
         measurements: true,
@@ -324,14 +332,10 @@ export default function FitnessProfileContent() {
     const setMeasurement = (key, val) =>
         setMeasurements((prev) => ({ ...prev, [key]: val }));
 
-    // ── Goals ─────────────────────────────────────────────────────────────────
+    // ── Goals (still saved immediately — each action is discrete) ─────────────
     const [daily,   setDaily]   = useState([]);
     const [monthly, setMonthly] = useState([]);
     const [yearly,  setYearly]  = useState([]);
-
-    const addGoal    = (setter, text) => setter((p) => [...p, { text, done: false }]);
-    const toggleGoal = (setter, i)    => setter((p) => p.map((g, idx) => idx === i ? { ...g, done: !g.done } : g));
-    const deleteGoal = (setter, i)    => setter((p) => p.filter((_, idx) => idx !== i));
 
     // ── Progress pictures ──────────────────────────────────────────────────────
     const [pictures, setPictures] = useState([]);
@@ -362,7 +366,7 @@ export default function FitnessProfileContent() {
                 const fileType = nameParts[nameParts.length - 1];
                 const formData = new FormData();
                 formData.append('progressPicture', {
-                    uri: uri,
+                    uri,
                     name: `progress_${Date.now()}.${fileType}`,
                     size: fileSize,
                     type: `image/${fileType}`,
@@ -374,14 +378,12 @@ export default function FitnessProfileContent() {
                 }));
                 fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/upload-progress-picture', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${await user.getIdToken()}`,
-                    },
+                    headers: { 'Authorization': `Bearer ${await user.getIdToken()}` },
                     body: formData,
                 }).then(() => {
                     console.log('Photo uploaded successfully');
                 }).catch((err) => {
-                    Alert.alert('Error', err.message)
+                    Alert.alert('Error', err.message);
                 });
                 setPictures((prev) => [...prev, newPic]);
             }
@@ -400,14 +402,11 @@ export default function FitnessProfileContent() {
             const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
             if (!result.canceled) {
                 const { fileName, fileSize, uri } = result.assets[0];
-
-                console.log(result.assets[0]);
-
                 const nameParts = fileName.split('.');
                 const fileType = nameParts[nameParts.length - 1];
                 const formData = new FormData();
                 formData.append('progressPicture', {
-                    uri: uri,
+                    uri,
                     name: `progress_${Date.now()}.${fileType}`,
                     size: fileSize,
                     type: `image/${fileType}`,
@@ -415,9 +414,7 @@ export default function FitnessProfileContent() {
 
                 fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/upload-progress-picture', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${await user.getIdToken()}`,
-                    },
+                    headers: { 'Authorization': `Bearer ${await user.getIdToken()}` },
                     body: formData,
                 }).then(() => {
                     console.log('Photo uploaded successfully');
@@ -434,29 +431,29 @@ export default function FitnessProfileContent() {
 
     const removePicture = (i) => {
         const selectedPicture = pictures[i];
-
         if (!selectedPicture?.uri) {
             Alert.alert('Error', 'Could not find the selected photo.');
             return;
         }
-
         Alert.alert('Remove Photo', 'Delete this progress photo?', [
-            { text: 'Delete', style: 'destructive', onPress: () => 
-                {
-                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/delete-progress-picture?pictureUrl=' + encodeURIComponent(selectedPicture.uri) + '&pictureId=' + encodeURIComponent(selectedPicture.id), {
-                        method: 'delete',
-                        headers: {
-                            'Authorization': `Bearer ${authToken}`,
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    fetch(
+                        process.env.EXPO_PUBLIC_BACKEND_SERVER_URL +
+                        '/api/profile/delete-progress-picture?pictureUrl=' +
+                        encodeURIComponent(selectedPicture.uri) +
+                        '&pictureId=' +
+                        encodeURIComponent(selectedPicture.id),
+                        {
+                            method: 'delete',
+                            headers: { 'Authorization': `Bearer ${authToken}` },
                         }
-                    }).then(() => {
-                        console.log('Photo deleted successfully');
+                    ).then(() => {
                         setPictures((prev) => prev.filter((_, idx) => idx !== i));
-
                     }).catch((err) => {
                         Alert.alert('Error', err.message);
                     });
-
-                }
+                },
             },
             { text: 'Cancel', style: 'cancel' },
         ]);
@@ -465,11 +462,6 @@ export default function FitnessProfileContent() {
     // ── Rest Timer ─────────────────────────────────────────────────────────────
     const [defaultRest, setDefaultRest] = useState(90);
     const [customRest,  setCustomRest]  = useState('');
-    const applyCustomRest = () => {
-        const val = parseInt(customRest, 10);
-        if (!isNaN(val) && val > 0) setDefaultRest(val);
-        setCustomRest('');
-    };
 
     // ── Import modal ───────────────────────────────────────────────────────────
     const [importVisible, setImportVisible] = useState(false);
@@ -481,11 +473,13 @@ export default function FitnessProfileContent() {
             ['Name', name],
             ['Date of Birth', dob],
             ['Units', useMetric ? 'Metric' : 'Imperial'],
-            ...FIELDS.map((f) => [
+            ...MEASUREMENT_FIELDS.map((f) => [
                 f.label,
-                meas[f.key] ? `${meas[f.key]} ${f.type === 'weight' ? wUnit : sUnit}` : '',
+                measurements[f.key]
+                    ? `${measurements[f.key]} ${f.type === 'weight' ? weightUnit : sizeUnit}`
+                    : '',
             ]),
-            ['Default Rest Timer', fmtRest(defaultRest)],
+            ['Default Rest Timer', formatRest(defaultRest)],
             ['Rest Timer Seconds', String(defaultRest)],
             ['Daily Goals',        daily.map((g) => g.text).join(' | ')],
             ['Monthly Goals',      monthly.map((g) => g.text).join(' | ')],
@@ -509,9 +503,12 @@ export default function FitnessProfileContent() {
             if (m['Name']          != null) setName(m['Name']);
             if (m['Date of Birth'] != null) setDob(m['Date of Birth']);
             if (m['Units']         != null) setUseMetric(m['Units'] === 'Metric');
-            FIELDS.forEach((f) => {
+            MEASUREMENT_FIELDS.forEach((f) => {
                 if (m[f.label] != null)
-                    setMeas((prev) => ({ ...prev, [f.key]: m[f.label].replace(/\s*(kg|lbs|cm|in)$/, '').trim() }));
+                    setMeasurements((prev) => ({
+                        ...prev,
+                        [f.key]: m[f.label].replace(/\s*(kg|lbs|cm|in)$/, '').trim(),
+                    }));
             });
             if (m['Rest Timer Seconds']) {
                 const v = parseInt(m['Rest Timer Seconds'], 10);
@@ -521,150 +518,161 @@ export default function FitnessProfileContent() {
             if (m['Monthly Goals']      != null) setMonthly(goalsFromPipe(m['Monthly Goals']));
             if (m['Yearly Resolutions'] != null) setYearly(goalsFromPipe(m['Yearly Resolutions']));
             setCollapsed({ personal: false, measurements: false, goals: false, pictures: false, rest: false, data: false });
+            // Mark all sections dirty so the user knows they need to Apply
+            setDirty({ personal: true, measurements: true, rest: true });
             setImportVisible(false);
-            Alert.alert('Import Successful', 'Your profile data has been restored.');
+            Alert.alert('Import Successful', 'Review your data and tap "Apply Changes" to save.');
         } catch (e) {
             Alert.alert('Import Failed', e.message);
         }
     };
 
-    useEffect(() => {
+    // ── Apply Changes — single save for all dirty sections ────────────────────
+    const handleApplyChanges = async () => {
+        if (!isAnyDirty) return;
+        setIsSaving(true);
 
-        // Load profile data from backend
+        try {
+            const saves = [];
+
+            if (dirty.personal) {
+                saves.push(saveFullName(user, name));
+                saves.push(saveDob(user, dob));
+            }
+
+            if (dirty.measurements) {
+                // Convert display values back to imperial (stored unit) before saving
+                const toSave = {};
+                MEASUREMENT_FIELDS.forEach((f) => {
+                    const displayVal = measurements[f.key];
+                    if (displayVal !== undefined && displayVal !== '') {
+                        toSave[f.key] = useMetric
+                            ? convertMetricToImperial(displayVal, f.type)
+                            : displayVal;
+                    } else {
+                        toSave[f.key] = displayVal ?? '';
+                    }
+                });
+                saves.push(saveMeasurements(user, toSave));
+            }
+
+            if (dirty.rest) {
+                // Resolve pending custom input if the user typed but didn't press Set
+                const restToSave = (() => {
+                    const custom = parseInt(customRest, 10);
+                    if (!isNaN(custom) && custom > 0) {
+                        setDefaultRest(custom);
+                        setCustomRest('');
+                        return custom;
+                    }
+                    return defaultRest;
+                })();
+                saves.push(saveDefaultRestTimer(user, restToSave));
+            }
+
+            await Promise.all(saves);
+
+            clearDirty();
+
+            Toast.show({
+                type: 'success',
+                text1: 'Profile saved',
+                text2: 'All changes have been applied.',
+            });
+        } catch (err) {
+            console.error(err);
+            Toast.show({
+                type: 'error',
+                text1: 'Save failed',
+                text2: 'Could not save some changes. Please try again.',
+            });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    // ── Load profile on mount ──────────────────────────────────────────────────
+    useEffect(() => {
         async function loadFullProfile() {
-            setAuthToken(await user.getIdToken());
+            const token = await user.getIdToken();
+            setAuthToken(token);
 
             fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/full-profile', {
-                headers: {
-                    'Authorization': `Bearer ${await user.getIdToken()}`, 
-                }
-            }).then(res => res.json()).then(data => {
-                // console.log(data)
+                headers: { 'Authorization': `Bearer ${token}` },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setName(data.fullName);
+                    setDob(data.dateOfBirth ? new Date(data.dateOfBirth).toLocaleDateString() : '');
 
-                setName(data.fullName);
-                if(data.dateOfBirth)
-                    setDob(new Date(data.dateOfBirth).toLocaleDateString());
-                else
-                    setDob('');
-                
-                data.bodyMeasurements.forEach(m => {
-                    setMeasurement(m.bodyType, m.measurementValue !== null ? m.measurementValue.toString() : '');
-                });
+                    data.bodyMeasurements.forEach((m) => {
+                        setMeasurement(
+                            m.bodyType,
+                            m.measurementValue !== null ? m.measurementValue.toString() : ''
+                        );
+                    });
 
-                data.dailyGoals.forEach(goal => {
-                    setDaily((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                    data.dailyGoals.forEach((goal) => {
+                        setDaily((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                    });
+                    data.monthlyGoals.forEach((goal) => {
+                        setMonthly((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                    });
+                    data.yearlyGoals.forEach((goal) => {
+                        setYearly((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                    });
+
+                    data.progressPictures.forEach((picURL) => {
+                        const parseURL =
+                            process.env.EXPO_PUBLIC_BACKEND_SERVER_URL +
+                            '/api/profile/download-progress-picture?pictureUrl=' +
+                            picURL.url;
+                        setPictures((prev) => [...prev, { id: picURL._id, uri: parseURL, date: picURL.date }]);
+                    });
+
+                    setDefaultRest(data.defaultRestTimer);
                 })
-
-                data.monthlyGoals.forEach(goal => {
-                    setMonthly((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
+                .catch((err) => {
+                    console.error('Failed to load full profile:', err);
                 });
-
-                data.yearlyGoals.forEach(goal => {
-                    setYearly((prev) => [...prev, { id: goal._id, text: goal.title, done: goal.achieved }]);
-                });
-
-                data.progressPictures.forEach(picURL => {
-                    console.log(picURL);
-                    const parseURL = process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/download-progress-picture?pictureUrl=' + picURL.url;
-                    setPictures((prev) => [...prev, { id: picURL._id, uri: parseURL, date: picURL.date }]);
-                })
-
-                setDefaultRest(data.defaultRestTimer);
-            }).catch(err => {
-                console.error('Failed to load full profile:', err);
-            });
-        };
+        }
 
         loadFullProfile();
-
     }, []);
 
-    const handleSaveFullName = async (newName) => {
-        setName(newName);
-        saveFullName(user, newName);
-    };
-
-    const handleSaveDob = async (newDob) => {
-        setDob(newDob);
-        saveDob(user, newDob);
-    };
-
-    const handleSaveMeasurement = (key, value) => {
-        setMeasurements((prev) => {
-            let updated;
-            if(!useMetric) 
-                updated = { ...prev, [key]: value };
-            else
-                updated = { ...prev, [key]: convertMetricToImperial(value, MEASUREMENT_FIELDS.find(f => f.key === key)?.type) };
-            saveMeasurements(user, updated);
-            return updated;
-        });
-    }
-
-    const handleAddDailyGoal = async (goal) => {
-        addDailyGoal(user, goal, setDaily);
-    };
-
-    const handleToggleDailyGoal = async (index) => {
+    // ── Goal handlers (still immediate — each action is atomic) ───────────────
+    const handleAddDailyGoal    = (goal) => addDailyGoal(user, goal, setDaily);
+    const handleToggleDailyGoal = (index) => {
         setDaily((prev) => {
             const updated = [...prev];
-            updated[index].done = !updated[index].done;
-
+            updated[index] = { ...updated[index], done: !updated[index].done };
             toggleDailyGoal(user, updated[index]);
-
             return updated;
         });
     };
+    const handleDeleteDailyGoal = (index) => deleteDailyGoal(user, daily[index].id, setDaily);
 
-    const handleDeleteDailyGoal = async (index) => {
-        deleteDailyGoal(user, daily[index].id, setDaily);
-    }
-
-    const handleAddMonthlyGoal = async (goal) => {
-        addMonthlyGoal(user, goal, setMonthly);
-    };
-
-    const handleToggleMonthlyGoal = async (index) => {
+    const handleAddMonthlyGoal    = (goal) => addMonthlyGoal(user, goal, setMonthly);
+    const handleToggleMonthlyGoal = (index) => {
         setMonthly((prev) => {
             const updated = [...prev];
-            updated[index].done = !updated[index].done;
-
+            updated[index] = { ...updated[index], done: !updated[index].done };
             toggleMonthlyGoal(user, updated[index]);
-
             return updated;
         });
     };
+    const handleDeleteMonthlyGoal = (index) => deleteMonthlyGoal(user, monthly[index].id, setMonthly);
 
-    const handleDeleteMonthlyGoal = async (index) => {
-        deleteMonthlyGoal(user, monthly[index].id, setMonthly);
-    }
-
-    const handleAddYearlyGoal = async (goal) => {
-        addYearlyGoal(user, goal, setYearly);
-    };
-
-    const handleToggleYearlyGoal = async (index) => {
+    const handleAddYearlyGoal    = (goal) => addYearlyGoal(user, goal, setYearly);
+    const handleToggleYearlyGoal = (index) => {
         setYearly((prev) => {
             const updated = [...prev];
-            updated[index].done = !updated[index].done;
-
+            updated[index] = { ...updated[index], done: !updated[index].done };
             toggleYearlyGoal(user, updated[index]);
-
             return updated;
         });
     };
-
-    const handleDeleteYearlyGoal = async (index) => {
-        deleteYearlyGoal(user, yearly[index].id, setYearly);
-    }
-
-    const handleSaveDefaultRest = async (seconds, isCustom) => {
-        saveDefaultRestTimer(user, seconds);
-        if(!isCustom)
-            setDefaultRest(seconds);
-        else
-            applyCustomRest();
-    }
+    const handleDeleteYearlyGoal = (index) => deleteYearlyGoal(user, yearly[index].id, setYearly);
 
     return (
         <>
@@ -674,27 +682,58 @@ export default function FitnessProfileContent() {
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
             >
+                {/* ── Sticky Apply Changes Banner ── */}
+                {isAnyDirty && (
+                    <TouchableOpacity
+                        style={[styles.applyBanner, isSaving && styles.applyBannerDisabled]}
+                        onPress={handleApplyChanges}
+                        activeOpacity={0.85}
+                        disabled={isSaving}
+                    >
+                        <Ionicons
+                            name={isSaving ? 'hourglass-outline' : 'checkmark-circle-outline'}
+                            size={20}
+                            color="#fff"
+                        />
+                        <Text style={styles.applyBannerText}>
+                            {isSaving ? 'Saving…' : 'Apply Changes'}
+                        </Text>
+                    </TouchableOpacity>
+                )}
+
                 {/* ── Personal Info ── */}
-                <Section id="personal" icon="person-circle-outline" title="Personal Info" collapsed={collapsed} toggleSection={toggleSection}>
+                <Section
+                    id="personal"
+                    icon="person-circle-outline"
+                    title="Personal Info"
+                    collapsed={collapsed}
+                    toggleSection={toggleSection}
+                    isDirty={dirty.personal}
+                >
                     <LabeledInput
                         label="Full Name"
                         value={name}
-                        onChangeText={newName => handleSaveFullName(newName)}
+                        onChangeText={(v) => { setName(v); markDirty('personal'); }}
                         placeholder="Your name"
                     />
                     <LabeledInput
                         label="Date of Birth"
                         value={dob}
-                        onChangeText={newText => handleSaveDob(newText)}
+                        onChangeText={(v) => { setDob(v); markDirty('personal'); }}
                         placeholder="MM/DD/YYYY"
                         keyboardType="numbers-and-punctuation"
                     />
-
                 </Section>
 
-                {/* ── Measurements & Units (merged) ── */}
-                <Section id="measurements" icon="body-outline" title="Body Measurements" collapsed={collapsed} toggleSection={toggleSection}>
-                    {/* Unit toggle at the top */}
+                {/* ── Measurements & Units ── */}
+                <Section
+                    id="measurements"
+                    icon="body-outline"
+                    title="Body Measurements"
+                    collapsed={collapsed}
+                    toggleSection={toggleSection}
+                    isDirty={dirty.measurements}
+                >
                     <View style={styles.switchRow}>
                         <View>
                             <Text style={styles.switchLabel}>
@@ -717,15 +756,20 @@ export default function FitnessProfileContent() {
                             </View>
                         ))}
                     </View>
-                    {/* Divider between unit toggle and measurement fields */}
                     <View style={[styles.divider, { marginTop: 16 }]} />
-                    {/* Body measurement fields */}
                     {MEASUREMENT_FIELDS.map((f) => (
                         <LabeledInput
                             key={f.key}
                             label={f.label}
-                            value={!useMetric ? (measurements[f.key] ?? '') : (convertImperialToMetric(measurements[f.key], f.type) ?? '')}
-                            onChangeText={(v) => handleSaveMeasurement(f.key, v)}
+                            value={
+                                !useMetric
+                                    ? (measurements[f.key] ?? '')
+                                    : (convertImperialToMetric(measurements[f.key], f.type) ?? '')
+                            }
+                            onChangeText={(v) => {
+                                setMeasurement(f.key, v);
+                                markDirty('measurements');
+                            }}
                             keyboardType="decimal-pad"
                             suffix={f.type === 'weight' ? weightUnit : sizeUnit}
                         />
@@ -733,47 +777,53 @@ export default function FitnessProfileContent() {
                 </Section>
 
                 {/* ── Goals & Resolutions ── */}
-                <Section id="goals" icon="flag-outline" title="Goals & Resolutions" collapsed={collapsed} toggleSection={toggleSection}>
+                <Section
+                    id="goals"
+                    icon="flag-outline"
+                    title="Goals & Resolutions"
+                    collapsed={collapsed}
+                    toggleSection={toggleSection}
+                    isDirty={false}
+                >
                     <GoalGroup
                         label="Daily Goals"
                         goals={daily}
-                        onAdd={(t) => handleAddDailyGoal(t)}
-                        onToggle={(i) => handleToggleDailyGoal(i)}
-                        onDelete={(i) => handleDeleteDailyGoal(i)}
+                        onAdd={handleAddDailyGoal}
+                        onToggle={handleToggleDailyGoal}
+                        onDelete={handleDeleteDailyGoal}
                     />
                     <View style={styles.divider} />
                     <GoalGroup
                         label="Monthly Goals"
                         goals={monthly}
-                        onAdd={(t) => handleAddMonthlyGoal(t)}
-                        onToggle={(i) => handleToggleMonthlyGoal(i)}
-                        onDelete={(i) => handleDeleteMonthlyGoal(i)}
+                        onAdd={handleAddMonthlyGoal}
+                        onToggle={handleToggleMonthlyGoal}
+                        onDelete={handleDeleteMonthlyGoal}
                     />
                     <View style={styles.divider} />
                     <GoalGroup
                         label="Yearly Resolutions"
                         goals={yearly}
-                        onAdd={(t) => handleAddYearlyGoal(t)}
-                        onToggle={(i) => handleToggleYearlyGoal(i)}
-                        onDelete={(i) => handleDeleteYearlyGoal(i)}
+                        onAdd={handleAddYearlyGoal}
+                        onToggle={handleToggleYearlyGoal}
+                        onDelete={handleDeleteYearlyGoal}
                     />
                 </Section>
 
                 {/* ── Progress Pictures ── */}
-                <Section id="pictures" icon="camera-outline" title="Progress Pictures" collapsed={collapsed} toggleSection={toggleSection}>
+                <Section
+                    id="pictures"
+                    icon="camera-outline"
+                    title="Progress Pictures"
+                    collapsed={collapsed}
+                    toggleSection={toggleSection}
+                    isDirty={false}
+                >
                     <Text style={styles.hintText}>
                         Document your transformation over time. Photos are stored locally.
                     </Text>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        style={{ marginTop: 12 }}
-                    >
-                        <TouchableOpacity
-                            style={styles.addPictureBox}
-                            onPress={handleAddPictureMenu}
-                            activeOpacity={0.8}
-                        >
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12 }}>
+                        <TouchableOpacity style={styles.addPictureBox} onPress={handleAddPictureMenu} activeOpacity={0.8}>
                             <Ionicons name="add-circle-outline" size={32} color={BLUE} />
                             <Text style={styles.addPictureLabel}>Add Photo</Text>
                         </TouchableOpacity>
@@ -784,7 +834,11 @@ export default function FitnessProfileContent() {
                                 activeOpacity={0.85}
                                 style={{ marginRight: 10 }}
                             >
-                                <Image source={{ uri: pic.uri, headers: { Authorization: `Bearer ${authToken}` } }} style={styles.pictureThumbnail} resizeMode="cover" />
+                                <Image
+                                    source={{ uri: pic.uri, headers: { Authorization: `Bearer ${authToken}` } }}
+                                    style={styles.pictureThumbnail}
+                                    resizeMode="cover"
+                                />
                                 <View style={styles.picDateBadge}>
                                     <Text style={styles.picDateText}>{pic.date}</Text>
                                 </View>
@@ -802,7 +856,14 @@ export default function FitnessProfileContent() {
                 </Section>
 
                 {/* ── Default Rest Timer ── */}
-                <Section id="rest" icon="timer-outline" title="Default Rest Timer" collapsed={collapsed} toggleSection={toggleSection}>
+                <Section
+                    id="rest"
+                    icon="timer-outline"
+                    title="Default Rest Timer"
+                    collapsed={collapsed}
+                    toggleSection={toggleSection}
+                    isDirty={dirty.rest}
+                >
                     <Text style={styles.hintText}>
                         Select a preset or enter a custom duration applied between sets.
                     </Text>
@@ -812,7 +873,7 @@ export default function FitnessProfileContent() {
                                 key={s}
                                 label={formatRest(s)}
                                 active={defaultRest === s}
-                                onPress={() => handleSaveDefaultRest(s)}
+                                onPress={() => { setDefaultRest(s); markDirty('rest'); }}
                             />
                         ))}
                     </View>
@@ -820,14 +881,21 @@ export default function FitnessProfileContent() {
                         <TextInput
                             style={styles.customRestInput}
                             value={customRest}
-                            onChangeText={setCustomRest}
+                            onChangeText={(v) => { setCustomRest(v); markDirty('rest'); }}
                             placeholder="Custom (sec)"
                             placeholderTextColor="#9ca3af"
                             keyboardType="number-pad"
                         />
                         <TouchableOpacity
                             style={styles.customRestBtn}
-                            onPress={() => handleSaveDefaultRest(customRest, true)}
+                            onPress={() => {
+                                const val = parseInt(customRest, 10);
+                                if (!isNaN(val) && val > 0) {
+                                    setDefaultRest(val);
+                                    setCustomRest('');
+                                    markDirty('rest');
+                                }
+                            }}
                             activeOpacity={0.85}
                         >
                             <Text style={styles.customRestBtnText}>Set</Text>
@@ -844,8 +912,15 @@ export default function FitnessProfileContent() {
                     </View>
                 </Section>
 
-                {/* ── Export & Import Data ──────────────────────────────────── */}
-                <Section id="data" icon="swap-vertical-outline" title="Export & Import Data" collapsed={collapsed} toggleSection={toggleSection}>
+                {/* ── Export & Import Data ── */}
+                <Section
+                    id="data"
+                    icon="swap-vertical-outline"
+                    title="Export & Import Data"
+                    collapsed={collapsed}
+                    toggleSection={toggleSection}
+                    isDirty={false}
+                >
                     <Text style={styles.hintText}>
                         Export your profile data as CSV text to back it up, or paste a previous export to restore everything.
                     </Text>
@@ -871,7 +946,7 @@ export default function FitnessProfileContent() {
                 </Section>
 
             </ScrollView>
-            
+
             <ImportModal
                 visible={importVisible}
                 onClose={() => setImportVisible(false)}
@@ -892,6 +967,40 @@ const styles = StyleSheet.create({
     scrollContent: {
         padding: 16,
         paddingBottom: 40,
+    },
+
+    // Apply banner
+    applyBanner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        backgroundColor: GREEN,
+        paddingVertical: 14,
+        borderRadius: 14,
+        marginBottom: 14,
+        shadowColor: GREEN,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.35,
+        shadowRadius: 6,
+        elevation: 4,
+    },
+    applyBannerDisabled: {
+        opacity: 0.65,
+    },
+    applyBannerText: {
+        color: '#fff',
+        fontWeight: '700',
+        fontSize: 16,
+    },
+
+    // Dirty indicator dot
+    dirtyDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: GREEN,
+        marginLeft: 6,
     },
 
     // Card / Section
@@ -962,40 +1071,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: GRAY,
         minWidth: 24,
-    },
-
-    // Profile preview
-    profilePreview: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        marginTop: 14,
-        padding: 12,
-        backgroundColor: LIGHT_BLUE,
-        borderRadius: 12,
-    },
-    avatarCircle: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: BLUE,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    avatarLetter: {
-        color: '#fff',
-        fontWeight: '700',
-        fontSize: 18,
-    },
-    previewName: {
-        fontWeight: '700',
-        color: '#111827',
-        fontSize: 15,
-    },
-    previewDob: {
-        fontSize: 13,
-        color: GRAY,
-        marginTop: 2,
     },
 
     // Units
@@ -1148,9 +1223,9 @@ const styles = StyleSheet.create({
         backgroundColor: LIGHT_GRAY,
         marginRight: 10,
     },
-    picDateBadge:     { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.5)', borderBottomLeftRadius: 12, borderBottomRightRadius: 12, paddingVertical: 3, alignItems: 'center' },
-    picDateText:      { fontSize: 9, color: '#fff', fontWeight: '600' },
-    picRemoveBadge:   { position: 'absolute', top: -6, right: -6 },
+    picDateBadge: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.5)', borderBottomLeftRadius: 12, borderBottomRightRadius: 12, paddingVertical: 3, alignItems: 'center' },
+    picDateText:  { fontSize: 9, color: '#fff', fontWeight: '600' },
+    picRemoveBadge: { position: 'absolute', top: -6, right: -6 },
 
     // Rest Timer
     presetRow: {
@@ -1220,7 +1295,7 @@ const styles = StyleSheet.create({
         color: '#374151',
     },
 
-    // Export
+    // Export / Import
     exportBtn: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -1236,7 +1311,6 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#fff',
     },
-
     orRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 14 },
     orLine:        { flex: 1, height: 1, backgroundColor: BORDER },
     orText:        { fontSize: 12, color: GRAY, fontWeight: '600' },

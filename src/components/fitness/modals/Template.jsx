@@ -24,7 +24,8 @@ function formatRestDisplay(seconds) {
     return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-export default function Template({ visible, template, onClose, onUseTemplate }) {
+export default function Template({ visible, template, onClose, onUseTemplate, onDeleteTemplate }) {
+
     return (
         <Modal
             visible={visible}
@@ -91,6 +92,15 @@ export default function Template({ visible, template, onClose, onUseTemplate }) 
                         >
                             <Ionicons name="play" size={22} color="#fff" />
                             <Text style={styles.useTemplateButtonText}>Use template</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.deleteTemplateButton}
+                            onPress={onDeleteTemplate}
+                            activeOpacity={0.85}
+                        >
+                            <Ionicons name="trash" size={22} color="#fff" />
+                            <Text style={styles.deleteTemplateButtonText}>Delete template</Text>
                         </TouchableOpacity>
                     </View>
                 </Pressable>
@@ -170,6 +180,7 @@ const styles = StyleSheet.create({
         padding: 20,
         paddingTop: 12,
         borderTopWidth: 1,
+        gap: 12,
         borderTopColor: '#e5e7eb',
     },
     useTemplateButton: {
@@ -182,6 +193,20 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     useTemplateButtonText: {
+        fontSize: 17,
+        fontWeight: '600',
+        color: '#fff',
+    },
+    deleteTemplateButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        backgroundColor: '#ef4444',
+        paddingVertical: 14,
+        borderRadius: 12,
+    },
+    deleteTemplateButtonText: {
         fontSize: 17,
         fontWeight: '600',
         color: '#fff',

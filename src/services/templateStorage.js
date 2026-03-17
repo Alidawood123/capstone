@@ -3,19 +3,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const TEMPLATES_KEY = 'arc_templates';
 
 /**
- * Get all stored workout templates.
- * @returns {Promise<Array>} List of template objects; [] on missing/invalid data or error.
+ * Grab the stored templates array on the backend with the user object that contains the token
+ * 
+ * @param {Object} user Firebase Auth user object
+ * @returns 
  */
 export const getTemplates = async (user) => {
-  // try {
-  //   const stored = await AsyncStorage.getItem(TEMPLATES_KEY);
-  //   if (stored == null) return [];
-  //   const parsed = JSON.parse(stored);
-  //   return Array.isArray(parsed) ? parsed : [];
-  // } catch (error) {
-  //   console.error('Error reading templates:', error);
-  //   return [];
-  // }
 
   try{
     const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-templates/get-templates', {
@@ -26,7 +19,7 @@ export const getTemplates = async (user) => {
       },
     });
     const data = await res.json();
-    console.log(data);
+    // console.log(data);
     return Array.isArray(data) ? data : [];
   }
   catch (error) {
@@ -35,11 +28,7 @@ export const getTemplates = async (user) => {
   }
 };
 
-/**
- * Overwrite stored templates with the given array.
- * @param {Array} templates - Full list of templates to save.
- * @returns {Promise<void>}
- */
+// TODO: Rewrite this into the backend version once the UI for updating has been implemented
 export const saveTemplates = async (templates) => {
   try {
     await AsyncStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
@@ -68,5 +57,25 @@ export const addTemplate = async (user, template) => {
     console.log(res);
   } catch (error) {
     console.error('Error adding template:', error);
+  }
+};
+
+export const deleteTemplate = async (user, templateId) => {
+  const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-templates/delete-template?templateId=' + templateId, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${await user.getIdToken()}`,
+      'Content-Type': 'application/json'
+    },
+  });
+
+  if(!res.ok)
+  {
+    console.log(res);
+    throw new Error('Failed to delete template');
+  }
+  else
+  {
+    console.log('Template deleted successfully');
   }
 };

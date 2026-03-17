@@ -5,6 +5,7 @@ import { getWorkouts } from '../../services/workoutStorage';
 
 import { getAuth } from '@react-native-firebase/auth';
 
+
 /** Normalize stored workout to include isoDate (YYYY-MM-DD) for calendar. */
 function withIsoDate(workout) {
     const dateStr = workout.date || workout.completedAt || '';

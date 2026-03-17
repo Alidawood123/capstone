@@ -5,7 +5,6 @@ import { getUserExercises, initUserExercisesCache } from './userExerciseService'
 
 let cachedExercises = null;
 let loadPromise = null;
-// const csvAsset = 'updated_exercises_500';
 
 const getAllExercisesWithUserExercises = () => {
   const csvExercises = parseCSVData();
@@ -15,13 +14,6 @@ const getAllExercisesWithUserExercises = () => {
 
 const loadCSVString = async () => {
   try {
-    // if (Platform.OS === 'web') {
-    //   const uri = typeof csvAsset === 'string' ? csvAsset : Asset.fromModule(csvAsset).uri;
-    //   if (!uri) return '';
-    //   const response = await fetch(uri);
-    //   return await response.text();
-    // }
-
     const asset = Asset.fromModule(require('./updated_exercises_500.csv'));
     console.log(asset);
     await asset.downloadAsync();

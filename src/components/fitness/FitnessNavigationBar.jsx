@@ -10,7 +10,7 @@ const TABS = [
     { key: 'templates', label: 'Templates', icon: 'barbell-outline' },
     { key: 'history', label: 'History', icon: 'trending-up-outline' },
     { key: 'analytics', label: 'Analytics', icon: 'bar-chart-outline' },
-    { key: 'profile', label: 'profile', icon: 'person-outline' },
+    { key: 'profile', label: 'Profile', icon: 'person-outline' },
 ];
 
 export default function FitnessNavigationBar({ activeTab, onTabChange, insets }) {

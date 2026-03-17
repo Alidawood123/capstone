@@ -57,9 +57,9 @@ export default ({config}) => {
                     [
                         "react-native-fbsdk-next",
                         {
-                        "appID": "1544148290008338",
+                        "appID": process.env.EXPO_PUBLIC_FACEBOOK_APP_ID || "1544148290008338",
                         "displayName": "BetterHelp Capstone",
-                        "clientToken": "4a08bdc135286e7788930e62f7ba94ae"
+                        "clientToken": process.env.EXPO_PUBLIC_FACEBOOK_CLIENT_TOKEN || "4a08bdc135286e7788930e62f7ba94ae"
                         }
                     ],
                     [

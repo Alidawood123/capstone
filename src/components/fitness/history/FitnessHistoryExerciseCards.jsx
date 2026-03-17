@@ -12,8 +12,6 @@ function fmtSetValue(set) {
     return "—";
 }
 
-
-
 export default function ExerciseCard({ exerciseObj }) {
     const name = exerciseObj.exercises?.[0].title || "Exercise";
     const sets = Array.isArray(exerciseObj.sets) ? exerciseObj.sets : [];

@@ -25,7 +25,8 @@ import {
 import ExercisePicker from '../modals/ExercisePicker';
 
 import { getAuth } from '@react-native-firebase/auth';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import Toast from 'react-native-toast-message';
+
 
 const BLUE = '#00b4d8';
 const GREEN = '#22c55e';
@@ -51,6 +52,7 @@ function formatRestDisplay(seconds) {
         return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
     }
     return `${m}:${String(s).padStart(2, "0")}`;
+
 }
 
 /** Parse rest input: "90", "1:30", "45s" -> seconds */
@@ -196,6 +198,7 @@ export default function EmptyWorkoutContent({
     const [showExerciseModal, setShowExerciseModal] = useState(false);
     const [addedItems, setAddedItems] = useState([]);
     const [editingRest, setEditingRest] = useState(null);
+    const [restInputText, setRestInputText] = useState('');
     const [restCountdown, setRestCountdown] = useState(null);
     const prevRestCountdownRef = useRef(null);
     const [completingWorkout, setCompletingWorkout] = useState(false);
@@ -335,7 +338,7 @@ export default function EmptyWorkoutContent({
         }
     };
 
-    const handleCompleteWorkout = async () => {
+    const handleCompleteWorkout = () => {
         if (completingWorkout) return;
         setCompletingWorkout(true);
         try {
@@ -346,10 +349,12 @@ export default function EmptyWorkoutContent({
                 completedAt: new Date().toISOString(),
                 exercises: addedItems,
             };
-            await addWorkout(user, workout);
-            if (onCancelWorkout) onCancelWorkout();
+            addWorkout(user, workout).then(() => {    
+                if (onCancelWorkout) onCancelWorkout();
+            });
         } catch (error) {
             console.error('Failed to save workout:', error);
+
         } finally {
             setCompletingWorkout(false);
         }
@@ -512,14 +517,18 @@ export default function EmptyWorkoutContent({
                                                     <TextInput
                                                         style={styles.restInput}
                                                         defaultValue={formatRestDisplay(set.restSeconds)}
+                                                        onChangeText={(value) => {
+                                                            const digits = value.replace(/[^0-9]/g, '').slice(0,5);
+                                                            setRestInputText(digits);
+                                                        }}
                                                         placeholder="0:00 or 45s"
                                                         placeholderTextColor="#020203"
                                                         keyboardType="numbers-and-punctuation"
                                                         onBlur={(e) =>
-                                                            handleRestBlur(item.id, setIndex, e.nativeEvent.text)
+                                                            handleRestBlur(item.id, setIndex, restInputText)
                                                         }
                                                         onSubmitEditing={(e) =>
-                                                            handleRestBlur(item.id, setIndex, e.nativeEvent.text)
+                                                            handleRestBlur(item.id, setIndex, restInputText)
                                                         }
                                                         selectTextOnFocus
                                                         autoFocus

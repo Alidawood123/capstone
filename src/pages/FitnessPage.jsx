@@ -20,6 +20,7 @@ import { addTemplate } from '../services/templateStorage';
 import Settings from '../components/fitness/modals/Settings';
 
 import { getAuth } from '@react-native-firebase/auth';
+import Toast from 'react-native-toast-message';
 
 const BLUE = '#00b4d8';
 
@@ -65,7 +66,7 @@ export default function FitnessPage({ onNavigateToSignIn }) {
                         </>
                     ) : activeTab === 'home' ? (
                         <>
-                            <Text style={styles.headerTitle} numberOfLines={1}>welcome back!</Text>
+                            <Text style={styles.headerTitle} numberOfLines={1}>Welcome Back!</Text>
                             <TouchableOpacity style={styles.backButton} onPress={() => setShowSettings(true)} activeOpacity={0.8}>
                                 <Ionicons name="settings-outline" size={24} color="#fff" />
                             </TouchableOpacity>
@@ -96,7 +97,9 @@ export default function FitnessPage({ onNavigateToSignIn }) {
                             onAddExercises={() => {}}
                             onCancelWorkout={() => setFitnessScreen('tabs')}
                             onSaveTemplate={async (t) => {
-                                await addTemplate(user, t);
+                                await addTemplate(user, t)
+                                    .then(() => Toast.show({ type: 'success', text1: 'Template saved' }))
+                                    .catch(() => Toast.show({ type: 'error', text1: 'Failed to save template' }));
                                 setFitnessScreen('tabs');
                                 setActiveTab('templates');
                             }}

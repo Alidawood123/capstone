@@ -21,8 +21,6 @@ export default function WorkoutDetailsFrame({ open, onClose, workout, miniStat})
         day: "numeric",
         year: "numeric"
     });
-    
-
 
     return (
         <Modal visible={open} transparent animationType="fade">

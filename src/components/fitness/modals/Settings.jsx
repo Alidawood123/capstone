@@ -11,8 +11,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { getAuth, deleteUser } from '@react-native-firebase/auth';
 
-const BLUE = '#00b4d8';
-
 export default function Settings({ visible, onClose, onSignOut }) {
     const auth = getAuth();
     const user = auth.currentUser;
