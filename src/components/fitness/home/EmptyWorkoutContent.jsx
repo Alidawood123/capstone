@@ -198,6 +198,7 @@ export default function EmptyWorkoutContent({
     const [showExerciseModal, setShowExerciseModal] = useState(false);
     const [addedItems, setAddedItems] = useState([]);
     const [editingRest, setEditingRest] = useState(null);
+    const [restInputText, setRestInputText] = useState('');
     const [restCountdown, setRestCountdown] = useState(null);
     const prevRestCountdownRef = useRef(null);
     const [completingWorkout, setCompletingWorkout] = useState(false);
@@ -516,14 +517,18 @@ export default function EmptyWorkoutContent({
                                                     <TextInput
                                                         style={styles.restInput}
                                                         defaultValue={formatRestDisplay(set.restSeconds)}
+                                                        onChangeText={(value) => {
+                                                            const digits = value.replace(/[^0-9]/g, '').slice(0,5);
+                                                            setRestInputText(digits);
+                                                        }}
                                                         placeholder="0:00 or 45s"
                                                         placeholderTextColor="#020203"
                                                         keyboardType="numbers-and-punctuation"
                                                         onBlur={(e) =>
-                                                            handleRestBlur(item.id, setIndex, e.nativeEvent.text)
+                                                            handleRestBlur(item.id, setIndex, restInputText)
                                                         }
                                                         onSubmitEditing={(e) =>
-                                                            handleRestBlur(item.id, setIndex, e.nativeEvent.text)
+                                                            handleRestBlur(item.id, setIndex, restInputText)
                                                         }
                                                         selectTextOnFocus
                                                         autoFocus
