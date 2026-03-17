@@ -31,6 +31,7 @@ export default function FitnessAnalyticsContent({ onNavigateToLanding }) {
   const [pbReps, setPBReps] = useState('');
   const [exerciseSearch, setExerciseSearch] = useState('');
   const auth = getAuth();
+  const user = auth.currentUser;
   const userId = auth.currentUser?.uid;
 
   // Load workouts and personal bests on component mount
@@ -45,7 +46,7 @@ export default function FitnessAnalyticsContent({ onNavigateToLanding }) {
       setLoading(true);
       
       // Load workouts from workout storage
-      const workoutsData = await getWorkouts();
+      const workoutsData = await getWorkouts(user);
       setWorkouts(workoutsData);
 
       // Load personal bests
