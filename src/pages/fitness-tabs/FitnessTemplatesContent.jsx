@@ -79,7 +79,7 @@ export default function FitnessTemplatesContent({ onUseTemplate }) {
     };
 
     const handleDeleteTemplate = async () => {
-        await deleteTemplate(user, selectedTemplate.templateId)
+        await deleteTemplate(user, selectedTemplate._id)
             .then(() => {
                 Toast.show({ type: 'success', text1: 'Template deleted' });
                 closeModal();

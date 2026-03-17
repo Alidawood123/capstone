@@ -80,10 +80,10 @@ export default function FitnessHistoryCard({ workout, setWorkoutHistory }) {
 
     // Implement Backend Logic Functions
     const handleRemoveWorkout = () => {
-        const workoutId = workout.workoutId;
+        const workoutId = workout._id;
         
         removeWorkout(user, workoutId).then(() => {
-            setWorkoutHistory((prev) => prev.filter((w) => w.workoutId !== workoutId));
+            setWorkoutHistory((prev) => prev.filter((w) => w._id !== workoutId));
             Toast.show({
                 type: 'success',
                 text1: 'Success',
@@ -103,7 +103,7 @@ export default function FitnessHistoryCard({ workout, setWorkoutHistory }) {
 
 
     function handleSaveWorkout(updatedWorkout) {
-        const workoutId = updatedWorkout.workoutId;
+        const workoutId = updatedWorkout._id;
 
         console.log("Saving workout:", workoutId);
         console.log("Saving workout:", updatedWorkout.title);
@@ -111,7 +111,7 @@ export default function FitnessHistoryCard({ workout, setWorkoutHistory }) {
         console.log(JSON.stringify(updatedWorkout, null, 2));
         
         updateWorkout(user, workoutId, updatedWorkout);
-        setWorkoutHistory((prev) => prev.map((w) => w.workoutId === workoutId ? { ...w, ...updatedWorkout } : w));
+        setWorkoutHistory((prev) => prev.map((w) => w._id === workoutId ? { ...w, ...updatedWorkout } : w));
 
         setEditOpen(false);
     }
