@@ -284,11 +284,6 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
 
     return (
         <View style={styles.root}>
-            {/* 50/50 color split: red left, blue right */}
-            <View style={styles.colorSplit}>
-                <View style={styles.colorLeft} />
-                <View style={styles.colorRight} />
-            </View>
             {/* Content overlay */}
             <KeyboardAvoidingView
                 style={styles.container}
@@ -525,28 +520,10 @@ const styles = StyleSheet.create({
     root: {
         flex: 1,
     },
-    // 50/50 vertical color split background
-    colorSplit: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        flexDirection: 'row',
-    },
-    // Left half - red
-    colorLeft: {
-        flex: 1,
-        backgroundColor: '#d00000',
-    },
-    // Right half - blue
-    colorRight: {
-        flex: 1,
-        backgroundColor: '#00b4d8',
-    },
     // Full-screen container
     container: {
         flex: 1,
+        backgroundColor: '#00b4d8',
     },
     // ScrollView content container
     scrollContent: {

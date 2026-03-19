@@ -71,11 +71,6 @@ export default function SigninPage({ onNavigateToSignIn }) {
 
     return (
         <View style={styles.root}>
-            {/* 50/50 color split: red left, blue right */}
-            <View style={styles.colorSplit}>
-                <View style={styles.colorLeft} />
-                <View style={styles.colorRight} />
-            </View>
             {/* Content overlay */}
             <KeyboardAvoidingView
                 style={styles.container}
@@ -131,16 +126,16 @@ export default function SigninPage({ onNavigateToSignIn }) {
                         </View>
 
                         {/* Forgot Password Link */}
-                        <TouchableOpacity style={styles.forgotPassword} onPress={onNavigateToSignIn}>
-                            <Text style={styles.forgotPasswordText}>Remember Your Password?</Text>
+                        <TouchableOpacity style={styles.rememberPassword} onPress={onNavigateToSignIn}>
+                            <Text style={styles.rememberPasswordText}>Remember Your Password?</Text>
                         </TouchableOpacity>
 
                         {/* Sign In Button - Disabled until form is valid */}
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
                                 style={[
-                                    styles.signInButton,
-                                    !isFormValid && styles.signInButtonDisabled
+                                    styles.forgotButton,
+                                    !isFormValid && styles.forgotButtonDisabled
                                 ]}
                                 onPress={handleSendPasswordReset}
                                 disabled={isLoading}
@@ -162,7 +157,7 @@ export default function SigninPage({ onNavigateToSignIn }) {
                                     ) : (
                                         // Show button text with arrow icon when not loading
                                         <View style={styles.buttonContent}>
-                                            <Text style={styles.signInButtonText}>Send Reset Link</Text>
+                                            <Text style={styles.forgotButtonText}>Send Reset Link</Text>
                                             <View style={styles.arrowContainer}>
                                                 <Ionicons name="arrow-forward" size={20} color="#fff" />
                                             </View>
@@ -184,28 +179,10 @@ const styles = StyleSheet.create({
     root: {
         flex: 1,
     },
-    // 50/50 vertical color split background
-    colorSplit: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        flexDirection: 'row',
-    },
-    // Left half - red
-    colorLeft: {
-        flex: 1,
-        backgroundColor: '#d00000',
-    },
-    // Right half - blue
-    colorRight: {
-        flex: 1,
-        backgroundColor: '#00b4d8',
-    },
     // Full-screen container
     container: {
         flex: 1,
+        backgroundColor: '#00b4d8',
     },
     // Inner container centered vertically with horizontal padding
     innerContainer: {
@@ -271,18 +248,18 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
     },
-    // Forgot password link container
-    forgotPassword: {
+    // Remember password link container
+    rememberPassword: {
         alignSelf: 'flex-end',
         marginBottom: 20,
     },
-    // Forgot password link text color
-    forgotPasswordText: {
+    // Remember password link text color
+    rememberPasswordText: {
         color: '#d00000',
         fontSize: 14,
         fontWeight: '600',
     },
-    // Sign-in button container with shadow
+    // Forgot password button container with shadow
     buttonContainer: {
         marginBottom: 20,
         shadowColor: '#4f46e5',
@@ -291,13 +268,13 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 8,
     },
-    // Sign-in button styling
-    signInButton: {
+    // Forgot password button styling
+    forgotButton: {
         borderRadius: 16,
         overflow: 'hidden',
     },
     // Disabled button styling
-    signInButtonDisabled: {
+    forgotButtonDisabled: {
         opacity: 0.6,
     },
     // Gradient background inside button
@@ -333,8 +310,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 6,
     },
-    // Sign-in button text
-    signInButtonText: {
+    // Forgot password button text
+    forgotButtonText: {
         color: '#fff',
         fontSize: 18,
         fontWeight: '700',
@@ -342,58 +319,5 @@ const styles = StyleSheet.create({
         textShadowColor: 'rgba(0, 0, 0, 0.2)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 2,
-    },
-    // Divider container with text in between
-    dividerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    // Horizontal divider line
-    divider: {
-        flex: 1,
-        height: 1,
-        backgroundColor: 'rgba(0, 180, 216, 0.3)',
-    },
-    // Divider text
-    dividerText: {
-        color: 'rgba(0, 180, 216, 0.7)',
-        paddingHorizontal: 16,
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    // Social login buttons container
-    socialContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 16,
-    },
-    // Individual social login button
-    socialButton: {
-        width: 56,
-        height: 56,
-        borderRadius: 16,
-        backgroundColor: '#f8f9fa',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 1.5,
-        borderColor: 'rgba(0, 180, 216, 0.2)',
-    },
-    // Sign-up link container
-    signUpContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 24,
-    },
-    // Sign-up text styling
-    signUpText: {
-        color: 'rgba(255,255,255,0.8)',
-        fontSize: 14,
-    },
-    // Sign-up link styling
-    signUpLink: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: '700',
     },
 });
