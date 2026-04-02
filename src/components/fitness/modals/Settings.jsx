@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     Modal,
     Pressable,
+    Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -16,11 +17,31 @@ export default function Settings({ visible, onClose, onSignOut }) {
     const user = auth.currentUser;
 
     const handleSignOut = () => {
-        onClose();
-        if (onSignOut) onSignOut();
+        Alert.alert(
+            'Sign Out',
+            'Are you sure you want to sign out?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Sign Out', style: 'destructive', onPress: () => {
+                    onClose();
+                    if (onSignOut) onSignOut();
+                }}
+            ]
+        );
     };
 
     const handleDeleteAccount = async () => {
+        Alert.alert(
+            'Delete Account',
+            'This action is irreversible. Are you sure you want to delete your account?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Delete', style: 'destructive', onPress: () => deleteAccount() }
+            ]
+        );
+    };
+
+    const deleteAccount = async () => {
         fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/delete-profile', {
             method: 'DELETE',
             headers: {
