@@ -15,6 +15,8 @@ import FitnessHistoryContent from './fitness-tabs/FitnessHistoryContent';
 import FitnessAnalyticsContent from './fitness-tabs/FitnessAnalyticsContent';
 import FitnessProfileContent from './fitness-tabs/FitnessProfileContent';
 import EmptyWorkoutContent from '../components/fitness/home/EmptyWorkoutContent';
+import AnalyzeVideoContent from '../components/fitness/home/AnalyzeVideoContent';
+import VideoProcessingContent from '../components/fitness/home/VideoProcessingContent';
 import FitnessNavigationBar from '../components/fitness/FitnessNavigationBar';
 import { addTemplate } from '../services/templateStorage';
 import Settings from '../components/fitness/modals/Settings';
@@ -31,6 +33,8 @@ export default function FitnessPage({ onNavigateToSignIn }) {
     const [activeTab, setActiveTab] = useState('home');
     const [fitnessScreen, setFitnessScreen] = useState('tabs');
     const [workoutInitialData, setWorkoutInitialData] = useState(null);
+    const [processingVideo, setProcessingVideo] = useState(null);
+    const [isFirstPerson, setIsFirstPerson] = useState(true);
     const [showSettings, setShowSettings] = useState(false);
     const insets = useSafeAreaInsets();
 
@@ -56,6 +60,22 @@ export default function FitnessPage({ onNavigateToSignIn }) {
                             >
                                 <Ionicons name="arrow-back" size={24} color="#fff" />
                             </TouchableOpacity>
+                        </>
+                    ) : fitnessScreen === 'analyzevideo' ? (
+                        <>
+                            <Text style={styles.headerTitle} numberOfLines={1}>Analyze Video</Text>
+                            <TouchableOpacity
+                                style={styles.backButton}
+                                onPress={() => setFitnessScreen('tabs')}
+                                activeOpacity={0.8}
+                            >
+                                <Ionicons name="arrow-back" size={24} color="#fff" />
+                            </TouchableOpacity>
+                        </>
+                    ) : fitnessScreen === 'processing' ? (
+                        <>
+                            <Text style={styles.headerTitle} numberOfLines={1}>Analyzing...</Text>
+                            <View style={styles.headerSpacer} />
                         </>
                     ) : fitnessScreen === 'createtemplate' ? (
                         <>
@@ -84,7 +104,27 @@ export default function FitnessPage({ onNavigateToSignIn }) {
                 </View>
 
                 <View style={styles.content}>
-                    {fitnessScreen === 'emptyworkout' ? (
+                    {fitnessScreen === 'analyzevideo' ? (
+                        <AnalyzeVideoContent
+                            onBack={() => setFitnessScreen('tabs')}
+                            onAnalyze={(video, firstPerson) => {
+                                setProcessingVideo(video);
+                                setIsFirstPerson(firstPerson);
+                                setFitnessScreen('processing');
+                            }}
+                        />
+                    ) : fitnessScreen === 'processing' ? (
+                        <VideoProcessingContent
+                            video={processingVideo}
+                            isFirstPerson={isFirstPerson}
+                            onBack={() => setFitnessScreen('analyzevideo')}
+                            onComplete={(_session) => {
+                                setProcessingVideo(null);
+                                setFitnessScreen('tabs');
+                                setActiveTab('history');
+                            }}
+                        />
+                    ) : fitnessScreen === 'emptyworkout' ? (
                         <EmptyWorkoutContent
                             onAddExercises={() => {}}
                             onCancelWorkout={() => { setFitnessScreen('tabs'); setWorkoutInitialData(null); }}
@@ -106,7 +146,7 @@ export default function FitnessPage({ onNavigateToSignIn }) {
                         />
                     ) : (
                         <>
-                            {activeTab === 'home' && <FitnessHomeContent onStartEmptyWorkout={() => setFitnessScreen('emptyworkout')} />}
+                            {activeTab === 'home' && <FitnessHomeContent onStartEmptyWorkout={() => setFitnessScreen('emptyworkout')} onAnalyzeVideo={() => setFitnessScreen('analyzevideo')} />}
                             {activeTab === 'templates' && (
                                 <FitnessTemplatesContent
                                     onUseTemplate={(template) => {
