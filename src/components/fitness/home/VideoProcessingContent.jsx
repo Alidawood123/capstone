@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAuth } from '@react-native-firebase/auth';
+import * as FileSystem from 'expo-file-system/legacy';
 
 const BLUE = '#00b4d8';
 const GREEN = '#22c55e';
@@ -135,6 +136,7 @@ function StepDot({ done, active, color }) {
 export default function VideoProcessingContent({ video, isFirstPerson, onBack, onComplete }) {
     const [stage, setStage] = useState('uploading');
     const [errorMsg, setErrorMsg] = useState(null);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const jobIDRef = useRef(null);
     const [elapsedSecs, setElapsedSecs] = useState(0);
     const pollRef = useRef(null);
@@ -182,21 +184,38 @@ export default function VideoProcessingContent({ video, isFirstPerson, onBack, o
                 return;
             }
 
+            console.log('Received signed URL data:', signData);
+
             const { signedUrl, s3Key } = signData;
 
             // Step 2 — upload directly to S3 (single network hop)
-            const s3Res = await fetch(signedUrl, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'video/mp4' },
-                body: { uri: video.uri, name: video.name || 'workout-video.mp4', type: 'video/mp4' },
-            });
-            if (!s3Res.ok) {
+
+            console.log('Uploading video to S3 with signed URL...');
+
+            const uploadTask = FileSystem.createUploadTask(
+                signedUrl,
+                video.uri,
+                {
+                    httpMethod: 'PUT',
+                    uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+                    headers: { 'Content-Type': 'video/mp4' },
+                },
+                ({ totalBytesSent, totalBytesExpectedToSend }) => {
+                    if (!didUnmount.current && totalBytesExpectedToSend > 0) {
+                        setUploadProgress(Math.round((totalBytesSent / totalBytesExpectedToSend) * 100));
+                    }
+                }
+            );
+            const uploadResult = await uploadTask.uploadAsync();
+            if (uploadResult.status < 200 || uploadResult.status >= 300) {
                 if (!didUnmount.current) {
                     setStage('error');
                     setErrorMsg('Failed to upload video to storage.');
                 }
                 return;
             }
+
+            console.log('Video uploaded to S3 successfully.');
 
             if (didUnmount.current) return;
             setStage('queued');
@@ -279,6 +298,11 @@ export default function VideoProcessingContent({ video, isFirstPerson, onBack, o
             {/* Title + subtitle */}
             <Text style={[styles.title, { color: config.color }]}>{config.title}</Text>
             <Text style={styles.subtitle}>{config.subtitle}</Text>
+
+            {/* Upload percentage */}
+            {stage === 'uploading' && (
+                <Text style={[styles.uploadPercent, { color: BLUE }]}>{uploadProgress}%</Text>
+            )}
 
             {/* Progress steps (only while active) */}
             {!isDone && (
@@ -399,6 +423,12 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         marginBottom: 32,
         maxWidth: 280,
+    },
+    uploadPercent: {
+        fontSize: 32,
+        fontWeight: '700',
+        marginBottom: 20,
+        marginTop: -16,
     },
     stepsRow: {
         flexDirection: 'row',
