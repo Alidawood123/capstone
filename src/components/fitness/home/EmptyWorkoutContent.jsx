@@ -350,6 +350,11 @@ export default function EmptyWorkoutContent({
                 exercises: addedItems,
             };
             addWorkout(user, workout).then(() => {    
+                Toast.show({
+                    type: 'success',
+                    text1: 'Workout saved successfully',
+                    text2: 'Great job on completing your workout!',
+                });
                 if (onCancelWorkout) onCancelWorkout();
             });
         } catch (error) {
@@ -366,10 +371,20 @@ export default function EmptyWorkoutContent({
         try {
             if (onSaveTemplate) {
                 await onSaveTemplate({ title: workoutTitle, exercises: addedItems });
+                Toast.show({
+                    type: 'success',
+                    text1: 'Template saved successfully',
+                    text2: 'You can use it to create workouts in the future!',
+                });
             }
             if (onCancelWorkout) onCancelWorkout();
         } catch (error) {
             console.error('Failed to save template:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Failed to save template',
+                text2: 'Please try again later.'
+            });
         } finally {
             setCompletingWorkout(false);
         }

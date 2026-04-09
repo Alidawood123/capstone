@@ -119,6 +119,7 @@ export default function FitnessPage({ onNavigateToSignIn }) {
                             isFirstPerson={isFirstPerson}
                             onBack={() => setFitnessScreen('analyzevideo')}
                             onComplete={(_session) => {
+                                Toast.show({ type: 'success', text1: 'Workout video processed successfully', text2: 'You can find it in your history' });
                                 setProcessingVideo(null);
                                 setFitnessScreen('tabs');
                                 setActiveTab('history');

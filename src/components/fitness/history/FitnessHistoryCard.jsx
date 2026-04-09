@@ -97,23 +97,32 @@ export default function FitnessHistoryCard({ workout, setWorkoutHistory }) {
     const workoutItem = workoutItems[0];
 
     const handleRemoveWorkout = () => {
-        const workoutId = workout._id;
-        removeWorkout(user, workoutId).then(() => {
-                setWorkoutHistory((prev) => prev.filter((w) => w._id !== workoutId));
-                Toast.show({ type: 'success', text1: 'Removed', text2: 'Workout deleted.' });
-            })
-            .catch(() => {
-                Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to remove workout.' });
-            });
+        try{
+            const workoutId = workout._id;
+            removeWorkout(user, workoutId);
+            setWorkoutHistory((prev) => prev.filter((w) => w._id !== workoutId));
+            Toast.show({ type: 'success', text1: 'Removed', text2: 'Workout deleted.' });
+        }
+        catch (error) {
+            Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to remove workout.' });
+        } finally {
+            setEditOpen(false);
+        }
     };
 
     const handleSaveWorkout = (updatedWorkout) => {
-        const workoutId = updatedWorkout._id;
-        updateWorkout(user, workoutId, updatedWorkout);
-        setWorkoutHistory((prev) =>
-            prev.map((w) => w._id === workoutId ? { ...w, ...updatedWorkout } : w)
-        );
-        setEditOpen(false);
+        try {
+            const workoutId = updatedWorkout._id;
+            updateWorkout(user, workoutId, updatedWorkout);
+            setWorkoutHistory((prev) =>
+                prev.map((w) => w._id === workoutId ? { ...w, ...updatedWorkout } : w)
+            );
+            Toast.show({ type: 'success', text1: 'Saved', text2: 'Workout updated.' });
+        } catch (error) {
+            Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to save workout.' });
+        } finally {
+            setEditOpen(false);
+        }
     };
 
     return (

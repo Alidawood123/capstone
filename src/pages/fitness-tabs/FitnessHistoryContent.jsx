@@ -4,6 +4,7 @@ import FitnessHistoryCalendar from '../../components/fitness/history/FitnessHist
 import { getWorkouts } from '../../services/workoutStorage';
 
 import { getAuth } from '@react-native-firebase/auth';
+import Toast from 'react-native-toast-message';
 
 
 /** Normalize stored workout to include isoDate (YYYY-MM-DD) for calendar. */
@@ -28,6 +29,11 @@ export default function FitnessHistoryContent() {
         } catch (error) {
             console.error('Failed to load workout history:', error);
             setWorkoutHistory([]);
+            Toast.show({
+                type: 'error',
+                text1: 'Failed to load workout history',
+                text2: 'Please try again later.'
+            });
         } finally {
             setLoading(false);
         }
@@ -36,10 +42,6 @@ export default function FitnessHistoryContent() {
     useEffect(() => {
         loadWorkouts();
     }, [workoutHistory.length]); // Reload when workout count changes
-    
-    useEffect(() => {
-        console.log(JSON.stringify(workoutHistory, null, 2));
-    }, [workoutHistory]);
     
     if (loading) {
         return (
