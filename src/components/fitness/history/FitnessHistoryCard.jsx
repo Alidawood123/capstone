@@ -128,8 +128,8 @@ export default function FitnessHistoryCard({ workout, setWorkoutHistory }) {
     return (
         <View style={styles.wrapper}>
             <Swipeable
-                renderRightActions={(dragX) => (
-                    <RightActions dragX={dragX} onEdit={() => setEditOpen(true)} onDelete={handleRemoveWorkout} />
+                renderRightActions={(_progress, drag) => (
+                    <RightActions dragX={drag} onEdit={() => setEditOpen(true)} onDelete={handleRemoveWorkout} />
                 )}
                 rightThreshold={130 / 2}
                 overshootRight={false}
