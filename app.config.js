@@ -16,7 +16,7 @@ export default ({config}) => {
                 },
                 ios: {
                     googleServicesFile: process.env.GOOGLE_SERVICES_PLIST || "./GoogleService-Info.plist",
-                    bundleIdentifier: "com.betterhelp",
+                    bundleIdentifier: process.env.EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER,
                     supportsTablet: true,
                     infoPlist: {
                         ITSAppUsesNonExemptEncryption: false
@@ -27,7 +27,7 @@ export default ({config}) => {
                 },
                 android: {
                     googleServicesFile: process.env.GOOGLE_SERVICES_JSON || "./google-services.json",
-                    package: "com.betterhelp",
+                    package: process.env.EXPO_PUBLIC_ANDROID_PACKAGE,
                     adaptiveIcon: {
                         foregroundImage: "./assets/adaptive-icon.png",
                         backgroundColor: "#ffffff"
@@ -58,7 +58,7 @@ export default ({config}) => {
                         "react-native-fbsdk-next",
                         {
                             "appID": process.env.EXPO_PUBLIC_FACEBOOK_APP_ID,
-                            "displayName": "BetterHelp Capstone",
+                            "displayName": process.env.EXPO_PUBLIC_FACEBOOK_DISPLAY_NAME,
                             "clientToken": process.env.EXPO_PUBLIC_FACEBOOK_CLIENT_TOKEN
                         }
                     ],
