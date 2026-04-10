@@ -109,8 +109,8 @@ export default function AnalyzeVideoContent({ onBack, onAnalyze }) {
                 <View style={styles.infoBanner}>
                     <Ionicons name="information-circle-outline" size={20} color={BLUE} />
                     <Text style={styles.infoText}>
-                        Footage from your Camera Roll or any video file on your device can be
-                        uploaded below to begin AI-powered analysis. Your video will not be stored and will only be used for processing your workout data.
+                        Your video will be stored for 15 days and will only be used for processing your workout data.
+                        After 15 days we will delete your video from our servers. Please ensure you have the rights to upload any video you select and avoid uploading sensitive or private footage.
                     </Text>
                 </View>
 

@@ -129,6 +129,7 @@ export default function WorkoutEditFrame({ open, onClose, workout, saveWorkout, 
                                 }}
                                 onBlur={() => setEditingTitle(false)}
                                 onSubmitEditing={() => setEditingTitle(false)}
+                                maxLength={50}
                             />
                         ) : ( <Text style={{fontSize: 18, fontWeight: "700", color: "#111"}}>{title}</Text> )}
 
@@ -187,6 +188,7 @@ export default function WorkoutEditFrame({ open, onClose, workout, saveWorkout, 
                                             setEditedWorkout((prev) => ({ ...prev, notes: text }));
                                         }}
                                         onBlur={() => setEditingNotes(false)}
+                                        maxLength={100}
                                     />
                                 ) : (
                                     <Text style={styles.notesText}>
@@ -225,7 +227,7 @@ export default function WorkoutEditFrame({ open, onClose, workout, saveWorkout, 
                         <View style={styles.exerciseSearchWrap}>
                             <Ionicons name="search" size={18} color="#9ca3af" />
                             <TextInput style={styles.exerciseSearchInput} placeholder="Search exercises..."
-                                value={exerciseSearch} onChangeText={setExerciseSearch} />
+                                value={exerciseSearch} onChangeText={setExerciseSearch} maxLength={50} />
                         </View>
                         
                         {/* Exercise List */}

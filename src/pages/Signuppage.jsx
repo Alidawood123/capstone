@@ -320,6 +320,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
                                     placeholderTextColor="#999"
                                     value={name}
                                     onChangeText={setName}
+                                    maxLength={50}
                                     autoCapitalize="words"
                                     onFocus={() => setNameFocused(true)}
                                     onBlur={() => setNameFocused(false)}
@@ -353,6 +354,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
                                     placeholderTextColor="#999"
                                     value={email}
                                     onChangeText={setEmail}
+                                    maxLength={50}
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     onFocus={() => setEmailFocused(true)}
@@ -386,6 +388,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
                                     placeholder="Password"
                                     placeholderTextColor="#999"
                                     value={password}
+                                    maxLength={128}
                                     onChangeText={setPassword}
                                     secureTextEntry={!showPassword}
                                     onFocus={() => setPasswordFocused(true)}
@@ -420,6 +423,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
                                     placeholderTextColor="#999"
                                     value={confirmPassword}
                                     onChangeText={setConfirmPassword}
+                                    maxLength={128}
                                     secureTextEntry={!showConfirmPassword}
                                     onFocus={() => setConfirmPasswordFocused(true)}
                                     onBlur={() => setConfirmPasswordFocused(false)}

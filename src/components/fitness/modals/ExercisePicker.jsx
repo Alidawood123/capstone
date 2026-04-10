@@ -302,6 +302,7 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                                     onChangeText={(value) =>
                                         setNewExercise((prev) => ({ ...prev, title: value }))
                                     }
+                                    maxLength={50}
                                     placeholder="Exercise name"
                                     placeholderTextColor="#9ca3af"
                                 />
@@ -371,6 +372,7 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                                     style={styles.searchInput}
                                     value={exerciseSearch}
                                     onChangeText={setExerciseSearch}
+                                    maxLength={50}
                                     placeholder="Search exercises..."
                                     placeholderTextColor="#9ca3af"
                                 />

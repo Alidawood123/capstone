@@ -38,12 +38,12 @@ const convertMeasurement = (value, type, toMetric) => {
     return value;
 };
 
-function LabeledInput({ label, value, onChangeText, onEndEditing, placeholder, keyboardType = 'default', suffix }) {
+function LabeledInput({ label, value, onChangeText, onEndEditing, maxLength = null, placeholder, keyboardType = 'default', suffix }) {
     return (
         <View style={styles.labeledInputRow}>
             <Text style={styles.inputLabel}>{label}</Text>
             <View style={styles.inputWithSuffix}>
-                <TextInput style={styles.inlineInput} value={value} onChangeText={onChangeText} onEndEditing={onEndEditing} placeholder={placeholder ?? '—'} placeholderTextColor={GRAY} keyboardType={keyboardType} />
+                <TextInput style={styles.inlineInput} value={value} onChangeText={onChangeText} onEndEditing={onEndEditing} maxLength={maxLength} placeholder={placeholder ?? '—'} placeholderTextColor={GRAY} keyboardType={keyboardType} />
                 {suffix ? <Text style={styles.inputSuffix}>{suffix}</Text> : null}
             </View>
         </View>
@@ -67,7 +67,7 @@ function GoalGroup({ label, goals, onAdd, onToggle, onDelete }) {
             ))}
             {adding ? (
                 <View style={styles.goalInputRow}>
-                    <TextInput autoFocus style={styles.goalInput} value={input} onChangeText={setInput} placeholder="Describe your goal..." placeholderTextColor={GRAY} onSubmitEditing={save} />
+                    <TextInput autoFocus style={styles.goalInput} value={input} onChangeText={setInput} placeholder="Describe your goal..." placeholderTextColor={GRAY} onSubmitEditing={save} maxLength={50} />
                     <TouchableOpacity style={styles.goalSaveBtn} onPress={save}><Text style={styles.goalSaveBtnText}>Save</Text></TouchableOpacity>
                     <TouchableOpacity style={styles.goalCancelBtn} onPress={() => setAdding(false)}><Ionicons name="close" size={18} color={GRAY} /></TouchableOpacity>
                 </View>
@@ -148,7 +148,7 @@ function ImportModal({ visible, onClose, onImport }) {
                     <Text style={styles.actionBtnText}>{isPicking ? 'Opening…' : 'Pick CSV File'}</Text>
                 </TouchableOpacity>
                 <View style={styles.orRow}><View style={styles.orLine} /><Text style={styles.orText}>OR PASTE</Text><View style={styles.orLine} /></View>
-                <TextInput style={styles.csvTextArea} value={text} onChangeText={setText} placeholder="Paste your exported CSV text here..." placeholderTextColor={GRAY} multiline autoCorrect={false} autoCapitalize="none" spellCheck={false} textAlignVertical="top" />
+                <TextInput style={styles.csvTextArea} value={text} onChangeText={setText} placeholder="Paste your exported CSV text here..." placeholderTextColor={GRAY} multiline autoCorrect={false} autoCapitalize="none" spellCheck={false} textAlignVertical="top" maxLength={1000} />
                 <TouchableOpacity style={[styles.actionBtn, { backgroundColor: GRAY }]} onPress={handlePasteImport} activeOpacity={0.85}>
                     <Ionicons name="cloud-upload-outline" size={20} color="#fff" /><Text style={styles.actionBtnText}>Import Pasted Text</Text>
                 </TouchableOpacity>
@@ -278,8 +278,54 @@ export default function FitnessProfileContent() {
         } catch (e) { Alert.alert('Import Failed', e.message); }
     };
 
+    const validateInputs = () => {
+        if (dirty.personal) {
+            if (!name.trim()) {
+                Alert.alert('Invalid Name', 'Full name cannot be empty.');
+                return false;
+            }
+            if (dob.trim()) {
+                const dobRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
+                if (!dobRegex.test(dob.trim())) {
+                    Alert.alert('Invalid Date', 'Date of Birth must be in MM/DD/YYYY format.');
+                    return false;
+                }
+                const [month, day, year] = dob.trim().split('/').map(Number);
+                const parsed = new Date(year, month - 1, day);
+                if (parsed.getMonth() !== month - 1 || parsed.getDate() !== day || parsed.getFullYear() !== year) {
+                    Alert.alert('Invalid Date', 'Please enter a valid calendar date.');
+                    return false;
+                }
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (parsed >= today) {
+                    Alert.alert('Invalid Date', 'Date of birth must be in the past.');
+                    return false;
+                }
+            }
+        }
+        if (dirty.measurements) {
+            for (const f of MEASUREMENT_FIELDS) {
+                const raw = measurements[f.key];
+                if (!raw) continue;
+                const val = parseFloat(raw);
+                if (isNaN(val) || val <= 0) {
+                    Alert.alert('Invalid Measurement', `${f.label} must be a positive number.`);
+                    return false;
+                }
+                const max = f.type === 'weight' ? 9999 : 999;
+                if (val > max) {
+                    Alert.alert('Invalid Measurement', `${f.label} value seems too large. Please double-check.`);
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
     const handleApplyChanges = async () => {
         if (!isAnyDirty) return;
+        if (!validateInputs()) return;
         setIsSaving(true);
         try {
             const saves = [];
@@ -328,8 +374,8 @@ export default function FitnessProfileContent() {
                     </TouchableOpacity>
                 )}
                 <Section id="personal" icon="person-circle-outline" title="Personal Info" {...sectionProps} isDirty={dirty.personal}>
-                    <LabeledInput label="Full Name"     value={name} onChangeText={(v) => { setName(v); markDirty('personal'); }} placeholder="Your name" />
-                    <LabeledInput label="Date of Birth" value={dob}  onChangeText={(v) => { setDob(v);  markDirty('personal'); }} placeholder="MM/DD/YYYY" keyboardType="numbers-and-punctuation" />
+                    <LabeledInput label="Full Name"     value={name} onChangeText={(v) => { setName(v); markDirty('personal'); }} placeholder="Your name" maxLength={50} />
+                    <LabeledInput label="Date of Birth" value={dob}  onChangeText={(v) => { setDob(v);  markDirty('personal'); }} placeholder="MM/DD/YYYY" maxLength={10} keyboardType="numbers-and-punctuation" />
                 </Section>
                 <Section id="measurements" icon="body-outline" title="Body Measurements" {...sectionProps} isDirty={dirty.measurements}>
                     <View style={styles.switchRow}>
@@ -365,6 +411,7 @@ export default function FitnessProfileContent() {
                                 setMeasurements((prev) => ({ ...prev, [f.key]: imp }));
                                 setDisplayMeasurements((prev) => ({ ...prev, [f.key]: convertMeasurement(imp, f.type, true) }));
                             }}
+                            maxLength={5}
                             keyboardType="decimal-pad" suffix={f.type === 'weight' ? weightUnit : sizeUnit}
                         />
                     ))}
@@ -403,8 +450,8 @@ export default function FitnessProfileContent() {
                         ))}
                     </View>
                     <View style={styles.customRestRow}>
-                        <TextInput style={styles.customRestInput} value={customRest} onChangeText={(v) => { setCustomRest(v); markDirty('rest'); }} placeholder="Custom (sec)" placeholderTextColor={GRAY} keyboardType="number-pad" />
-                        <TouchableOpacity style={styles.customRestBtn} onPress={() => { const val = parseInt(customRest, 10); if (!isNaN(val) && val > 0) { setDefaultRest(val); setCustomRest(''); markDirty('rest'); } }} activeOpacity={0.85}>
+                        <TextInput style={styles.customRestInput} value={customRest} onChangeText={(v) => { setCustomRest(v); markDirty('rest'); }} maxLength={5} placeholder="Custom (sec)" placeholderTextColor={GRAY} keyboardType="number-pad" />
+                        <TouchableOpacity style={styles.customRestBtn} onPress={() => { const val = parseInt(customRest, 10); if (!isNaN(val) && val > 0 && val <= 3600) { setDefaultRest(val); setCustomRest(''); markDirty('rest'); } else if (!isNaN(val) && val > 3600) { Alert.alert('Invalid Duration', 'Rest timer cannot exceed 3600 seconds (1 hour).'); } }} activeOpacity={0.85}>
                             <Text style={styles.customRestBtnText}>Set</Text>
                         </TouchableOpacity>
                     </View>

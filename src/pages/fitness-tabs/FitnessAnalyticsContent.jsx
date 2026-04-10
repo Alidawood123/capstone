@@ -233,6 +233,10 @@ export default function FitnessAnalyticsContent({ onNavigateToLanding }) {
         Alert.alert('Error', 'Please enter valid weight and reps');
         return;
       }
+      if (weight <= 0 || reps <= 0) {
+        Alert.alert('Error', 'Weight and reps must be greater than 0');
+        return;
+      }
 
       const updatedPB = {
         ...personalBests,
@@ -440,6 +444,7 @@ export default function FitnessAnalyticsContent({ onNavigateToLanding }) {
               value={exerciseSearch}
               onChangeText={setExerciseSearch}
               placeholderTextColor="#999"
+              maxLength={50}
             />
 
             {/* Exercise Selection */}
@@ -478,6 +483,7 @@ export default function FitnessAnalyticsContent({ onNavigateToLanding }) {
               keyboardType="decimal-pad"
               value={pbWeight}
               onChangeText={setPBWeight}
+              maxLength={6}
             />
 
             {/* Reps Input */}
@@ -488,6 +494,7 @@ export default function FitnessAnalyticsContent({ onNavigateToLanding }) {
               keyboardType="number-pad"
               value={pbReps}
               onChangeText={setPBReps}
+              maxLength={3}
             />
 
             {/* Action Buttons */}

@@ -55,6 +55,15 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness, on
             return;
         }
 
+        if (!isValidEmail) {
+            Toast.show({
+                type: 'error',
+                text1: 'Invalid Email',
+                text2: 'Please enter a valid email address.',
+            });
+            return;
+        }
+
         signInWithEmailAndPassword(auth, email, password).
         then((userCredential) => {
             // Signed in
@@ -315,6 +324,7 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness, on
                                 placeholderTextColor="#999"
                                 value={email}
                                 onChangeText={setEmail}
+                                maxLength={50}
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 onFocus={() => setEmailFocused(true)}
@@ -350,6 +360,7 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness, on
                                 placeholderTextColor="#999"
                                 value={password}
                                 onChangeText={setPassword}
+                                maxLength={128}
                                 secureTextEntry={!showPassword}
                                 onFocus={() => setPasswordFocused(true)}
                                 onBlur={() => setPasswordFocused(false)}

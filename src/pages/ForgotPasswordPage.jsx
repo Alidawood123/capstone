@@ -45,6 +45,15 @@ export default function SigninPage({ onNavigateToSignIn }) {
             return;
         }
 
+        if (!isValidEmail) {
+            Toast.show({
+                type: 'error',
+                text1: 'Invalid Email',
+                text2: 'Please enter a valid email address.',
+            });
+            return;
+        }
+
         sendPasswordResetEmail(auth, email)
             .then(() => {
                 Toast.show({
@@ -110,6 +119,7 @@ export default function SigninPage({ onNavigateToSignIn }) {
                                 placeholderTextColor="#999"
                                 value={email}
                                 onChangeText={setEmail}
+                                maxLength={50}
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 onFocus={() => setEmailFocused(true)}

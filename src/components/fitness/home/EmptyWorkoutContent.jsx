@@ -403,6 +403,7 @@ export default function EmptyWorkoutContent({
                 style={styles.workoutTitleInput}
                 value={workoutTitle}
                 onChangeText={setWorkoutTitle}
+                maxLength={50}
                 placeholder={isTemplateMode ? 'Template name' : 'Workout name'}
                 placeholderTextColor="#9ca3af"
             />
@@ -488,6 +489,7 @@ export default function EmptyWorkoutContent({
                                                         placeholder="lbs"
                                                         placeholderTextColor="#9ca3af"
                                                         keyboardType="decimal-pad"
+                                                        maxLength={6}
                                                     />
                                                 )}
                                                 {fields.reps && (
@@ -500,6 +502,7 @@ export default function EmptyWorkoutContent({
                                                         placeholder="Reps"
                                                         placeholderTextColor="#9ca3af"
                                                         keyboardType="numeric"
+                                                        maxLength={3}
                                                     />
                                                 )}
                                                 {fields.distance && (
@@ -512,6 +515,8 @@ export default function EmptyWorkoutContent({
                                                         placeholder="Dist (mi)"
                                                         placeholderTextColor="#9ca3af"
                                                         keyboardType="decimal-pad"
+                                                        maxLength={5}
+
                                                     />
                                                 )}
                                                 {fields.time && (
@@ -524,6 +529,7 @@ export default function EmptyWorkoutContent({
                                                         placeholder="Time (sec)"
                                                         placeholderTextColor="#9ca3af"
                                                         keyboardType="numeric"
+                                                        maxLength={5}
                                                     />
                                                 )}
                                             </View>
@@ -536,6 +542,7 @@ export default function EmptyWorkoutContent({
                                                             const digits = value.replace(/[^0-9]/g, '').slice(0,5);
                                                             setRestInputText(digits);
                                                         }}
+                                                        maxLength={5}
                                                         placeholder="0:00 or 45s"
                                                         placeholderTextColor="#020203"
                                                         keyboardType="numbers-and-punctuation"

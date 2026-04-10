@@ -119,7 +119,8 @@ export default function EditExerciseCard({ removeExercise, exerciseObj, defaultO
                                         <View style={styles.inputGroup}>
                                             <Text style={styles.inputLabel}>Weight (lbs)</Text>
                                             <TextInput style={styles.input} value={String(s?.weight ?? "")}
-                                                keyboardType="numeric" placeholder="0"
+                                                keyboardType="decimal-pad" placeholder="0"
+                                                maxLength={6}
                                                 onChangeText={(text) => updateSet(i, "weight", text)}
                                             />
                                         </View>
@@ -128,6 +129,7 @@ export default function EditExerciseCard({ removeExercise, exerciseObj, defaultO
                                             <Text style={styles.inputLabel}>Reps</Text>
                                             <TextInput style={styles.input} value={String(s?.reps ?? "")}
                                                 keyboardType="numeric" placeholder="0"
+                                                maxLength={3}
                                                 onChangeText={(text) => updateSet(i, "reps", text)}
                                             />
                                         </View>
