@@ -47,61 +47,29 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
     const [passwordFocused, setPasswordFocused] = useState(false); // Tracks if password input is focused for styling
     const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false); // Tracks if confirm password input is focused for styling
 
-    // Handler for sign-up button press
-    // Simulates an API call with a 2-second delay, then navigates to landing page
-    const handleSignUp = () => {
+    const handleSignUp = async () => {
         setIsLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            const idToken = await user.getIdToken();
+            await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${idToken}`,
+                },
+                body: JSON.stringify({ fullName: name, email }),
+            });
+            Toast.show({ type: 'success', text1: 'Account created successfully!' });
+            if (onNavigateToFitness) onNavigateToFitness();
+        } catch (error) {
+            if (auth.currentUser) auth.signOut();
+            console.error('Error during sign up:', error.code, error.message);
+            Toast.show({ type: 'error', text1: 'Sign up failed', text2: error.message });
+        } finally {
             setIsLoading(false);
-            console.log('Sign up with:', name, email, password);
-
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Signed in
-                    const user = userCredential.user;
-                    console.log('User account created & signed in!', user);
-
-                    user.getIdToken().then((idToken) => {
-                        fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${idToken}`,
-                            },
-                            body: JSON.stringify({
-                                fullName: name,
-                                email: email
-                            }),
-                        })
-                    })
-
-                    Toast.show({
-                        type: 'success',
-                        text1: 'Account created successfully!',
-                    });
-                })
-                .catch((error) => {
-                    // Sign out in case of error in the backend profile creation
-                    if(auth.currentUser) {
-                        auth.signOut();
-                    }
-
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    console.error('Error during sign up:', errorCode, errorMessage);
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Sign up failed',
-                        text2: errorMessage,
-                    });
-                });
-
-            // Navigate to fitness page after successful sign-up
-            if (onNavigateToFitness) {
-                onNavigateToFitness();
-            }
-        }, 2000);
+        }
     };
 
     const handleGoogleSignUp = async () => {
@@ -131,37 +99,22 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
 
             const user = auth.currentUser;
             if (user) {
-                user.getIdToken().then((idToken) => {
-                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${idToken}`,
-                        },
-                        body: JSON.stringify({
-                            fullName: user.displayName || '',
-                            email: user.email
-                        }),
-                    })
-                })
+                const idToken = await user.getIdToken();
+                await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`,
+                    },
+                    body: JSON.stringify({ fullName: user.displayName || '', email: user.email }),
+                });
             }
 
-
-            if (onNavigateToFitness) {
-                onNavigateToFitness();
-            }
+            if (onNavigateToFitness) onNavigateToFitness();
         } catch (error) {
-            // Sign out in case of error in the backend profile creation
-            if(auth.currentUser) {
-                auth.signOut();
-            }
-
+            if (auth.currentUser) auth.signOut();
             console.error('Error during Google sign-in:', error);
-            Toast.show({
-                type: 'error',
-                text1: 'Google sign-in failed',
-                text2: error.message,
-            });
+            Toast.show({ type: 'error', text1: 'Google sign-in failed', text2: error.message });
         }
     }
 
@@ -189,38 +142,22 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
 
             const user = auth.currentUser;
             if (user) {
-                user.getIdToken().then((idToken) => {
-                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${idToken}`,
-                        },
-                        body: JSON.stringify({
-                            fullName: user.displayName || '',
-                            email: user.email
-                        }),
-                    })
-                })
+                const idToken = await user.getIdToken();
+                await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`,
+                    },
+                    body: JSON.stringify({ fullName: user.displayName || '', email: user.email }),
+                });
             }
 
-            if (onNavigateToFitness) {
-                onNavigateToFitness();
-            }
-        }
-        catch(error){
-            // Sign out in case of error in the backend profile creation
-            if(auth.currentUser) {
-                auth.signOut();
-            }
-
+            if (onNavigateToFitness) onNavigateToFitness();
+        } catch (error) {
+            if (auth.currentUser) auth.signOut();
             console.error('Error during Facebook login:', error);
-            Toast.show({
-                type: 'error',
-                text1: 'Facebook login failed',
-                text2: error.message,
-            });
-            return;
+            Toast.show({ type: 'error', text1: 'Facebook login failed', text2: error.message });
         }
     }
 
@@ -245,33 +182,22 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
 
             const user = auth.currentUser;
             if (user) {
-                user.getIdToken().then((idToken) => {
-                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${idToken}`,
-                        },
-                        body: JSON.stringify({
-                            fullName: user.displayName || '',
-                            email: user.email
-                        }),
-                    })
-                })
+                const idToken = await user.getIdToken();
+                await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`,
+                    },
+                    body: JSON.stringify({ fullName: user.displayName || '', email: user.email }),
+                });
             }
 
-            console.log('Signed in with Apple credential!');
-            if (onNavigateToFitness) {
-                onNavigateToFitness();
-            }
-        }
-        catch (error) {
+            if (onNavigateToFitness) onNavigateToFitness();
+        } catch (error) {
+            if (auth.currentUser) auth.signOut();
             console.error('Error during Apple sign-in:', error);
-            Toast.show({
-                type: 'error',
-                text1: 'Apple sign-in failed',
-                text2: error.message,
-            });
+            Toast.show({ type: 'error', text1: 'Apple sign-in failed', text2: error.message });
         }
     }
 

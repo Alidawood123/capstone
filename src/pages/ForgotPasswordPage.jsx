@@ -35,42 +35,28 @@ export default function SigninPage({ onNavigateToSignIn }) {
 
     // Handler for sign-in button press
     // Immediately navigates to landing page (authentication disabled for testing)
-    const handleSendPasswordReset = () => {
-        if(email.trim() === '') {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Please enter your email.',
-            });
+    const handleSendPasswordReset = async () => {
+        if (email.trim() === '') {
+            Toast.show({ type: 'error', text1: 'Error', text2: 'Please enter your email.' });
             return;
         }
 
         if (!isValidEmail) {
-            Toast.show({
-                type: 'error',
-                text1: 'Invalid Email',
-                text2: 'Please enter a valid email address.',
-            });
+            Toast.show({ type: 'error', text1: 'Invalid Email', text2: 'Please enter a valid email address.' });
             return;
         }
 
-        sendPasswordResetEmail(auth, email)
-            .then(() => {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Success',
-                    text2: 'Password reset email sent. Please check your inbox.',
-                });
-                onNavigateToSignIn();
-            })
-            .catch((error) => {
-                console.error('Password reset error:', error);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Error',
-                    text2: 'Failed to send password reset email. Please try again.',
-                });
-            });
+        setIsLoading(true);
+        try {
+            await sendPasswordResetEmail(auth, email);
+            Toast.show({ type: 'success', text1: 'Success', text2: 'Password reset email sent. Please check your inbox.' });
+            onNavigateToSignIn();
+        } catch (error) {
+            console.error('Password reset error:', error);
+            Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to send password reset email. Please try again.' });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Validates email format - checks for @ and . characters

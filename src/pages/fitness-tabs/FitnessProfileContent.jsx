@@ -223,7 +223,9 @@ export default function FitnessProfileContent() {
         add: (text) => {
             const g = { id: null, text, done: false };
             setter((prev) => [...prev, g]);
-            addFn(user, text, setter).catch(() => { setter((prev) => prev.filter((x) => x !== g)); Alert.alert('Error', 'Failed to save goal.'); });
+            addFn(user, text)
+                .then((goalId) => setter((prev) => prev.map((x) => x === g ? { ...x, id: goalId } : x)))
+                .catch(() => { setter((prev) => prev.filter((x) => x !== g)); Alert.alert('Error', 'Failed to save goal.'); });
         },
         toggle: (i) => setter((prev) => {
             const u = prev.map((g, idx) => idx === i ? { ...g, done: !g.done } : g);
@@ -352,7 +354,7 @@ export default function FitnessProfileContent() {
                 .then((res) => res.json())
                 .then((data) => {
                     setName(data.fullName);
-                    setDob(data.dateOfBirth ? new Date(data.dateOfBirth).toLocaleDateString() : '');
+                    setDob(data.dateOfBirth ? (() => { const [y, mo, d] = data.dateOfBirth.split('T')[0].split('-'); return `${mo}/${d}/${y}`; })() : '');
                     setMeasurements(Object.fromEntries(data.bodyMeasurements.map((m) => [m.bodyType, m.measurementValue !== null ? m.measurementValue.toString() : ''])));
                     [[data.dailyGoals, setDaily], [data.monthlyGoals, setMonthly], [data.yearlyGoals, setYearly]]
                         .forEach(([goals, setter]) => setter(goals.map((g) => ({ id: g._id, text: g.title, done: g.achieved }))));

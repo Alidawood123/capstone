@@ -96,32 +96,33 @@ export default function FitnessHistoryCard({ workout, setWorkoutHistory }) {
 
     const workoutItem = workoutItems[0];
 
-    const handleRemoveWorkout = () => {
-        try{
-            const workoutId = workout._id;
-            removeWorkout(user, workoutId);
-            setWorkoutHistory((prev) => prev.filter((w) => w._id !== workoutId));
+    const handleRemoveWorkout = async () => {
+        const workoutId = workout._id;
+        setWorkoutHistory((prev) => prev.filter((w) => w._id !== workoutId));
+        setEditOpen(false);
+        try {
+            await removeWorkout(user, workoutId);
             Toast.show({ type: 'success', text1: 'Removed', text2: 'Workout deleted.' });
-        }
-        catch (error) {
+        } catch (error) {
+            setWorkoutHistory((prev) => [...prev, workout]);
             Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to remove workout.' });
-        } finally {
-            setEditOpen(false);
         }
     };
 
-    const handleSaveWorkout = (updatedWorkout) => {
+    const handleSaveWorkout = async (updatedWorkout) => {
+        const workoutId = updatedWorkout._id;
+        setWorkoutHistory((prev) =>
+            prev.map((w) => w._id === workoutId ? { ...w, ...updatedWorkout } : w)
+        );
+        setEditOpen(false);
         try {
-            const workoutId = updatedWorkout._id;
-            updateWorkout(user, workoutId, updatedWorkout);
-            setWorkoutHistory((prev) =>
-                prev.map((w) => w._id === workoutId ? { ...w, ...updatedWorkout } : w)
-            );
+            await updateWorkout(user, workoutId, updatedWorkout);
             Toast.show({ type: 'success', text1: 'Saved', text2: 'Workout updated.' });
         } catch (error) {
+            setWorkoutHistory((prev) =>
+                prev.map((w) => w._id === workoutId ? workout : w)
+            );
             Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to save workout.' });
-        } finally {
-            setEditOpen(false);
         }
     };
 

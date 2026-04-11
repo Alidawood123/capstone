@@ -7,7 +7,7 @@ const WORKOUTS_KEY = 'arc_workouts';
  * @returns {Promise<Array>} List of workout objects; [] on missing/invalid data or error.
  */
 export const getWorkouts = async (user) => {
-  try{
+  try {
     const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-history/get-history', {
       method: 'GET',
       headers: {
@@ -16,16 +16,14 @@ export const getWorkouts = async (user) => {
       },
     });
 
-    if(!res.ok)
-    {
-      console.log(res);
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
     }
 
     const data = await res.json();
-    console.log(data);
     return Array.isArray(data) ? data : [];
   }
-  catch(error) {
+  catch (error) {
     console.error('Error fetching workouts from backend:', error);
     return [];
   }
@@ -52,75 +50,45 @@ export const saveWorkouts = async (workouts) => {
  * @returns {Promise<void>}
  */
 export const addWorkout = async (user, workout) => {
-  try{
-    const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-history/add-history', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${await user.getIdToken()}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(workout)
-    });
+  const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-history/add-history', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${await user.getIdToken()}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(workout)
+  });
 
-    if(!res.ok)
-    {
-      console.log(res);
-    }
-    else
-    {
-      console.log('Workout added successfully');
-    }
-  }
-  catch (error) {
-    console.error('Error adding workout:', error);
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
   }
 };
 
 export const updateWorkout = async (user, workoutId, updatedWorkout) => {
-  try{
-    const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-history/update-history?workoutId=' + workoutId, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${await user.getIdToken()}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ title: updatedWorkout.title, notes: updatedWorkout.notes || '', exercises: updatedWorkout.exercises })
-    });
+  const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-history/update-history?workoutId=' + workoutId, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${await user.getIdToken()}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ title: updatedWorkout.title, notes: updatedWorkout.notes || '', exercises: updatedWorkout.exercises })
+  });
 
-    if(!res.ok)
-    {
-      console.log(res);
-    }
-    else
-    {
-      console.log('Workout updated successfully');
-    }
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
   }
-  catch (error) {
-    console.error('Error updating workout:', error);
-  }
-}
+};
 
 export const removeWorkout = async (user, workoutId) => {
-  try{
-    const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-history/delete-history?workoutId=' + workoutId, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${await user.getIdToken()}`,
-        'Content-Type': 'application/json'
-      }
-    });
+  const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/workout-history/delete-history?workoutId=' + workoutId, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${await user.getIdToken()}`,
+      'Content-Type': 'application/json'
+    }
+  });
 
-    if(!res.ok)
-    {
-      console.log(res);
-    }
-    else
-    {
-      console.log(`Removed workout with ID: ${workoutId}`);
-    }
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
   }
-  catch (error) {
-    console.error('Error removing workout:', error);
-  }
-}
+};

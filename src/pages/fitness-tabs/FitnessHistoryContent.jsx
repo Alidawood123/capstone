@@ -41,7 +41,7 @@ export default function FitnessHistoryContent() {
 
     useEffect(() => {
         loadWorkouts();
-    }, [workoutHistory.length]); // Reload when workout count changes
+    }, [loadWorkouts]);
     
     if (loading) {
         return (

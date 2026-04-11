@@ -54,14 +54,14 @@ export default ({config}) => {
                         }
                     ],
                     "@react-native-google-signin/google-signin",
-                    [
+                    ...(process.env.EXPO_PUBLIC_FACEBOOK_APP_ID ? [[
                         "react-native-fbsdk-next",
                         {
                             "appID": process.env.EXPO_PUBLIC_FACEBOOK_APP_ID,
                             "displayName": process.env.EXPO_PUBLIC_FACEBOOK_DISPLAY_NAME,
                             "clientToken": process.env.EXPO_PUBLIC_FACEBOOK_CLIENT_TOKEN
                         }
-                    ],
+                    ]] : []),
                     [
                         "expo-asset",
                         {

@@ -119,42 +119,24 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness, on
 
                 const user = auth.currentUser;
                 if (user) {
-                    user.getIdToken().then((idToken) => {
-                        fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/basic-profile', {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${idToken}`,
-                            },
-                        }).then(response => {
-                            if (response.status === 404) {
-                                // If profile doesn't exist, create it
-                                fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Bearer ${idToken}`,
-                                    },
-                                    body: JSON.stringify({
-                                        fullName: user.displayName || '',
-                                        email: user.email
-                                    }),
-                                })
-                            }
-                        })
-                    })
+                    const idToken = await user.getIdToken();
+                    const profileRes = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/basic-profile', {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+                    });
+                    if (profileRes.status === 404) {
+                        await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+                            body: JSON.stringify({ fullName: user.displayName || '', email: user.email }),
+                        });
+                    }
                 }
-    
-                if (onNavigateToFitness) {
-                    onNavigateToFitness();
-                }
+
+                if (onNavigateToFitness) onNavigateToFitness();
             } catch (error) {
                 console.error('Error during Google sign-in:', error);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Google sign-in failed',
-                    text2: error.message,
-                });
+                Toast.show({ type: 'error', text1: 'Google sign-in failed', text2: error.message });
             }
     }
 
@@ -176,42 +158,24 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness, on
 
             const user = auth.currentUser;
             if (user) {
-                user.getIdToken().then((idToken) => {
-                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/basic-profile', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${idToken}`,
-                        }
-                    }).then(response => {
-                        if (response.status === 404) {
-                            // If profile doesn't exist, create it
-                            fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${idToken}`,
-                                },
-                                body: JSON.stringify({
-                                    fullName: user.displayName || '',
-                                    email: user.email
-                                }),
-                            })
-                        }
-                    })
-                })
+                const idToken = await user.getIdToken();
+                const profileRes = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/basic-profile', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+                });
+                if (profileRes.status === 404) {
+                    await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+                        body: JSON.stringify({ fullName: user.displayName || '', email: user.email }),
+                    });
+                }
             }
 
-            if (onNavigateToFitness) {
-                onNavigateToFitness();
-            }
+            if (onNavigateToFitness) onNavigateToFitness();
         } catch (error) {
             console.error('Error during Facebook login:', error);
-            Toast.show({
-                type: 'error',
-                text1: 'Facebook sign-in failed',
-                text2: error.message,
-            });
+            Toast.show({ type: 'error', text1: 'Facebook sign-in failed', text2: error.message });
         }
     };
 
@@ -236,45 +200,24 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness, on
 
             const user = auth.currentUser;
             if (user) {
-                user.getIdToken().then((idToken) => {
-                    fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/basic-profile', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${idToken}`,
-                        }
-                    }).then(response => {
-                        if (response.status === 404) {
-                            // If profile doesn't exist, create it
-                            fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${idToken}`,
-                                },
-                                body: JSON.stringify({
-                                    fullName: user.displayName || '',
-                                    email: user.email
-                                }),
-                            })
-                        }
-                    })
-                })
+                const idToken = await user.getIdToken();
+                const profileRes = await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/basic-profile', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+                });
+                if (profileRes.status === 404) {
+                    await fetch(process.env.EXPO_PUBLIC_BACKEND_SERVER_URL + '/api/profile/create-profile', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+                        body: JSON.stringify({ fullName: user.displayName || '', email: user.email }),
+                    });
+                }
             }
 
-            console.log('Signed in with Apple credential!');
-
-            if (onNavigateToFitness) {
-                onNavigateToFitness();
-            }
-        }
-        catch (error) {
+            if (onNavigateToFitness) onNavigateToFitness();
+        } catch (error) {
             console.error('Error during Apple sign-in:', error);
-            Toast.show({
-                type: 'error',
-                text1: 'Apple sign-in failed',
-                text2: error.message,
-            });
+            Toast.show({ type: 'error', text1: 'Apple sign-in failed', text2: error.message });
         }
     }
 
