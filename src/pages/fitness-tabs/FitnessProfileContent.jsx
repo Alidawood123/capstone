@@ -358,7 +358,11 @@ export default function FitnessProfileContent() {
                     setMeasurements(Object.fromEntries(data.bodyMeasurements.map((m) => [m.bodyType, m.measurementValue !== null ? m.measurementValue.toString() : ''])));
                     [[data.dailyGoals, setDaily], [data.monthlyGoals, setMonthly], [data.yearlyGoals, setYearly]]
                         .forEach(([goals, setter]) => setter(goals.map((g) => ({ id: g._id, text: g.title, done: g.achieved }))));
-                    setPictures(data.progressPictures.map((p) => ({ id: p._id, uri: `${API}/api/profile/download-progress-picture?pictureUrl=${p.url}`, date: p.date })));
+                    setPictures(data.progressPictures.map((p) => {
+                        const [y, mo, d] = (p.date ?? '').split('T')[0].split('-');
+                        const formatted = y && mo && d ? `${mo}/${d}/${y}` : p.date ?? '';
+                        return { id: p._id, uri: `${API}/api/profile/download-progress-picture?pictureUrl=${p.url}`, date: formatted };
+                    }));
                     setDefaultRest(data.defaultRestTimer);
                 })
                 .catch((err) => console.error('Failed to load full profile:', err));

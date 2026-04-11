@@ -10,6 +10,7 @@ import {
     Pressable,
     ActivityIndicator,
     ScrollView,
+    Modal,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -48,6 +49,10 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
     const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false); // Tracks if confirm password input is focused for styling
 
     const handleSignUp = async () => {
+        if (unmetRequirements.length > 0) {
+            setPasswordModalVisible(true);
+            return;
+        }
         setIsLoading(true);
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -66,7 +71,11 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
         } catch (error) {
             if (auth.currentUser) auth.signOut();
             console.error('Error during sign up:', error.code, error.message);
-            Toast.show({ type: 'error', text1: 'Sign up failed', text2: error.message });
+            if (error.code === 'auth/weak-password') {
+                setPasswordModalVisible(true);
+            } else {
+                Toast.show({ type: 'error', text1: 'Sign up failed', text2: error.message });
+            }
         } finally {
             setIsLoading(false);
         }
@@ -201,6 +210,18 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
         }
     }
 
+    const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+
+    // Firebase password requirements
+    const passwordRequirements = [
+        { label: 'At least 6 characters',      met: password.length >= 6 },
+        { label: 'At least one uppercase letter', met: /[A-Z]/.test(password) },
+        { label: 'At least one lowercase letter', met: /[a-z]/.test(password) },
+        { label: 'At least one number',           met: /[0-9]/.test(password) },
+        { label: 'At least one special character', met: /[^A-Za-z0-9]/.test(password) },
+    ];
+    const unmetRequirements = passwordRequirements.filter(r => !r.met);
+
     // Validates email format - checks for @ and . characters
     const isValidEmail = email.includes('@') && email.includes('.');
     // Checks if passwords match
@@ -210,6 +231,40 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
 
     return (
         <View style={styles.root}>
+            <Modal
+                visible={passwordModalVisible}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setPasswordModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalCard}>
+                        <View style={styles.modalHeader}>
+                            <Ionicons name="shield-checkmark-outline" size={24} color="#d00000" />
+                            <Text style={styles.modalTitle}>Password Requirements</Text>
+                        </View>
+                        <Text style={styles.modalSubtitle}>Your password must include:</Text>
+                        {passwordRequirements.map((req) => (
+                            <View key={req.label} style={styles.requirementRow}>
+                                <Ionicons
+                                    name={req.met ? 'checkmark-circle' : 'close-circle'}
+                                    size={18}
+                                    color={req.met ? '#4CAF50' : '#ff6b6b'}
+                                />
+                                <Text style={[styles.requirementText, req.met && styles.requirementMet]}>
+                                    {req.label}
+                                </Text>
+                            </View>
+                        ))}
+                        <TouchableOpacity
+                            style={styles.modalCloseButton}
+                            onPress={() => setPasswordModalVisible(false)}
+                        >
+                            <Text style={styles.modalCloseText}>Got it</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
             {/* Content overlay */}
             <KeyboardAvoidingView
                 style={styles.container}
@@ -635,5 +690,74 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 14,
         fontWeight: '700',
+    },
+    // Modal overlay (semi-transparent backdrop)
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.45)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+    },
+    // Modal card container
+    modalCard: {
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        padding: 24,
+        width: '100%',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 16,
+        elevation: 12,
+    },
+    // Modal header row (icon + title)
+    modalHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        marginBottom: 8,
+    },
+    // Modal title text
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#1a1a1a',
+    },
+    // Modal subtitle text
+    modalSubtitle: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 16,
+    },
+    // Single requirement row
+    requirementRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        marginBottom: 10,
+    },
+    // Requirement label text
+    requirementText: {
+        fontSize: 14,
+        color: '#ff6b6b',
+    },
+    // Met requirement label
+    requirementMet: {
+        color: '#4CAF50',
+    },
+    // "Got it" close button
+    modalCloseButton: {
+        marginTop: 16,
+        backgroundColor: '#00b4d8',
+        borderRadius: 12,
+        paddingVertical: 12,
+        alignItems: 'center',
+    },
+    // Close button label
+    modalCloseText: {
+        color: '#fff',
+        fontWeight: '700',
+        fontSize: 15,
     },
 });
