@@ -19,7 +19,9 @@ export default ({config}) => {
                     bundleIdentifier: process.env.EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER,
                     supportsTablet: true,
                     infoPlist: {
-                        ITSAppUsesNonExemptEncryption: false
+                        ITSAppUsesNonExemptEncryption: false,
+                        NSPhotoLibraryUsageDescription: "Arc Wellness uses your photo library to let you upload progress pictures. For example, you can select a photo taken during your workout to track your fitness journey over time.",
+                        NSCameraUsageDescription: "Arc Wellness uses your camera to let you take progress pictures. For example, you can snap a photo after a workout to track your fitness journey over time."
                     },
                     entitlements: {
                         "com.apple.developer.applesignin": ["Default"]

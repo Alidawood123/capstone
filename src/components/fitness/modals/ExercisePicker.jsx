@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     StyleSheet,
     View,
@@ -7,7 +7,9 @@ import {
     TextInput,
     Modal,
     ScrollView,
+    FlatList,
     Pressable,
+    InteractionManager,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -88,48 +90,53 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
     const [filterCategory, setFilterCategory] = useState(null);
     const [openExerciseFilter, setOpenExerciseFilter] = useState(null);
 
-    useEffect(() => {
-        if (!visible) return;
-        ensureExercisesLoaded().then(() => {});
-    }, [visible]);
+    const searchDebounceRef = useRef(null);
 
+    // Load exercises after modal animation finishes to prevent freeze
     useEffect(() => {
         if (!visible) return;
         setLoadingExercises(true);
-        try {
-            const data = searchExercises('');
-            setExercises(data);
-            setFilteredExercises(data);
-        } catch (error) {
-            console.error('Failed to load exercises:', error);
-            setExercises([]);
-            setFilteredExercises([]);
-        } finally {
-            setLoadingExercises(false);
-        }
+        const task = InteractionManager.runAfterInteractions(() => {
+            ensureExercisesLoaded()
+                .then(() => {
+                    const data = searchExercises('');
+                    setExercises(data);
+                    setFilteredExercises(data);
+                })
+                .catch(() => {
+                    setExercises([]);
+                    setFilteredExercises([]);
+                })
+                .finally(() => setLoadingExercises(false));
+        });
+        return () => task.cancel();
     }, [visible]);
 
+    // Debounced filter effect — runs 150ms after search/filter changes
     useEffect(() => {
-        if (!visible) return;
-        if (exercises.length === 0) return;
-        let results = searchExercises(exerciseSearch);
-        if (filterBodyPart) {
-            const bpNorm = filterBodyPart.toLowerCase();
-            results = results.filter(
-                (ex) => (ex.bodyPart || '').toLowerCase() === bpNorm
-            );
-        }
-        if (filterCategory) {
-            const catNorm = filterCategory.toLowerCase();
-            results = results.filter((ex) => {
-                const typeNorm = (ex.type || '').toLowerCase();
-                if (catNorm === 'weighted assisted') {
-                    return typeNorm.includes('assisted');
-                }
-                return typeNorm === catNorm;
-            });
-        }
-        setFilteredExercises(results);
+        if (!visible || exercises.length === 0) return;
+        if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+        searchDebounceRef.current = setTimeout(() => {
+            let results = searchExercises(exerciseSearch);
+            if (filterBodyPart) {
+                const bpNorm = filterBodyPart.toLowerCase();
+                results = results.filter(
+                    (ex) => (ex.bodyPart || '').toLowerCase() === bpNorm
+                );
+            }
+            if (filterCategory) {
+                const catNorm = filterCategory.toLowerCase();
+                results = results.filter((ex) => {
+                    const typeNorm = (ex.type || '').toLowerCase();
+                    if (catNorm === 'weighted assisted') {
+                        return typeNorm.includes('assisted');
+                    }
+                    return typeNorm === catNorm;
+                });
+            }
+            setFilteredExercises(results);
+        }, 150);
+        return () => clearTimeout(searchDebounceRef.current);
     }, [visible, exerciseSearch, exercises.length, filterBodyPart, filterCategory]);
 
     const resetModalState = () => {
@@ -200,6 +207,40 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
 
     const isExerciseSelected = (id) =>
         selectedExercises.some((ex) => ex.id === id);
+
+    const renderExerciseItem = useCallback(({ item: exercise }) => {
+        const selected = isExerciseSelected(exercise.id);
+        return (
+            <View style={[styles.exerciseItemContainer, selected && styles.exerciseItemSelected]}>
+                <TouchableOpacity
+                    style={styles.exerciseRow}
+                    onPress={() => handleSelectExercise(exercise)}
+                    activeOpacity={selected ? 1 : 0.85}
+                    disabled={selected}
+                >
+                    <View style={styles.exerciseRowText}>
+                        <Text style={[styles.exerciseTitle, selected && styles.exerciseTitleSelected]}>{exercise.title}</Text>
+                        <Text style={styles.exerciseMeta}>
+                            {[exercise.type, exercise.bodyPart].filter(Boolean).join(' • ')}
+                        </Text>
+                    </View>
+                    <Ionicons
+                        name={selected ? 'checkmark-circle' : 'chevron-forward'}
+                        size={selected ? 20 : 18}
+                        color={selected ? BLUE : '#9ca3af'}
+                    />
+                </TouchableOpacity>
+                {exercise.isUserCreated && (
+                    <TouchableOpacity
+                        style={styles.exerciseDeleteButton}
+                        onPress={() => handleDeleteCustomExercise(exercise.id)}
+                    >
+                        <Ionicons name="trash" size={16} color="#ef4444" />
+                    </TouchableOpacity>
+                )}
+            </View>
+        );
+    }, [selectedExercises]);
 
     const handleSelectExercise = (exercise) => {
         setSelectedExercises((prev) => {
@@ -361,11 +402,7 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                             </View>
                         </ScrollView>
                     ) : (
-                        <ScrollView
-                            style={styles.exerciseLibrary}
-                            contentContainerStyle={styles.exerciseLibraryContent}
-                            keyboardShouldPersistTaps="handled"
-                        >
+                        <View style={styles.exerciseLibrary}>
                             <View style={styles.searchWrap}>
                                 <Ionicons name="search" size={20} color="#9ca3af" style={styles.searchIcon} />
                                 <TextInput
@@ -391,10 +428,7 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                                             )
                                         }
                                     >
-                                        <Text
-                                            style={styles.filterButtonText}
-                                            numberOfLines={1}
-                                        >
+                                        <Text style={styles.filterButtonText} numberOfLines={1}>
                                             {filterBodyPart || 'Any body part'}
                                         </Text>
                                         <Ionicons
@@ -417,9 +451,7 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                                                         setOpenExerciseFilter(null);
                                                     }}
                                                 >
-                                                    <Text style={styles.filterDropdownOptionText}>
-                                                        Any body part
-                                                    </Text>
+                                                    <Text style={styles.filterDropdownOptionText}>Any body part</Text>
                                                 </Pressable>
                                                 {EXERCISE_MODAL_BODY_PARTS.map((opt) => (
                                                     <Pressable
@@ -433,12 +465,10 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                                                             setOpenExerciseFilter(null);
                                                         }}
                                                     >
-                                                        <Text
-                                                            style={[
-                                                                styles.filterDropdownOptionText,
-                                                                filterBodyPart === opt && styles.filterDropdownOptionTextActive,
-                                                            ]}
-                                                        >
+                                                        <Text style={[
+                                                            styles.filterDropdownOptionText,
+                                                            filterBodyPart === opt && styles.filterDropdownOptionTextActive,
+                                                        ]}>
                                                             {opt}
                                                         </Text>
                                                     </Pressable>
@@ -459,10 +489,7 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                                             )
                                         }
                                     >
-                                        <Text
-                                            style={styles.filterButtonText}
-                                            numberOfLines={1}
-                                        >
+                                        <Text style={styles.filterButtonText} numberOfLines={1}>
                                             {filterCategory || 'Any category'}
                                         </Text>
                                         <Ionicons
@@ -485,9 +512,7 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                                                         setOpenExerciseFilter(null);
                                                     }}
                                                 >
-                                                    <Text style={styles.filterDropdownOptionText}>
-                                                        Any category
-                                                    </Text>
+                                                    <Text style={styles.filterDropdownOptionText}>Any category</Text>
                                                 </Pressable>
                                                 {EXERCISE_MODAL_CATEGORIES.map((opt) => (
                                                     <Pressable
@@ -501,12 +526,10 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                                                             setOpenExerciseFilter(null);
                                                         }}
                                                     >
-                                                        <Text
-                                                            style={[
-                                                                styles.filterDropdownOptionText,
-                                                                filterCategory === opt && styles.filterDropdownOptionTextActive,
-                                                            ]}
-                                                        >
+                                                        <Text style={[
+                                                            styles.filterDropdownOptionText,
+                                                            filterCategory === opt && styles.filterDropdownOptionTextActive,
+                                                        ]}>
                                                             {opt}
                                                         </Text>
                                                     </Pressable>
@@ -526,20 +549,14 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                                         {selectedExercises.map((exercise) => (
                                             <View key={exercise.id} style={styles.selectedItem}>
                                                 <View style={styles.selectedItemText}>
-                                                    <Text style={styles.selectedTitle}>
-                                                        {exercise.title}
-                                                    </Text>
+                                                    <Text style={styles.selectedTitle}>{exercise.title}</Text>
                                                     <Text style={styles.selectedMeta}>
-                                                        {[exercise.type, exercise.bodyPart]
-                                                            .filter(Boolean)
-                                                            .join(' • ')}
+                                                        {[exercise.type, exercise.bodyPart].filter(Boolean).join(' • ')}
                                                     </Text>
                                                 </View>
                                                 <TouchableOpacity
                                                     style={styles.selectedRemoveButton}
-                                                    onPress={() =>
-                                                        handleRemoveSelectedExercise(exercise.id)
-                                                    }
+                                                    onPress={() => handleRemoveSelectedExercise(exercise.id)}
                                                 >
                                                     <Ionicons name="close" size={16} color="#6b7280" />
                                                 </TouchableOpacity>
@@ -549,48 +566,22 @@ export default function ExercisePicker({ visible, onClose, onAddExercises }) {
                                 </View>
                             )}
 
-                            {loadingExercises ? (
-                                <Text style={styles.emptyStateText}>Loading exercises...</Text>
-                            ) : filteredExercises.length === 0 ? (
-                                <Text style={styles.emptyStateText}>No exercises found.</Text>
-                            ) : (
-                                filteredExercises.map((exercise) => {
-                                    const selected = isExerciseSelected(exercise.id);
-                                    return (
-                                        <View key={exercise.id} style={[styles.exerciseItemContainer, selected && styles.exerciseItemSelected]}>
-                                            <TouchableOpacity
-                                                style={styles.exerciseRow}
-                                                onPress={() => handleSelectExercise(exercise)}
-                                                activeOpacity={selected ? 1 : 0.85}
-                                                disabled={selected}
-                                            >
-                                                <View style={styles.exerciseRowText}>
-                                                    <Text style={[styles.exerciseTitle, selected && styles.exerciseTitleSelected]}>{exercise.title}</Text>
-                                                    <Text style={styles.exerciseMeta}>
-                                                        {[exercise.type, exercise.bodyPart]
-                                                            .filter(Boolean)
-                                                            .join(' • ')}
-                                                    </Text>
-                                                </View>
-                                                <Ionicons
-                                                    name={selected ? 'checkmark-circle' : 'chevron-forward'}
-                                                    size={selected ? 20 : 18}
-                                                    color={selected ? BLUE : '#9ca3af'}
-                                                />
-                                            </TouchableOpacity>
-                                            {exercise.isUserCreated && (
-                                                <TouchableOpacity
-                                                    style={styles.exerciseDeleteButton}
-                                                    onPress={() => handleDeleteCustomExercise(exercise.id)}
-                                                >
-                                                    <Ionicons name="trash" size={16} color="#ef4444" />
-                                                </TouchableOpacity>
-                                            )}
-                                        </View>
-                                    );
-                                })
-                            )}
-                        </ScrollView>
+                            <FlatList
+                                data={filteredExercises}
+                                keyExtractor={(item) => item.id.toString()}
+                                renderItem={renderExerciseItem}
+                                keyboardShouldPersistTaps="handled"
+                                contentContainerStyle={styles.exerciseLibraryContent}
+                                ListEmptyComponent={
+                                    <Text style={styles.emptyStateText}>
+                                        {loadingExercises ? 'Loading exercises...' : 'No exercises found.'}
+                                    </Text>
+                                }
+                                initialNumToRender={20}
+                                maxToRenderPerBatch={20}
+                                windowSize={5}
+                            />
+                        </View>
                     )}
                 </Pressable>
             </Pressable>
