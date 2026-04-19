@@ -28,6 +28,27 @@ import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 import Toast from 'react-native-toast-message';
 
+function displayAuthError(error) {
+    let message = '';
+
+    if (error.code == 'auth/invalid-email') {
+        message = 'The email address is badly formatted.';
+    } else if (error.code == 'auth/user-not-found') {
+        message = 'No user found with this email.';
+    } else if (error.code === 'auth/invalid-credential') {
+        message = 'Incorrect email or password. Please try again.';
+    }
+    else{
+        message = 'An unknown error occurred during sign-in.';
+    }
+
+    Toast.show({
+        type: 'error',
+        text1: 'Sign-in Failed',
+        text2: message,
+    });
+}
+
 // SigninPage Component - A modern login screen with email/password authentication
 // Features: email validation, password visibility toggle, loading state, social login buttons
 export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness, onNavigateToForgotPassword }) {
@@ -81,14 +102,7 @@ export default function SigninPage({ onNavigateToSignUp, onNavigateToFitness, on
             }
         })
         .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.error('Sign-in error:', errorCode, errorMessage);
-            Toast.show({
-                type: 'error',
-                text1: 'Sign-in Failed',
-                text2: errorMessage,
-            });
+            displayAuthError(error);
         });
     };
 

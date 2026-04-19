@@ -28,6 +28,36 @@ import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 import Toast from 'react-native-toast-message';
 
+function displayAuthError(error) {
+    let message = 'An error occurred. Please try again.';
+
+    if(error.code === 'auth/invalid-email') {
+        message = 'The email address is badly formatted.';
+    }
+    else if(error.code === 'auth/email-already-in-use') {
+        message = 'The email address is already in use by another account.';
+    }
+    else if(error.code === 'auth/weak-password') {
+        message = 'The password is too weak. Please choose a stronger password.';
+    }
+    else if(error.code === 'auth/network-request-failed') {
+        message = 'Network error. Please check your internet connection and try again.';
+    }
+    else if(error.code === 'auth/popup-closed-by-user') {
+        message = 'The sign-in popup was closed before completing the sign-in process.';
+    }
+    else if(error.code === 'auth/cancelled-popup-request') {
+        message = 'A sign-in popup request was cancelled. Please try again.';
+    }
+
+    Toast.show({
+        type: 'error',
+        text1: 'Sign-up Failed',
+        text2: message,
+    });
+
+}
+
 // SignupPage Component - A modern sign-up screen with email/password authentication
 // Features: name, email validation, password visibility toggle, confirm password, loading state, social login buttons
 export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) {
@@ -71,6 +101,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
         } catch (error) {
             if (auth.currentUser) auth.signOut();
             console.error('Error during sign up:', error.code, error.message);
+            displayAuthError(error);
             if (error.code === 'auth/weak-password') {
                 setPasswordModalVisible(true);
             } else {
@@ -123,7 +154,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
         } catch (error) {
             if (auth.currentUser) auth.signOut();
             console.error('Error during Google sign-in:', error);
-            Toast.show({ type: 'error', text1: 'Google sign-in failed', text2: error.message });
+            displayAuthError(error);
         }
     }
 
@@ -166,7 +197,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
         } catch (error) {
             if (auth.currentUser) auth.signOut();
             console.error('Error during Facebook login:', error);
-            Toast.show({ type: 'error', text1: 'Facebook login failed', text2: error.message });
+            displayAuthError(error);
         }
     }
 
@@ -206,7 +237,7 @@ export default function SignupPage({ onNavigateToSignIn, onNavigateToFitness }) 
         } catch (error) {
             if (auth.currentUser) auth.signOut();
             console.error('Error during Apple sign-in:', error);
-            Toast.show({ type: 'error', text1: 'Apple sign-in failed', text2: error.message });
+            displayAuthError(error);
         }
     }
 
